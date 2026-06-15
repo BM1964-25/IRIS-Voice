@@ -572,14 +572,21 @@ async function speak(text) {
   setUIState('speaking','Spricht…','Klicken zum Stoppen','gold');
   document.getElementById('bubble').classList.add('speaking');
 
+  // Try OpenAI TTS first, fallback to browser TTS
   try {
     const r = await fetch('https://api.openai.com/v1/audio/speech', {
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI_KEY},
       body:JSON.stringify({ model:'tts-1', input:text, voice:'nova', speed:0.93 })
     });
-    if (!r.ok) { const e=await r.json().catch(()=>({})); throw new Error(e.error?.message||'TTS '+r.status); }
-
+    if (!r.ok) {
+      const e=await r.json().catch(()=>({}));
+      // No access to tts-1 → use browser TTS
+      if(r.status===404 || (e.error?.message||'').includes('does not have access')) {
+        return speakBrowser(text);
+      }
+      throw new Error(e.error?.message||'TTS '+r.status);
+    }
     const url = URL.createObjectURL(await r.blob());
     const audio = new Audio(url);
     currentAudio = audio;
@@ -588,7 +595,30 @@ async function speak(text) {
       audio.onerror = () => { currentAudio=null; resetIdle(); res(); };
       audio.play().catch(() => { currentAudio=null; resetIdle(); res(); });
     });
-  } catch(e) { setErr('main-err',e.message); resetIdle(); }
+  } catch(e) {
+    // Any error → fallback to browser TTS
+    return speakBrowser(text);
+  }
+}
+
+function speakBrowser(text) {
+  return new Promise(res => {
+    if (!window.speechSynthesis) { resetIdle(); res(); return; }
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = 'de-DE';
+    utt.rate = 0.92;
+    utt.pitch = 1.0;
+    // Pick best German voice
+    const voices = window.speechSynthesis.getVoices();
+    const deVoice = voices.find(v=>v.lang.startsWith('de') && v.name.toLowerCase().includes('female'))
+                 || voices.find(v=>v.lang.startsWith('de'))
+                 || null;
+    if (deVoice) utt.voice = deVoice;
+    utt.onend = () => { resetIdle(); res(); };
+    utt.onerror = () => { resetIdle(); res(); };
+    window.speechSynthesis.speak(utt);
+  });
 }
 
 // ════════════════════════════
@@ -707,6 +737,7 @@ function showGHint(txt) {
 // ════════════════════════════
 //  BOOT
 // ════════════════════════════
+window.speechSynthesis && window.speechSynthesis.getVoices();
 window.addEventListener('load',()=>{
   const k=localStorage.getItem('iris_oai');
   if(k && k.length > 10){ OAI_KEY=k; bootMain(); }
