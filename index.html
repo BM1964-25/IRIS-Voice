@@ -244,6 +244,10 @@ body { font-family:'Syne',sans-serif; color:#fff; display:flex; align-items:cent
     <div class="gl-item"><div class="gl-icon">←→</div><div class="gl-lbl">Agent</div></div>
     <div class="gl-item"><div class="gl-icon">⊙</div><div class="gl-lbl">Hover</div></div>
   </div>
+
+  <div style="font-size:0.52rem;letter-spacing:0.1em;color:rgba(255,255,255,0.18);text-align:center;padding-bottom:0.2rem">
+    © 2026 BuiltSmart AI · Powered by BuiltSmart Hub · Bernhard Metzger
+  </div>
 </div>
 
 <script>
@@ -438,7 +442,7 @@ const AGENTS = {
 // ════════════════════════════
 function connect() {
   const k = document.getElementById('oai-key').value.trim();
-  if (!k) { setErr('setup-err','Bitte API-Key eingeben.'); return; }
+  if (!k || k.length < 10) { setErr('setup-err','Bitte gültigen API-Key eingeben.'); return; }
   OAI_KEY = k;
   localStorage.setItem('iris_oai', k);
   bootMain();
@@ -705,7 +709,8 @@ function showGHint(txt) {
 // ════════════════════════════
 window.addEventListener('load',()=>{
   const k=localStorage.getItem('iris_oai');
-  if(k){ OAI_KEY=k; bootMain(); }
+  if(k && k.length > 10){ OAI_KEY=k; bootMain(); }
+  // else: stay on setup screen
 });
 </script>
 </body>
