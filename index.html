@@ -719,6 +719,179 @@ window.addEventListener('load', () => {
   const k = localStorage.getItem('iris_oai');
   if (k) { OAI_KEY = k; startIRIS(); }
 });
+
+// ════════════════════════════
+//  GESTURE CONTROL
+// ════════════════════════════
+
+// ── Swipe gestures ──
+let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
+const SWIPE_MIN = 60, SWIPE_MAX_TIME = 400;
+
+document.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  touchStartTime = Date.now();
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  if (Date.now() - touchStartTime > SWIPE_MAX_TIME) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  const absDx = Math.abs(dx), absDy = Math.abs(dy);
+
+  if (absDy > SWIPE_MIN && absDy > absDx * 1.5) {
+    // Vertical swipe
+    if (dy < 0) {
+      // Swipe UP → start recording
+      if (!isRecording && !currentAudio) {
+        showGestureHint('↑ Aufnahme gestartet');
+        startRecording();
+      }
+    } else {
+      // Swipe DOWN → stop & send
+      if (isRecording) {
+        showGestureHint('↓ Sende…');
+        stopRecording();
+      }
+    }
+  } else if (absDx > SWIPE_MIN && absDx > absDy * 1.5) {
+    // Horizontal swipe → cycle agents
+    const agentKeys = ['chat','write','risk','research','claim','kpi'];
+    const idx = agentKeys.indexOf(agent);
+    let next;
+    if (dx > 0) {
+      next = agentKeys[(idx + 1) % agentKeys.length];
+      showGestureHint('→ ' + AGENTS[next].name);
+    } else {
+      next = agentKeys[(idx - 1 + agentKeys.length) % agentKeys.length];
+      showGestureHint('← ' + AGENTS[next].name);
+    }
+    setAgent(next);
+  }
+}, { passive: true });
+
+// ── Proximity / Hover → auto-start ──
+let proximityTimer = null;
+let orbProximityActive = false;
+const ORB_EL = () => document.getElementById('orb');
+
+function getOrbCenter() {
+  const r = ORB_EL().getBoundingClientRect();
+  return { x: r.left + r.width / 2, y: r.top + r.height / 2, radius: r.width / 2 };
+}
+
+function distToOrb(cx, cy) {
+  const o = getOrbCenter();
+  return Math.sqrt((cx - o.x) ** 2 + (cy - o.y) ** 2) - o.radius;
+}
+
+document.addEventListener('mousemove', e => {
+  if (!document.getElementById('screen-main').style.display || document.getElementById('screen-main').style.display === 'none') return;
+  const dist = distToOrb(e.clientX, e.clientY);
+  const PROX_ZONE = 80; // px outside orb edge
+
+  if (dist < PROX_ZONE && dist > 0) {
+    // In proximity zone — show proximity indicator
+    const intensity = 1 - (dist / PROX_ZONE);
+    updateProximityGlow(intensity);
+
+    if (!orbProximityActive && !isRecording && !currentAudio) {
+      orbProximityActive = true;
+      clearTimeout(proximityTimer);
+      proximityTimer = setTimeout(() => {
+        if (orbProximityActive && !isRecording && !currentAudio) {
+          showGestureHint('🎙 Auto-Start durch Näherung');
+          startRecording();
+        }
+      }, 1200); // 1.2s hover → auto start
+    }
+  } else if (dist <= 0) {
+    // Inside orb — clear proximity
+    clearTimeout(proximityTimer);
+    orbProximityActive = false;
+    updateProximityGlow(0);
+  } else {
+    // Outside zone
+    if (orbProximityActive) {
+      clearTimeout(proximityTimer);
+      orbProximityActive = false;
+      updateProximityGlow(0);
+      // If recording and mouse left far → auto stop
+      if (isRecording && dist > 160) {
+        showGestureHint('Aufnahme beendet');
+        stopRecording();
+      }
+    }
+  }
+});
+
+function updateProximityGlow(intensity) {
+  const orb = ORB_EL();
+  if (intensity <= 0) {
+    orb.style.filter = '';
+    return;
+  }
+  const alpha = (intensity * 0.4).toFixed(2);
+  const spread = Math.round(intensity * 40);
+  orb.style.filter = `drop-shadow(0 0 ${spread}px rgba(201,168,76,${alpha}))`;
+}
+
+// ── Gesture hint overlay ──
+function showGestureHint(text) {
+  let el = document.getElementById('gesture-hint');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'gesture-hint';
+    el.style.cssText = `
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -180px);
+      background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.4);
+      backdrop-filter: blur(12px); border-radius: 30px;
+      padding: 0.5rem 1.2rem; font-family: 'Syne', sans-serif;
+      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gold); z-index: 999; pointer-events: none;
+      transition: opacity 0.3s;
+    `;
+    document.body.appendChild(el);
+  }
+  el.textContent = text;
+  el.style.opacity = '1';
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => { el.style.opacity = '0'; }, 2200);
+}
+
+// ── Gesture legend ──
+function addGestureLegend() {
+  const leg = document.createElement('div');
+  leg.style.cssText = `
+    position: fixed; bottom: 4.5rem; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 1.2rem; z-index: 10; pointer-events: none;
+  `;
+  const items = [
+    { icon: '↑', label: 'Start' },
+    { icon: '↓', label: 'Senden' },
+    { icon: '←→', label: 'Agent' },
+    { icon: '⊙', label: 'Hover' }
+  ];
+  items.forEach(item => {
+    const d = document.createElement('div');
+    d.style.cssText = `
+      display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+      font-family: 'Syne', sans-serif;
+    `;
+    d.innerHTML = `
+      <span style="font-size:0.9rem;color:rgba(201,168,76,0.5)">${item.icon}</span>
+      <span style="font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(240,235,224,0.25)">${item.label}</span>
+    `;
+    leg.appendChild(d);
+  });
+  document.body.appendChild(leg);
+}
+
+// Init legend when main screen shows
+const _origStartIRIS = startIRIS;
+startIRIS = function() { _origStartIRIS(); addGestureLegend(); };
+
 </script>
 </body>
 </html>
