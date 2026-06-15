@@ -88,12 +88,12 @@ body {
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 48px 44px;
+  padding: 32px 44px 44px;
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
   text-align: center;
 }
-.setup-orb { font-size: 52px; margin-bottom: 20px; }
+.setup-orb { margin-bottom: 8px; line-height: 0; }
 .setup-title {
   font-family: Cambria, Georgia, serif;
   font-size: 28px;
@@ -423,7 +423,117 @@ body {
 <!-- SETUP SCREEN -->
 <div class="screen" id="screen-setup">
   <div class="setup-card">
-    <div class="setup-orb">🔮</div>
+    <div class="setup-orb">
+<svg viewBox="0 0 320 320" width="260" height="260" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#0A2040"/>
+    <stop offset="100%" stop-color="#030B18"/>
+  </radialGradient>
+  <radialGradient id="core" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#1A5080"/>
+    <stop offset="60%" stop-color="#0D2A45"/>
+    <stop offset="100%" stop-color="#030B18"/>
+  </radialGradient>
+  <filter id="blur4"><feGaussianBlur stdDeviation="4"/></filter>
+</defs>
+<style>
+@keyframes rot1{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes rot2{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+@keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+@keyframes tp{0%,100%{opacity:.8}50%{opacity:1}}
+</style>
+<circle cx="160" cy="160" r="160" fill="url(#bg)"/>
+<!-- Ring 1 outer slow -->
+<g style="transform-origin:160px 160px;animation:rot1 60s linear infinite">
+  <circle cx="160" cy="160" r="145" fill="none" stroke="#0A3D6B" stroke-width="1"/>
+  <path d="M 160 16 A 144 144 0 0 1 260 75" fill="none" stroke="#1AADDD" stroke-width="2.5" stroke-linecap="round" opacity=".9"/>
+  <path d="M 260 245 A 144 144 0 0 1 160 304" fill="none" stroke="#1AADDD" stroke-width="2.5" stroke-linecap="round" opacity=".9"/>
+  <path d="M 16 160 A 144 144 0 0 1 60 60" fill="none" stroke="#1AADDD" stroke-width="2.5" stroke-linecap="round" opacity=".6"/>
+  <rect x="153" y="16" width="14" height="7" rx="1" fill="#1AADDD"/>
+  <rect x="153" y="298" width="14" height="7" rx="1" fill="#1AADDD"/>
+  <rect x="16" y="153" width="7" height="14" rx="1" fill="#1AADDD"/>
+  <rect x="298" y="153" width="7" height="14" rx="1" fill="#1AADDD"/>
+  <g fill="#1AADDD" opacity=".6">
+    <circle cx="160" cy="19" r="2.5"/>
+    <circle cx="175" cy="21" r="2"/>
+    <circle cx="190" cy="26" r="1.5"/>
+    <circle cx="145" cy="21" r="2"/>
+    <circle cx="130" cy="26" r="1.5"/>
+  </g>
+</g>
+<!-- Ring 2 counter -->
+<g style="transform-origin:160px 160px;animation:rot2 22s linear infinite">
+  <circle cx="160" cy="160" r="124" fill="none" stroke="#0E4D7A" stroke-width="1.5" stroke-dasharray="8 4"/>
+  <path d="M 160 37 A 123 123 0 0 1 260 110" fill="none" stroke="#1AADDD" stroke-width="3" stroke-linecap="round" opacity=".8"/>
+  <path d="M 260 210 A 123 123 0 0 1 160 283" fill="none" stroke="#1AADDD" stroke-width="3" stroke-linecap="round" opacity=".8"/>
+  <rect x="153" y="37" width="14" height="8" rx="1.5" fill="#1AADDD"/>
+  <rect x="153" y="277" width="14" height="8" rx="1.5" fill="#1AADDD"/>
+  <rect x="37" y="153" width="8" height="14" rx="1.5" fill="#1AADDD"/>
+  <rect x="278" y="153" width="8" height="14" rx="1.5" fill="#1AADDD"/>
+  <g fill="#1AADDD" opacity=".5">
+    <circle cx="210" cy="44" r="2"/>
+    <circle cx="226" cy="52" r="1.5"/>
+    <circle cx="240" cy="64" r="2"/>
+  </g>
+  <!-- Dot row bottom arc -->
+  <g fill="#1AADDD" opacity=".55">
+    <circle cx="126" cy="267" r="1.8"/>
+    <circle cx="137" cy="271" r="1.4"/>
+    <circle cx="149" cy="274" r="1.8"/>
+    <circle cx="161" cy="275" r="1.4"/>
+    <circle cx="173" cy="274" r="1.8"/>
+    <circle cx="185" cy="271" r="1.4"/>
+    <circle cx="196" cy="267" r="1.8"/>
+  </g>
+</g>
+<!-- Ring 3 inner fast -->
+<g style="transform-origin:160px 160px;animation:rot1 14s linear infinite">
+  <circle cx="160" cy="160" r="105" fill="none" stroke="#0A3D6B" stroke-width="1"/>
+  <path d="M 160 56 A 104 104 0 0 1 249 111" fill="none" stroke="#10C0E8" stroke-width="2" stroke-dasharray="14 6" stroke-linecap="round" opacity=".9"/>
+  <path d="M 71 209 A 104 104 0 0 1 160 264" fill="none" stroke="#10C0E8" stroke-width="2" stroke-dasharray="14 6" stroke-linecap="round" opacity=".9"/>
+  <rect x="154" y="56" width="12" height="7" rx="1" fill="#10C0E8" opacity=".9"/>
+  <rect x="261" y="154" width="7" height="12" rx="1" fill="#10C0E8" opacity=".7"/>
+</g>
+<!-- Glow ring -->
+<circle cx="160" cy="160" r="64" fill="none" stroke="#0CBDE0" stroke-width="10" opacity=".12" filter="url(#blur4)"/>
+<!-- Main bright ring -->
+<circle cx="160" cy="160" r="61" fill="none" stroke="#10D8F5" stroke-width="3.5" opacity=".9" style="animation:pulse 3s ease-in-out infinite"/>
+<circle cx="160" cy="160" r="55" fill="none" stroke="#0899B8" stroke-width="1.5" opacity=".5"/>
+<!-- Core -->
+<circle cx="160" cy="160" r="52" fill="url(#core)"/>
+<!-- Scanning arc -->
+<circle cx="160" cy="160" r="61" fill="none" stroke="#10D8F5" stroke-width="5"
+  stroke-dasharray="80 303" opacity=".8"
+  style="transform-origin:160px 160px;animation:rot1 4s linear infinite"/>
+<!-- I.R.I.S. text -->
+<text x="160" y="153" text-anchor="middle"
+  font-family="Cambria,Georgia,serif" font-size="22" font-weight="700"
+  fill="#10D8F5" letter-spacing="5"
+  style="animation:tp 2.5s ease-in-out infinite">I.R.I.S.</text>
+<text x="160" y="170" text-anchor="middle"
+  font-family="Calibri,Arial,sans-serif" font-size="7" fill="#1A8ABB"
+  letter-spacing="2" style="animation:tp 2.5s ease-in-out infinite 0.5s">INTELLIGENCE SYSTEM</text>
+<circle cx="160" cy="182" r="2.5" fill="#10D8F5" style="animation:blink 1.2s ease-in-out infinite"/>
+<!-- Corner brackets -->
+<g stroke="#1AADDD" stroke-width="1.5" fill="none" opacity=".45">
+  <path d="M 32 52 L 32 32 L 52 32"/>
+  <path d="M 270 32 L 290 32 L 290 52"/>
+  <path d="M 32 270 L 32 290 L 52 290"/>
+  <path d="M 270 290 L 290 290 L 290 270"/>
+</g>
+<circle cx="32" cy="32" r="2.5" fill="#1AADDD" style="animation:blink 2s ease-in-out infinite 0s"/>
+<circle cx="290" cy="32" r="2.5" fill="#1AADDD" style="animation:blink 2s ease-in-out infinite 0.5s"/>
+<circle cx="32" cy="290" r="2.5" fill="#1AADDD" style="animation:blink 2s ease-in-out infinite 1s"/>
+<circle cx="290" cy="290" r="2.5" fill="#1AADDD" style="animation:blink 2s ease-in-out infinite 1.5s"/>
+<!-- Corner labels -->
+<text x="42" y="48" font-family="Calibri,Arial,sans-serif" font-size="7" fill="#1A8ABB" opacity=".6" letter-spacing="1">SYS.ON</text>
+<text x="280" y="48" font-family="Calibri,Arial,sans-serif" font-size="7" fill="#1A8ABB" opacity=".6" letter-spacing="1" text-anchor="end">v2.0</text>
+<text x="42" y="286" font-family="Calibri,Arial,sans-serif" font-size="7" fill="#1A8ABB" opacity=".6" letter-spacing="1">BAU+IMMO</text>
+<text x="280" y="286" font-family="Calibri,Arial,sans-serif" font-size="7" fill="#1A8ABB" opacity=".6" letter-spacing="1" text-anchor="end">MRA</text>
+</svg>
+</div>
     <div class="setup-title">Willkommen bei <em>IRIS</em></div>
     <div class="setup-sub">Ihr KI-Sprachassistent für Bau &amp; Immobilien.<br>Starten Sie mit Ihrem API-Key.</div>
 
