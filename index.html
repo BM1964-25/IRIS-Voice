@@ -3,457 +3,787 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IRIS</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<title>IRIS — BuiltSmart AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-html, body { width:100%; height:100%; overflow:hidden; background:#000; }
-body { font-family:'Syne',sans-serif; color:#fff; display:flex; align-items:center; justify-content:center; }
+:root{
+  --c:#00b8ff;--c2:#0066cc;--c3:#00ff88;--c4:#ff6b00;--c5:#a855f7;
+  --bg:#020810;--bg2:#040f1a;--bg3:#061525;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);}
+body{font-family:'Rajdhani',sans-serif;color:var(--c);}
 
-/* ── Canvas background ── */
-#canvas { position:fixed; inset:0; z-index:0; }
+/* ── CANVAS LAYER ── */
+#bg-canvas{position:fixed;inset:0;z-index:0;}
 
-/* ── Setup ── */
-#screen-setup {
-  position:fixed; inset:0; z-index:100;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.8rem;
-  background:rgba(0,0,0,0.92); backdrop-filter:blur(20px);
+/* ── SETUP SCREEN ── */
+#setup{
+  position:fixed;inset:0;z-index:50;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1.4rem;background:rgba(2,8,16,0.97);
 }
-.setup-logo {
-  font-size:5rem; font-weight:800; letter-spacing:0.4em;
-  background:linear-gradient(135deg,#00f5ff,#a855f7,#f59e0b,#3b82f6);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 0 30px rgba(0,245,255,0.4));
-  animation:logo-pulse 3s ease-in-out infinite;
+.setup-logo{
+  font-family:'Orbitron',monospace;font-size:4rem;font-weight:900;
+  letter-spacing:.35em;color:var(--c);
+  text-shadow:0 0 30px rgba(0,184,255,.8),0 0 80px rgba(0,184,255,.3);
+  animation:logoBreath 3s ease-in-out infinite;
 }
-@keyframes logo-pulse {
-  0%,100% { filter:drop-shadow(0 0 20px rgba(0,245,255,0.3)); }
-  50% { filter:drop-shadow(0 0 50px rgba(168,85,247,0.6)); }
+@keyframes logoBreath{
+  0%,100%{text-shadow:0 0 20px rgba(0,184,255,.6),0 0 50px rgba(0,184,255,.2);}
+  50%{text-shadow:0 0 50px rgba(0,184,255,1),0 0 100px rgba(0,184,255,.5);}
 }
-.setup-sub {
-  font-family:'Cormorant Garamond',serif; font-style:italic;
-  font-size:1rem; letter-spacing:0.08em;
-  color:rgba(255,255,255,0.4);
+.setup-sub{font-family:'Rajdhani',sans-serif;font-size:.9rem;letter-spacing:.25em;
+  color:rgba(0,184,255,.4);text-transform:uppercase;}
+.setup-box{
+  background:rgba(0,184,255,.03);border:1px solid rgba(0,184,255,.2);
+  border-radius:4px;padding:1.5rem;display:flex;flex-direction:column;
+  gap:.8rem;width:360px;
 }
-.setup-inp {
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(0,245,255,0.3);
-  border-radius:12px; padding:0.9rem 1.2rem;
-  color:#fff; font-family:'Syne',sans-serif; font-size:0.9rem;
-  outline:none; width:340px; transition:all 0.3s;
+.setup-label{font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(0,184,255,.4);font-family:'Orbitron',monospace;}
+.setup-inp{
+  background:rgba(0,184,255,.05);border:1px solid rgba(0,184,255,.25);
+  border-radius:2px;padding:.8rem 1rem;color:var(--c);
+  font-family:'Orbitron',monospace;font-size:.72rem;outline:none;width:100%;
+  letter-spacing:.06em;transition:border-color .2s;
 }
-.setup-inp:focus { border-color:#00f5ff; box-shadow:0 0 0 3px rgba(0,245,255,0.12),0 0 20px rgba(0,245,255,0.1); }
-.setup-inp::placeholder { color:rgba(255,255,255,0.25); }
-.setup-lbl { font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(0,245,255,0.6); align-self:flex-start; margin-left:calc(50% - 170px); }
-.setup-btn {
-  width:340px; padding:1rem;
-  background:linear-gradient(135deg,rgba(0,245,255,0.15),rgba(168,85,247,0.15));
-  border:1px solid rgba(0,245,255,0.4);
-  border-radius:12px; color:#00f5ff;
-  font-family:'Syne',sans-serif; font-weight:700;
-  font-size:0.85rem; letter-spacing:0.18em; cursor:pointer;
-  transition:all 0.3s;
-  box-shadow:0 0 20px rgba(0,245,255,0.1);
+.setup-inp:focus{border-color:var(--c);box-shadow:0 0 0 1px rgba(0,184,255,.15);}
+.setup-inp::placeholder{color:rgba(0,184,255,.2);}
+.setup-btn{
+  background:linear-gradient(135deg,rgba(0,184,255,.12),rgba(0,102,204,.12));
+  border:1px solid rgba(0,184,255,.4);border-radius:2px;
+  padding:.85rem;color:var(--c);font-family:'Orbitron',monospace;
+  font-weight:700;font-size:.72rem;letter-spacing:.2em;cursor:pointer;
+  transition:all .25s;
 }
-.setup-btn:hover { background:linear-gradient(135deg,rgba(0,245,255,0.25),rgba(168,85,247,0.25)); box-shadow:0 0 40px rgba(0,245,255,0.2); transform:translateY(-2px); }
-.setup-err { font-size:0.7rem; color:#f87171; min-height:1em; }
-.setup-note { font-size:0.65rem; color:rgba(255,255,255,0.25); text-align:center; max-width:300px; line-height:1.7; }
+.setup-btn:hover{background:linear-gradient(135deg,rgba(0,184,255,.22),rgba(0,102,204,.22));
+  box-shadow:0 0 20px rgba(0,184,255,.25);}
+.setup-err{font-size:.6rem;color:#ff4455;font-family:'Orbitron',monospace;
+  letter-spacing:.08em;min-height:.9em;}
+.setup-note{font-size:.6rem;color:rgba(0,184,255,.25);text-align:center;
+  max-width:320px;line-height:1.7;letter-spacing:.04em;}
 
-/* ── Main ── */
-#screen-main {
-  display:none; position:fixed; inset:0; z-index:10;
-  flex-direction:column; align-items:center; justify-content:space-between;
-  padding:1.5rem;
-}
+/* ── MAIN UI ── */
+#main{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;}
 
-/* Topbar */
-.topbar {
-  width:100%; max-width:700px;
-  display:flex; align-items:center; justify-content:space-between;
+/* TOPBAR */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.7rem 1.4rem;border-bottom:1px solid rgba(0,184,255,.12);
+  background:rgba(2,8,16,.85);backdrop-filter:blur(10px);flex-shrink:0;
 }
-.top-logo {
-  font-size:1.4rem; font-weight:800; letter-spacing:0.25em;
-  background:linear-gradient(135deg,#00f5ff,#a855f7);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-}
-.top-status { display:flex; align-items:center; gap:0.5rem; font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.35); }
-.sdot { width:6px; height:6px; border-radius:50%; background:#3ecf7a; box-shadow:0 0 8px #3ecf7a; }
-.top-btns { display:flex; gap:0.4rem; }
-.tbtn { background:transparent; border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.35); border-radius:6px; padding:0.28rem 0.65rem; font-size:0.6rem; letter-spacing:0.08em; cursor:pointer; transition:all 0.2s; }
-.tbtn:hover { border-color:rgba(0,245,255,0.4); color:#00f5ff; }
+.top-logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.2rem;
+  letter-spacing:.3em;color:var(--c);
+  text-shadow:0 0 20px rgba(0,184,255,.7);}
+.top-meta{display:flex;align-items:center;gap:1.2rem;}
+.top-time{font-family:'Orbitron',monospace;font-size:.75rem;color:rgba(0,184,255,.6);
+  letter-spacing:.12em;}
+.top-status{display:flex;align-items:center;gap:.4rem;font-size:.55rem;
+  letter-spacing:.18em;text-transform:uppercase;color:rgba(0,184,255,.45);}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--c3);
+  box-shadow:0 0 7px var(--c3);animation:sdot 2s ease-in-out infinite;}
+@keyframes sdot{0%,100%{opacity:1}50%{opacity:.2}}
+.top-agent-name{font-family:'Orbitron',monospace;font-size:.6rem;
+  color:rgba(0,184,255,.5);letter-spacing:.14em;}
+.top-btns{display:flex;gap:.5rem;}
+.tbtn{background:transparent;border:1px solid rgba(0,184,255,.18);
+  border-radius:2px;padding:.25rem .7rem;color:rgba(0,184,255,.4);
+  font-family:'Orbitron',monospace;font-size:.55rem;letter-spacing:.1em;
+  cursor:pointer;transition:all .2s;}
+.tbtn:hover{border-color:var(--c);color:var(--c);}
 
-/* Center */
-.center-area {
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:1.2rem; flex:1;
-}
+/* BODY */
+.body{flex:1;display:flex;overflow:hidden;}
 
-/* IRIS state label */
-.iris-state {
-  font-family:'Cormorant Garamond',serif; font-style:italic;
-  font-size:1.1rem; letter-spacing:0.1em;
-  color:rgba(255,255,255,0.35); transition:all 0.4s;
-  text-shadow:none;
+/* LEFT PANEL */
+.left-panel{
+  width:220px;flex-shrink:0;border-right:1px solid rgba(0,184,255,.1);
+  background:rgba(2,8,16,.7);backdrop-filter:blur(8px);
+  display:flex;flex-direction:column;padding:.8rem 0;gap:.5rem;overflow-y:auto;
 }
-.iris-state.listening { color:#00f5ff; text-shadow:0 0 20px rgba(0,245,255,0.5); }
-.iris-state.thinking { color:#a855f7; text-shadow:0 0 20px rgba(168,85,247,0.5); }
-.iris-state.speaking { color:#f59e0b; text-shadow:0 0 20px rgba(245,158,11,0.5); }
+.panel-section{padding:0 .8rem;}
+.panel-lbl{font-family:'Orbitron',monospace;font-size:.48rem;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(0,184,255,.3);margin-bottom:.4rem;
+  padding-bottom:.3rem;border-bottom:1px solid rgba(0,184,255,.08);}
+.agent-item{
+  display:flex;align-items:center;gap:.6rem;padding:.5rem .7rem;
+  border:1px solid transparent;border-radius:2px;cursor:pointer;
+  transition:all .2s;margin-bottom:.2rem;
+}
+.agent-item:hover{border-color:rgba(0,184,255,.25);background:rgba(0,184,255,.05);}
+.agent-item.on{border-color:rgba(0,184,255,.5);background:rgba(0,184,255,.08);}
+.agent-item.on .agent-icon-wrap{box-shadow:0 0 10px currentColor;}
+.agent-icon-wrap{
+  width:28px;height:28px;border-radius:2px;border:1px solid currentColor;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;flex-shrink:0;transition:all .2s;
+}
+.agent-info{flex:1;}
+.agent-name{font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.08em;
+  text-transform:uppercase;}
+.agent-desc{font-size:.58rem;color:rgba(255,255,255,.3);margin-top:.1rem;}
 
-/* Orb wrapper — canvas handles the visuals */
-.orb-click-area {
-  width:280px; height:280px; border-radius:50%;
-  cursor:pointer; position:relative;
-  display:flex; align-items:center; justify-content:center;
-  -webkit-tap-highlight-color:transparent;
-}
-.orb-label {
-  position:relative; z-index:2;
-  font-size:2rem; font-weight:800; letter-spacing:0.3em;
-  background:linear-gradient(135deg,#00f5ff,#a855f7,#f59e0b);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  pointer-events:none; transition:opacity 0.3s;
-}
+/* Colors per agent */
+.a-chat .agent-icon-wrap,.a-chat .agent-name{color:var(--c);}
+.a-news .agent-icon-wrap,.a-news .agent-name{color:#00ccff;}
+.a-calendar .agent-icon-wrap,.a-calendar .agent-name{color:var(--c3);}
+.a-email .agent-icon-wrap,.a-email .agent-name{color:#ffcc00;}
+.a-risk .agent-icon-wrap,.a-risk .agent-name{color:var(--c4);}
+.a-write .agent-icon-wrap,.a-write .agent-name{color:#00ddaa;}
+.a-research .agent-icon-wrap,.a-research .agent-name{color:var(--c5);}
+.a-kpi .agent-icon-wrap,.a-kpi .agent-name{color:#ff6699;}
 
-/* Hint */
-.orb-hint {
-  font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase;
-  color:rgba(255,255,255,0.25); transition:color 0.3s;
+/* Info cards in left panel */
+.info-card{
+  background:rgba(0,184,255,.03);border:1px solid rgba(0,184,255,.1);
+  border-radius:2px;padding:.6rem .7rem;margin-bottom:.3rem;
 }
-.orb-hint.cyan { color:#00f5ff; }
-.orb-hint.purple { color:#a855f7; }
-.orb-hint.gold { color:#f59e0b; }
-.orb-hint.green { color:#3ecf7a; }
+.info-card-title{font-family:'Orbitron',monospace;font-size:.5rem;
+  letter-spacing:.16em;color:rgba(0,184,255,.4);margin-bottom:.35rem;}
+.info-card-val{font-size:.72rem;color:rgba(0,184,255,.8);line-height:1.45;}
 
-/* Bubble */
-.bubble {
-  max-width:480px; width:100%; min-height:3.5rem;
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:16px; padding:0.9rem 1.3rem;
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.05rem; line-height:1.6; text-align:center;
-  color:rgba(255,255,255,0.8);
-  backdrop-filter:blur(10px);
-  display:flex; align-items:center; justify-content:center;
-  transition:border-color 0.4s;
-}
-.bubble.speaking { border-color:rgba(245,158,11,0.3); }
-.bubble .ph { color:rgba(255,255,255,0.2); font-style:italic; }
-.dots span {
-  display:inline-block; width:6px; height:6px; border-radius:50%;
-  margin:0 3px;
-  animation:db 1.1s ease-in-out infinite;
-}
-.dots span:nth-child(1){background:#00f5ff;animation-delay:0s}
-.dots span:nth-child(2){background:#a855f7;animation-delay:.18s}
-.dots span:nth-child(3){background:#f59e0b;animation-delay:.36s}
-@keyframes db{0%,100%{transform:translateY(0);opacity:.25}50%{transform:translateY(-7px);opacity:1}}
+/* CENTER */
+.center{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:.8rem;position:relative;overflow:hidden;}
 
-/* Agent pills */
-.pills {
-  display:flex; gap:0.45rem; flex-wrap:wrap; justify-content:center;
-  max-width:480px;
+/* Scan line */
+.scan-line{
+  position:absolute;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(0,184,255,.5) 40%,rgba(0,184,255,.5) 60%,transparent 100%);
+  animation:scanMove 5s linear infinite;pointer-events:none;
 }
-.pill {
-  border-radius:20px; padding:0.28rem 0.75rem;
-  font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase;
-  cursor:pointer; transition:all 0.2s;
-  border:1px solid rgba(255,255,255,0.1);
-  color:rgba(255,255,255,0.3);
-  background:transparent;
-}
-.pill:hover { border-color:rgba(0,245,255,0.4); color:#00f5ff; }
-.pill.on { border-color:rgba(0,245,255,0.5); color:#00f5ff; background:rgba(0,245,255,0.08); box-shadow:0 0 12px rgba(0,245,255,0.15); }
+@keyframes scanMove{0%{top:-1px;opacity:.7}100%{top:100%;opacity:0}}
 
-/* Gesture legend */
-.gesture-legend {
-  display:flex; gap:1.5rem; justify-content:center;
-}
-.gl-item { display:flex; flex-direction:column; align-items:center; gap:0.2rem; }
-.gl-icon { font-size:0.85rem; color:rgba(255,255,255,0.2); }
-.gl-lbl { font-size:0.5rem; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.15); }
+.iris-state{font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(0,184,255,.4);transition:all .4s;min-height:1.2rem;}
+.iris-state.listening{color:var(--c3);text-shadow:0 0 12px rgba(0,255,136,.5);}
+.iris-state.thinking{color:var(--c5);text-shadow:0 0 12px rgba(168,85,247,.5);}
+.iris-state.speaking{color:var(--c4);text-shadow:0 0 12px rgba(255,107,0,.5);}
 
-/* Gesture hint overlay */
-#gesture-hint {
-  position:fixed; top:50%; left:50%; transform:translate(-50%,-200px);
-  background:rgba(0,245,255,0.1); border:1px solid rgba(0,245,255,0.3);
-  backdrop-filter:blur(12px); border-radius:30px;
-  padding:0.45rem 1.2rem;
-  font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase;
-  color:#00f5ff; z-index:999; pointer-events:none;
-  opacity:0; transition:opacity 0.3s;
+/* ORB */
+.orb-wrap{position:relative;width:280px;height:280px;cursor:pointer;flex-shrink:0;}
+canvas#orb{position:absolute;inset:0;}
+.orb-center-text{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:.2rem;pointer-events:none;
 }
+.orb-iris{font-family:'Orbitron',monospace;font-weight:900;font-size:1.5rem;
+  letter-spacing:.35em;color:var(--c);
+  text-shadow:0 0 25px rgba(0,184,255,.9),0 0 50px rgba(0,184,255,.4);}
+.orb-mode{font-family:'Orbitron',monospace;font-size:.45rem;letter-spacing:.2em;
+  color:rgba(0,184,255,.35);text-transform:uppercase;}
 
-/* Error */
-.main-err { font-size:0.68rem; color:#f87171; min-height:1em; text-align:center; }
+/* Corner brackets */
+.brackets{position:absolute;inset:0;pointer-events:none;}
+.brk{position:absolute;width:18px;height:18px;border-color:rgba(0,184,255,.35);border-style:solid;}
+.brk.tl{top:0;left:0;border-width:1.5px 0 0 1.5px;}
+.brk.tr{top:0;right:0;border-width:1.5px 1.5px 0 0;}
+.brk.bl{bottom:0;left:0;border-width:0 0 1.5px 1.5px;}
+.brk.br{bottom:0;right:0;border-width:0 1.5px 1.5px 0;}
+
+.orb-hint{font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.18em;
+  color:rgba(0,184,255,.3);text-transform:uppercase;text-align:center;transition:color .3s;}
+.orb-hint.active{color:var(--c);}
+
+/* BUBBLE */
+.bubble{
+  max-width:500px;width:calc(100% - 2rem);
+  background:rgba(0,184,255,.04);border:1px solid rgba(0,184,255,.15);
+  border-radius:2px;padding:.7rem 1rem;
+  font-size:.85rem;line-height:1.6;color:rgba(0,184,255,.8);
+  text-align:center;min-height:48px;
+  display:flex;align-items:center;justify-content:center;
+  letter-spacing:.03em;transition:border-color .4s;
+}
+.bubble.speaking{border-color:rgba(255,107,0,.3);}
+.bubble .ph{color:rgba(0,184,255,.25);letter-spacing:.08em;
+  font-family:'Orbitron',monospace;font-size:.6rem;}
+
+/* RIGHT PANEL */
+.right-panel{
+  width:200px;flex-shrink:0;border-left:1px solid rgba(0,184,255,.1);
+  background:rgba(2,8,16,.7);backdrop-filter:blur(8px);
+  display:flex;flex-direction:column;padding:.8rem;gap:.6rem;overflow-y:auto;
+}
+.metric{background:rgba(0,184,255,.03);border:1px solid rgba(0,184,255,.1);
+  border-radius:2px;padding:.6rem .7rem;}
+.metric-lbl{font-family:'Orbitron',monospace;font-size:.47rem;
+  letter-spacing:.18em;color:rgba(0,184,255,.35);margin-bottom:.2rem;}
+.metric-val{font-size:1.1rem;font-weight:600;color:var(--c);
+  font-family:'Orbitron',monospace;letter-spacing:.06em;}
+.metric-sub{font-size:.6rem;color:rgba(0,184,255,.4);margin-top:.1rem;}
+
+.news-item{background:rgba(0,184,255,.02);border-left:2px solid rgba(0,184,255,.3);
+  padding:.4rem .6rem;margin-bottom:.3rem;cursor:pointer;transition:all .2s;}
+.news-item:hover{border-left-color:var(--c);background:rgba(0,184,255,.05);}
+.news-item-cat{font-family:'Orbitron',monospace;font-size:.44rem;
+  letter-spacing:.14em;color:rgba(0,184,255,.4);text-transform:uppercase;}
+.news-item-txt{font-size:.65rem;color:rgba(0,184,255,.7);line-height:1.4;margin-top:.15rem;}
+
+/* BOTTOM */
+.bottom{
+  border-top:1px solid rgba(0,184,255,.12);padding:.65rem 1rem;
+  display:flex;gap:.6rem;align-items:center;
+  background:rgba(2,8,16,.85);backdrop-filter:blur(10px);flex-shrink:0;
+}
+.mic-btn{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  background:rgba(0,184,255,.08);border:1.5px solid rgba(0,184,255,.3);
+  color:var(--c);display:flex;align-items:center;justify-content:center;
+  font-size:1rem;cursor:pointer;transition:all .2s;
+}
+.mic-btn:hover{background:rgba(0,184,255,.18);border-color:var(--c);}
+.mic-btn.on{background:rgba(0,255,136,.15);border-color:var(--c3);color:var(--c3);
+  box-shadow:0 0 16px rgba(0,255,136,.3);}
+.txt-inp{
+  flex:1;background:rgba(0,184,255,.04);border:1px solid rgba(0,184,255,.2);
+  border-radius:2px;padding:.65rem 1rem;color:var(--c);
+  font-family:'Orbitron',monospace;font-size:.68rem;outline:none;
+  letter-spacing:.06em;transition:border-color .2s;
+}
+.txt-inp:focus{border-color:rgba(0,184,255,.55);}
+.txt-inp::placeholder{color:rgba(0,184,255,.2);}
+.send-btn{
+  background:rgba(0,184,255,.1);border:1.5px solid rgba(0,184,255,.35);
+  border-radius:2px;padding:.65rem 1.1rem;color:var(--c);
+  font-family:'Orbitron',monospace;font-size:.62rem;font-weight:700;
+  letter-spacing:.14em;cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.send-btn:hover{background:rgba(0,184,255,.2);box-shadow:0 0 14px rgba(0,184,255,.25);}
+
+.footer-bar{
+  padding:.35rem 1rem;display:flex;justify-content:space-between;
+  border-top:1px solid rgba(0,184,255,.06);
+  background:rgba(2,8,16,.9);flex-shrink:0;
+}
+.footer-bar span{font-family:'Orbitron',monospace;font-size:.42rem;
+  letter-spacing:.12em;color:rgba(0,184,255,.2);text-transform:uppercase;}
+
+/* DOTS */
+.dots span{display:inline-block;width:5px;height:5px;border-radius:50%;margin:0 2px;
+  animation:db 1s ease-in-out infinite;}
+.dots span:nth-child(1){background:var(--c)}
+.dots span:nth-child(2){background:var(--c5);animation-delay:.18s}
+.dots span:nth-child(3){background:var(--c4);animation-delay:.36s}
+@keyframes db{0%,100%{transform:translateY(0);opacity:.2}50%{transform:translateY(-6px);opacity:1}}
+
+/* ERR */
+.err-bar{font-family:'Orbitron',monospace;font-size:.55rem;color:#ff4455;
+  letter-spacing:.08em;text-align:center;padding:.2rem 1rem;min-height:1.1rem;flex-shrink:0;}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:rgba(0,184,255,.2);border-radius:2px;}
 </style>
 </head>
 <body>
 
-<canvas id="canvas"></canvas>
-<div id="gesture-hint"></div>
+<!-- BG CANVAS -->
+<canvas id="bg-canvas"></canvas>
 
-<!-- ══ SETUP ══ -->
-<div id="screen-setup">
+<!-- ════ SETUP ════ -->
+<div id="setup">
   <div class="setup-logo">IRIS</div>
   <div class="setup-sub">Intelligent Real Estate Intelligence System</div>
-  <div class="setup-lbl">OpenAI API-Key</div>
-  <input class="setup-inp" type="password" id="oai-key" placeholder="sk-proj-… oder sk-…" autocomplete="off" onkeydown="if(event.key==='Enter')connect()">
-  <button class="setup-btn" onclick="connect()">IRIS AKTIVIEREN</button>
-  <div class="setup-err" id="setup-err"></div>
-  <p class="setup-note">Mikrofon benötigt HTTPS oder localhost · Texteingabe immer verfügbar</p>
+  <div class="setup-box">
+    <div class="setup-label">OpenAI API Authorization Key</div>
+    <input class="setup-inp" type="password" id="oai-key"
+      placeholder="sk-proj-…" autocomplete="off"
+      onkeydown="if(event.key==='Enter')connect()">
+    <button class="setup-btn" onclick="connect()">▶ SYSTEM AKTIVIEREN</button>
+    <div class="setup-err" id="setup-err"></div>
+  </div>
+  <p class="setup-note">Mikrofon benötigt HTTPS · Texteingabe immer verfügbar<br>
+  IRIS verbindet sich mit OpenAI GPT-4o</p>
 </div>
 
-<!-- ══ MAIN ══ -->
-<div id="screen-main">
+<!-- ════ MAIN ════ -->
+<div id="main">
+
+  <!-- TOPBAR -->
   <div class="topbar">
-    <div class="top-logo">IRIS</div>
-    <div class="top-status"><div class="sdot"></div><span id="agent-lbl">Gespräch</span></div>
+    <div style="display:flex;align-items:baseline;gap:.8rem">
+      <div class="top-logo">IRIS</div>
+      <div class="top-agent-name" id="top-agent">GESPRÄCH</div>
+    </div>
+    <div class="top-meta">
+      <div class="top-time" id="clock">--:--</div>
+      <div class="top-status"><div class="sdot"></div><span id="top-status">ONLINE</span></div>
+    </div>
     <div class="top-btns">
-      <button class="tbtn" onclick="clearSession()">Neu</button>
-      <button class="tbtn" onclick="disconnect()">✕</button>
+      <button class="tbtn" onclick="clearSession()">NEW</button>
+      <button class="tbtn" onclick="disconnect()">EXIT</button>
     </div>
   </div>
 
-  <div class="center-area">
-    <div class="iris-state" id="iris-state">Bereit</div>
+  <div class="body">
 
-    <div class="orb-click-area" id="orb-click" onclick="toggleMic()">
-      <div class="orb-label" id="orb-lbl">IRIS</div>
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+
+      <div class="panel-section">
+        <div class="panel-lbl">Agenten</div>
+
+        <div class="agent-item a-chat on" id="ag-chat" onclick="setAgent('chat')">
+          <div class="agent-icon-wrap">💬</div>
+          <div class="agent-info">
+            <div class="agent-name">Gespräch</div>
+            <div class="agent-desc">Freier Dialog</div>
+          </div>
+        </div>
+        <div class="agent-item a-news" id="ag-news" onclick="setAgent('news')">
+          <div class="agent-icon-wrap">📡</div>
+          <div class="agent-info">
+            <div class="agent-name">News</div>
+            <div class="agent-desc">Aktuelle Lage</div>
+          </div>
+        </div>
+        <div class="agent-item a-calendar" id="ag-calendar" onclick="setAgent('calendar')">
+          <div class="agent-icon-wrap">📅</div>
+          <div class="agent-info">
+            <div class="agent-name">Kalender</div>
+            <div class="agent-desc">Termine · Events</div>
+          </div>
+        </div>
+        <div class="agent-item a-email" id="ag-email" onclick="setAgent('email')">
+          <div class="agent-icon-wrap">✉️</div>
+          <div class="agent-info">
+            <div class="agent-name">E-Mail</div>
+            <div class="agent-desc">Lesen · Verfassen</div>
+          </div>
+        </div>
+        <div class="agent-item a-risk" id="ag-risk" onclick="setAgent('risk')">
+          <div class="agent-icon-wrap">⚠️</div>
+          <div class="agent-info">
+            <div class="agent-name">Risiko</div>
+            <div class="agent-desc">Verträge · §650f</div>
+          </div>
+        </div>
+        <div class="agent-item a-write" id="ag-write" onclick="setAgent('write')">
+          <div class="agent-icon-wrap">✍️</div>
+          <div class="agent-info">
+            <div class="agent-name">Schreiben</div>
+            <div class="agent-desc">Berichte · Briefe</div>
+          </div>
+        </div>
+        <div class="agent-item a-research" id="ag-research" onclick="setAgent('research')">
+          <div class="agent-icon-wrap">🔍</div>
+          <div class="agent-info">
+            <div class="agent-name">Recherche</div>
+            <div class="agent-desc">Markt · Analyse</div>
+          </div>
+        </div>
+        <div class="agent-item a-kpi" id="ag-kpi" onclick="setAgent('kpi')">
+          <div class="agent-icon-wrap">📊</div>
+          <div class="agent-info">
+            <div class="agent-name">KPI</div>
+            <div class="agent-desc">Kennzahlen</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section" style="margin-top:.4rem">
+        <div class="panel-lbl">Briefing</div>
+        <div class="info-card">
+          <div class="info-card-title">Nächster Termin</div>
+          <div class="info-card-val" id="next-appt">Laden...</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">E-Mails heute</div>
+          <div class="info-card-val" id="email-count">—</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">Datum</div>
+          <div class="info-card-val" id="today-date">—</div>
+        </div>
+      </div>
     </div>
 
-    <div class="orb-hint" id="orb-hint">Klicken oder Schweben zum Sprechen</div>
+    <!-- CENTER -->
+    <div class="center">
+      <div class="scan-line"></div>
 
-    <div class="bubble" id="bubble"><span class="ph">Was möchten Sie wissen?</span></div>
+      <div class="iris-state" id="iris-state">SYSTEM BEREIT</div>
 
-    <div class="pills">
-      <div class="pill on" id="pill-chat" onclick="setAgent('chat')">💬 Gespräch</div>
-      <div class="pill" id="pill-write" onclick="setAgent('write')">✍️ Schreiben</div>
-      <div class="pill" id="pill-risk" onclick="setAgent('risk')">⚠️ Risiko</div>
-      <div class="pill" id="pill-research" onclick="setAgent('research')">🔍 Recherche</div>
-      <div class="pill" id="pill-claim" onclick="setAgent('claim')">⚖️ Claim</div>
-      <div class="pill" id="pill-kpi" onclick="setAgent('kpi')">📊 KPI</div>
+      <div class="orb-wrap" onclick="toggleMic()">
+        <canvas id="orb" width="280" height="280"></canvas>
+        <div class="brackets">
+          <div class="brk tl"></div><div class="brk tr"></div>
+          <div class="brk bl"></div><div class="brk br"></div>
+        </div>
+        <div class="orb-center-text">
+          <div class="orb-iris">IRIS</div>
+          <div class="orb-mode" id="orb-mode">v1.0</div>
+        </div>
+      </div>
+
+      <div class="orb-hint" id="orb-hint">KLICKEN ZUM SPRECHEN</div>
+      <div class="bubble" id="bubble">
+        <span class="ph">AWAITING INPUT...</span>
+      </div>
     </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+      <div class="panel-lbl" style="font-family:'Orbitron',monospace;font-size:.48rem;letter-spacing:.22em;color:rgba(0,184,255,.3);padding-bottom:.3rem;border-bottom:1px solid rgba(0,184,255,.08);">System Status</div>
+
+      <div class="metric">
+        <div class="metric-lbl">KI-Engine</div>
+        <div class="metric-val" style="font-size:.75rem">GPT-4o</div>
+        <div class="metric-sub">OpenAI · aktiv</div>
+      </div>
+      <div class="metric">
+        <div class="metric-lbl">Sitzung</div>
+        <div class="metric-val" id="msg-count" style="font-size:.9rem">0</div>
+        <div class="metric-sub">Nachrichten</div>
+      </div>
+      <div class="metric">
+        <div class="metric-lbl">Sprache</div>
+        <div class="metric-val" style="font-size:.75rem" id="tts-mode">Browser</div>
+        <div class="metric-sub">TTS Engine</div>
+      </div>
+
+      <div class="panel-lbl" style="font-family:'Orbitron',monospace;font-size:.48rem;letter-spacing:.22em;color:rgba(0,184,255,.3);padding-bottom:.3rem;border-bottom:1px solid rgba(0,184,255,.08);margin-top:.4rem;">World Feed</div>
+
+      <div id="news-feed">
+        <div class="news-item">
+          <div class="news-item-cat">Laden...</div>
+          <div class="news-item-txt">Nachrichten werden abgerufen</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <div class="main-err" id="main-err"></div>
+  <div class="err-bar" id="main-err"></div>
 
-  <div class="gesture-legend">
-    <div class="gl-item"><div class="gl-icon">↑</div><div class="gl-lbl">Start</div></div>
-    <div class="gl-item"><div class="gl-icon">↓</div><div class="gl-lbl">Senden</div></div>
-    <div class="gl-item"><div class="gl-icon">←→</div><div class="gl-lbl">Agent</div></div>
-    <div class="gl-item"><div class="gl-icon">⊙</div><div class="gl-lbl">Hover</div></div>
+  <div class="bottom">
+    <button class="mic-btn" id="mic-btn" onclick="toggleMic()">🎤</button>
+    <input class="txt-inp" id="txt" placeholder="HEY IRIS, ..."
+      onkeydown="if(event.key==='Enter')sendText()">
+    <button class="send-btn" onclick="sendText()">SENDEN ▶</button>
   </div>
 
-  <div style="font-size:0.52rem;letter-spacing:0.1em;color:rgba(255,255,255,0.18);text-align:center;padding-bottom:0.2rem">
-    © 2026 BuiltSmart AI · Powered by BuiltSmart Hub · Bernhard Metzger
+  <div class="footer-bar">
+    <span>© 2026 BuiltSmart AI · BuiltSmart Hub · Bernhard Metzger</span>
+    <span id="footer-status">IDLE</span>
   </div>
 </div>
 
 <script>
-// ════════════════════════════
-//  CANVAS VISUALIZER
-// ════════════════════════════
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-let W, H, CX, CY;
-let vizState = 'idle'; // idle | listening | thinking | speaking
-let vizIntensity = 0;
-let animFrame;
-let time = 0;
+// ════════════════════════════════════════
+//  BACKGROUND CANVAS — HEX GRID + LINES
+// ════════════════════════════════════════
+const bgC = document.getElementById('bg-canvas');
+const bgX = bgC.getContext('2d');
 
-function resizeCanvas() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-  CX = W / 2; CY = H / 2;
+function resizeBg() {
+  bgC.width = window.innerWidth;
+  bgC.height = window.innerHeight;
 }
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
+resizeBg();
+window.addEventListener('resize', resizeBg);
 
-// Color palettes per state
-const COLORS = {
-  idle:      ['#00f5ff','#3b82f6','#a855f7','#1e40af'],
-  listening: ['#00f5ff','#06b6d4','#0ea5e9','#00e5ff'],
-  thinking:  ['#a855f7','#8b5cf6','#c084fc','#7c3aed'],
-  speaking:  ['#f59e0b','#f97316','#fbbf24','#ef4444']
-};
+let bgT = 0;
+function drawBg() {
+  const W = bgC.width, H = bgC.height;
+  bgX.clearRect(0, 0, W, H);
 
-function drawFrame() {
-  animFrame = requestAnimationFrame(drawFrame);
-  time += 0.012;
+  // Deep space bg
+  bgX.fillStyle = '#020810';
+  bgX.fillRect(0, 0, W, H);
 
-  ctx.clearRect(0,0,W,H);
+  // Hex grid
+  const hs = 32;
+  bgX.strokeStyle = 'rgba(0,184,255,0.035)';
+  bgX.lineWidth = 0.5;
+  for (let r = -1; r < H / (hs * .75) + 2; r++) {
+    for (let c = -1; c < W / (hs * 1.73) + 2; c++) {
+      const x = c * hs * 1.73 + (r % 2) * hs * .865;
+      const y = r * hs * .75;
+      bgX.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const a = Math.PI / 3 * i - Math.PI / 6;
+        i === 0 ? bgX.moveTo(x + hs * .46 * Math.cos(a), y + hs * .46 * Math.sin(a))
+                : bgX.lineTo(x + hs * .46 * Math.cos(a), y + hs * .46 * Math.sin(a));
+      }
+      bgX.closePath();
+      bgX.stroke();
+    }
+  }
 
-  // Dark gradient background
-  const bg = ctx.createRadialGradient(CX,CY,0,CX,CY,Math.max(W,H)*0.7);
-  bg.addColorStop(0,'rgba(5,5,20,1)');
-  bg.addColorStop(1,'rgba(0,0,0,1)');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0,0,W,H);
+  // Ambient glow center
+  const grd = bgX.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.min(W,H) * .45);
+  grd.addColorStop(0, 'rgba(0,100,200,0.06)');
+  grd.addColorStop(1, 'transparent');
+  bgX.fillStyle = grd;
+  bgX.fillRect(0, 0, W, H);
 
-  const cols = COLORS[vizState] || COLORS.idle;
-  const targetIntensity = vizState === 'idle' ? 0.35 : vizState === 'thinking' ? 0.65 : 0.9;
-  vizIntensity += (targetIntensity - vizIntensity) * 0.04;
+  // Animated data streams on left/right
+  for (let l = 0; l < 8; l++) {
+    const y = 60 + l * 55 + Math.sin(bgT * .7 + l) * 12;
+    const len = 35 + Math.sin(bgT * 1.1 + l * .8) * 20;
+    const alpha = 0.06 + Math.sin(bgT + l) * .03;
+    bgX.strokeStyle = `rgba(0,184,255,${alpha})`;
+    bgX.lineWidth = 0.5;
+    bgX.beginPath(); bgX.moveTo(16, y); bgX.lineTo(16 + len, y); bgX.stroke();
+    bgX.beginPath(); bgX.moveTo(W - 16, y); bgX.lineTo(W - 16 - len, y); bgX.stroke();
+    // Tick marks
+    bgX.beginPath(); bgX.moveTo(16, y - 3); bgX.lineTo(16, y + 3); bgX.stroke();
+    bgX.beginPath(); bgX.moveTo(W - 16, y - 3); bgX.lineTo(W - 16, y + 3); bgX.stroke();
+  }
+}
 
-  const BASE = Math.min(W,H) * 0.18;
+// ════════════════════════════════════════
+//  ORB CANVAS — JARVIS STYLE
+// ════════════════════════════════════════
+const orbC = document.getElementById('orb');
+const orbX = orbC.getContext('2d');
+const OW = 280, OH = 280, CX = 140, CY = 140;
 
-  // ── Draw rings ──
-  const ringCount = 6;
-  for (let i = 0; i < ringCount; i++) {
-    const phase = (time * (0.4 + i * 0.15)) + (i * Math.PI * 2 / ringCount);
-    let r;
-    if (vizState === 'speaking') {
-      r = BASE + i * 22 + Math.sin(phase * 3) * 18 * vizIntensity * (1 + i * 0.2);
-    } else if (vizState === 'listening') {
-      r = BASE + i * 20 + Math.sin(phase * 2) * 14 * vizIntensity;
-    } else if (vizState === 'thinking') {
-      r = BASE + i * 20 + Math.sin(phase) * 10 * vizIntensity;
+let vState = 'idle', vInt = 0, orbT = 0;
+
+// Rotating symbols (meaningful for real estate/AI)
+const SYMBOLS = ['◈','⬡','△','○','◇','⊕','⌬','⏣','⬢','✦'];
+const LABELS = ['RISK','KPI','DATA','AI','BUILD','PLAN','LAW','COST','TIME','INFO'];
+let symRot = 0;
+
+// Waveform data
+let waveData = new Array(64).fill(0);
+let waveTarget = new Array(64).fill(0);
+
+function updateWave() {
+  for (let i = 0; i < 64; i++) {
+    if (vState === 'speaking') {
+      waveTarget[i] = Math.random() * 0.7 + 0.1;
+    } else if (vState === 'listening') {
+      waveTarget[i] = Math.random() * 0.4 + 0.05;
     } else {
-      r = BASE + i * 18 + Math.sin(phase * 0.5) * 6;
+      waveTarget[i] = Math.sin(orbT * 2 + i * .15) * 0.08 + 0.08;
     }
+    waveData[i] += (waveTarget[i] - waveData[i]) * 0.15;
+  }
+}
 
-    const col = cols[i % cols.length];
-    const alpha = (0.12 + vizIntensity * 0.18) * (1 - i * 0.12);
+function drawOrb() {
+  orbX.clearRect(0, 0, OW, OH);
+  updateWave();
 
-    ctx.beginPath();
-    ctx.arc(CX, CY, r, 0, Math.PI * 2);
-    ctx.strokeStyle = col;
-    ctx.lineWidth = vizState === 'speaking' ? 2.5 - i*0.2 : 1.5;
-    ctx.globalAlpha = alpha;
-    ctx.stroke();
-    ctx.globalAlpha = 1;
+  const tgt = vState === 'idle' ? 0.28 : vState === 'thinking' ? 0.55 : 0.92;
+  vInt += (tgt - vInt) * 0.06;
+
+  const stateColor = {
+    idle: '0,184,255',
+    listening: '0,255,136',
+    thinking: '168,85,247',
+    speaking: '255,107,0'
+  }[vState] || '0,184,255';
+
+  const C = stateColor;
+
+  // ── Outer rotating dashes ──
+  for (let d = 0; d < 16; d++) {
+    const ang = (d / 16) * Math.PI * 2 + symRot * 0.4;
+    const R = 130;
+    orbX.beginPath();
+    orbX.arc(CX, CY, R, ang, ang + 0.14);
+    orbX.strokeStyle = `rgba(${C},${0.25 * vInt + 0.08})`;
+    orbX.lineWidth = 2;
+    orbX.stroke();
   }
 
-  // ── Rotating color arcs ──
-  for (let a = 0; a < 4; a++) {
-    const arcR = BASE * (1.8 + a * 0.55);
-    const speed = (0.3 + a * 0.12) * (a % 2 === 0 ? 1 : -1);
-    const startAngle = time * speed + a * Math.PI * 0.5;
-    const arcLen = (Math.PI * 0.4 + vizIntensity * Math.PI * 0.5);
+  // ── Rotating symbols ring ──
+  for (let s = 0; s < 8; s++) {
+    const ang = (s / 8) * Math.PI * 2 + symRot;
+    const R = 115;
+    const sx = CX + Math.cos(ang) * R;
+    const sy = CY + Math.sin(ang) * R;
+    orbX.save();
+    orbX.translate(sx, sy);
+    orbX.rotate(ang + Math.PI / 2);
+    orbX.font = `${8 + vInt * 3}px Orbitron, monospace`;
+    orbX.fillStyle = `rgba(${C},${0.4 * vInt + 0.15})`;
+    orbX.textAlign = 'center';
+    orbX.textBaseline = 'middle';
+    orbX.fillText(SYMBOLS[s % SYMBOLS.length], 0, 0);
+    orbX.restore();
 
-    const grad = ctx.createLinearGradient(
-      CX + Math.cos(startAngle) * arcR,
-      CY + Math.sin(startAngle) * arcR,
-      CX + Math.cos(startAngle + arcLen) * arcR,
-      CY + Math.sin(startAngle + arcLen) * arcR
-    );
-    grad.addColorStop(0, cols[a % cols.length] + '00');
-    grad.addColorStop(0.5, cols[a % cols.length]);
-    grad.addColorStop(1, cols[(a+1) % cols.length] + '00');
-
-    ctx.beginPath();
-    ctx.arc(CX, CY, arcR, startAngle, startAngle + arcLen);
-    ctx.strokeStyle = grad;
-    ctx.lineWidth = 2.5;
-    ctx.globalAlpha = 0.5 * vizIntensity + 0.15;
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-  }
-
-  // ── Radial lines (listening/speaking) ──
-  if (vizState === 'listening' || vizState === 'speaking') {
-    const lineCount = vizState === 'speaking' ? 24 : 16;
-    for (let l = 0; l < lineCount; l++) {
-      const angle = (l / lineCount) * Math.PI * 2 + time * 0.5;
-      const len = (20 + Math.sin(time * 4 + l * 0.8) * 30) * vizIntensity;
-      const inner = BASE * 0.95;
-      const col = cols[l % cols.length];
-      ctx.beginPath();
-      ctx.moveTo(CX + Math.cos(angle) * inner, CY + Math.sin(angle) * inner);
-      ctx.lineTo(CX + Math.cos(angle) * (inner + len), CY + Math.sin(angle) * (inner + len));
-      ctx.strokeStyle = col;
-      ctx.lineWidth = 1.5;
-      ctx.globalAlpha = 0.5 * vizIntensity;
-      ctx.stroke();
-      ctx.globalAlpha = 1;
+    // Label below symbol
+    if (vInt > 0.3) {
+      orbX.font = '5px Orbitron, monospace';
+      orbX.fillStyle = `rgba(${C},${(vInt - 0.3) * 0.5})`;
+      orbX.textAlign = 'center';
+      orbX.textBaseline = 'middle';
+      orbX.fillText(LABELS[s % LABELS.length], CX + Math.cos(ang) * 100, CY + Math.sin(ang) * 100);
     }
   }
 
-  // ── Particles ──
-  if (vizState !== 'idle') {
-    for (let p = 0; p < 8; p++) {
-      const pAngle = (p / 8) * Math.PI * 2 + time * 0.8;
-      const pR = BASE * 1.2 + Math.sin(time * 2 + p) * BASE * 0.4;
-      const px = CX + Math.cos(pAngle) * pR;
-      const py = CY + Math.sin(pAngle) * pR;
-      const col = cols[p % cols.length];
-      ctx.beginPath();
-      ctx.arc(px, py, 2.5, 0, Math.PI * 2);
-      ctx.fillStyle = col;
-      ctx.globalAlpha = 0.7 * vizIntensity;
-      ctx.fill();
-      ctx.globalAlpha = 1;
+  // ── Inner rings ──
+  for (let i = 0; i < 5; i++) {
+    const ph = orbT * (0.3 + i * .12) + i * Math.PI / 2.5;
+    let r;
+    if (vState === 'speaking') r = 48 + i * 11 + Math.sin(ph * 3.5) * 11 * vInt * (1 + i * .15);
+    else if (vState === 'listening') r = 48 + i * 10 + Math.sin(ph * 2.2) * 8 * vInt;
+    else r = 48 + i * 9 + Math.sin(ph * .6) * 4;
+    orbX.beginPath();
+    orbX.arc(CX, CY, r, 0, Math.PI * 2);
+    orbX.strokeStyle = `rgba(${C},${(0.1 + vInt * .16) * (1 - i * .15)})`;
+    orbX.lineWidth = vState === 'speaking' ? 1.8 - i * .15 : 1;
+    orbX.stroke();
+  }
+
+  // ── Counter-rotating arc ──
+  for (let a = 0; a < 3; a++) {
+    const aR = 50 + a * 16;
+    const spd = (0.6 + a * .2) * (a % 2 ? 1 : -1);
+    const sa = orbT * spd + a * Math.PI * .66;
+    const al = Math.PI * (.28 + vInt * .4);
+    orbX.beginPath();
+    orbX.arc(CX, CY, aR, sa, sa + al);
+    orbX.strokeStyle = `rgba(${C},${.55 * vInt + .12})`;
+    orbX.lineWidth = 1.8;
+    orbX.stroke();
+  }
+
+  // ── WAVEFORM RING ──
+  const wR = 88;
+  const segments = 64;
+  orbX.beginPath();
+  for (let i = 0; i < segments; i++) {
+    const ang = (i / segments) * Math.PI * 2 - Math.PI / 2;
+    const amp = waveData[i] * 22 * vInt;
+    const r = wR + amp;
+    const x = CX + Math.cos(ang) * r;
+    const y = CY + Math.sin(ang) * r;
+    i === 0 ? orbX.moveTo(x, y) : orbX.lineTo(x, y);
+  }
+  orbX.closePath();
+  orbX.strokeStyle = `rgba(${C},${.6 * vInt + .1})`;
+  orbX.lineWidth = 1.5;
+  orbX.stroke();
+
+  // ── Radial spikes ──
+  if (vState !== 'idle') {
+    const cnt = vState === 'speaking' ? 24 : 16;
+    for (let s = 0; s < cnt; s++) {
+      const ang = (s / cnt) * Math.PI * 2 + orbT * .5;
+      const spLen = (6 + Math.sin(orbT * 5 + s) * 14) * vInt;
+      orbX.beginPath();
+      orbX.moveTo(CX + Math.cos(ang) * 46, CY + Math.sin(ang) * 46);
+      orbX.lineTo(CX + Math.cos(ang) * (46 + spLen), CY + Math.sin(ang) * (46 + spLen));
+      orbX.strokeStyle = `rgba(${C},${.4 * vInt})`;
+      orbX.lineWidth = 1;
+      orbX.stroke();
     }
   }
 
   // ── Center glow ──
-  const glowR = BASE * 0.85;
-  const glow = ctx.createRadialGradient(CX,CY,0,CX,CY,glowR);
-  const glowCol = cols[0];
-  glow.addColorStop(0, glowCol + '18');
-  glow.addColorStop(0.5, glowCol + '08');
-  glow.addColorStop(1, 'transparent');
-  ctx.fillStyle = glow;
-  ctx.beginPath();
-  ctx.arc(CX, CY, glowR, 0, Math.PI * 2);
-  ctx.fill();
+  const grd = orbX.createRadialGradient(CX, CY, 0, CX, CY, 44);
+  grd.addColorStop(0, `rgba(${C},${.12 * vInt})`);
+  grd.addColorStop(1, 'transparent');
+  orbX.fillStyle = grd;
+  orbX.beginPath(); orbX.arc(CX, CY, 44, 0, Math.PI * 2); orbX.fill();
 
-  // ── Outer ambient glow ──
-  for (let g = 0; g < 3; g++) {
-    const ambR = Math.min(W,H) * (0.55 + g * 0.15);
-    const amb = ctx.createRadialGradient(CX,CY,ambR*0.7,CX,CY,ambR);
-    const ac = cols[g % cols.length];
-    amb.addColorStop(0, 'transparent');
-    amb.addColorStop(1, ac + Math.round(vizIntensity * 18).toString(16).padStart(2,'0'));
-    ctx.fillStyle = amb;
-    ctx.beginPath();
-    ctx.arc(CX, CY, ambR, 0, Math.PI*2);
-    ctx.fill();
+  // ── Particles ──
+  for (let p = 0; p < 6; p++) {
+    const pA = (p / 6) * Math.PI * 2 + orbT * .8;
+    const pR = 55 + Math.sin(orbT * 2 + p) * 25 * vInt;
+    orbX.beginPath();
+    orbX.arc(CX + Math.cos(pA) * pR, CY + Math.sin(pA) * pR, 1.8, 0, Math.PI * 2);
+    orbX.fillStyle = `rgba(${C},${.7 * vInt})`;
+    orbX.fill();
   }
-}
-drawFrame();
 
-function setViz(state) {
-  vizState = state;
+  symRot += 0.004;
 }
 
-// ════════════════════════════
+// ════════════════════════════════════════
+//  MAIN LOOP
+// ════════════════════════════════════════
+function mainLoop() {
+  requestAnimationFrame(mainLoop);
+  bgT += 0.012;
+  orbT += 0.014;
+  drawBg();
+  drawOrb();
+}
+mainLoop();
+
+// ════════════════════════════════════════
+//  CLOCK
+// ════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+  const day = now.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('today-date').textContent = day;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ════════════════════════════════════════
 //  APP STATE
-// ════════════════════════════
-let OAI_KEY = '';
+// ════════════════════════════════════════
+let OAI = '';
 let agent = 'chat';
 let history = [];
 let currentAudio = null;
 let mediaRec = null;
 let audioChunks = [];
-let isRecording = false;
+let isRec = false;
+let msgCount = 0;
+let usedOAI_TTS = false;
 
 const AGENTS = {
-  chat:     { name:'Gespräch',      sys:`Du bist IRIS — KI-Sprachassistentin von Metzger Real Estate Advisory. Natürliches, professionelles Gespräch über Bau und Immobilien. Max 80 Wörter. Deutsch. Siezen.` },
-  write:    { name:'Schreib-Agent', sys:`Du bist IRIS, Schreib-Agent. Managementberichte, Briefe, Exposés, Protokolle. Max 100 Wörter. Deutsch.` },
-  risk:     { name:'Risiko-Agent',  sys:`Du bist IRIS, Risiko-Agent. Verträge, §650f BGB, VOB, Claims. Max 100 Wörter. Deutsch.` },
-  research: { name:'Recherche',     sys:`Du bist IRIS, Recherche-Agent. Markt, Preise, Standort, Trends. Max 100 Wörter. Deutsch.` },
-  claim:    { name:'Claim-Agent',   sys:`Du bist IRIS, Claim-Agent. Nachträge, VOB, Bauzeitverzögerung. Max 100 Wörter. Deutsch.` },
-  kpi:      { name:'KPI-Agent',     sys:`Du bist IRIS, KPI-Agent. Kennzahlen, Controlling, Performance. Max 100 Wörter. Deutsch.` }
+  chat: { name: 'GESPRÄCH', color: '0,184,255',
+    sys: `Du bist IRIS — KI-Sprachassistentin von BuiltSmart AI, entwickelt von Bernhard Metzger.
+Du beantwortest Fragen zu Bau, Immobilien und allgemeinen Themen. Professionell, prägnant.
+Max 90 Wörter. Sprachausgabe-optimiert. Deutsch. Siez den Nutzer.` },
+  news: { name: 'NEWS', color: '0,204,255',
+    sys: `Du bist IRIS, News-Agent. Fasse aktuelle Weltlage, Wirtschaft, Immobilienmarkt zusammen.
+Wenn keine echten Daten verfügbar: Erkläre, dass Google/Kalender-Integration nötig ist.
+Max 100 Wörter. Deutsch.` },
+  calendar: { name: 'KALENDER', color: '0,255,136',
+    sys: `Du bist IRIS, Kalender-Agent. Hilf bei Terminplanung, erstelle Terminvorschläge, 
+fasse Kalendereinträge zusammen. Ohne API-Zugriff: erkläre was mit Google Calendar Integration möglich wäre.
+Max 100 Wörter. Deutsch.` },
+  email: { name: 'E-MAIL', color: '255,204,0',
+    sys: `Du bist IRIS, E-Mail-Agent. Verfasse professionelle E-Mails, fasse Inhalte zusammen,
+schlage Antworten vor. Ohne Gmail-Zugriff: erstelle Vorlagen. Max 100 Wörter. Deutsch.` },
+  risk: { name: 'RISIKO', color: '255,107,0',
+    sys: `Du bist IRIS, Risiko-Agent für Bau- und Immobilienwirtschaft.
+Verträge, §650f BGB, VOB, Claims, Baurecht. Klar und handlungsorientiert. Max 100 Wörter. Deutsch.` },
+  write: { name: 'SCHREIBEN', color: '0,221,170',
+    sys: `Du bist IRIS, Schreib-Agent. Managementberichte, Briefe, Exposés, Protokolle, Angebote.
+Professionell und prägnant. Max 100 Wörter. Deutsch.` },
+  research: { name: 'RECHERCHE', color: '168,85,247',
+    sys: `Du bist IRIS, Recherche-Agent. Marktanalyse, Preise, Standorte, Trends.
+Faktenbasiert und strukturiert. Max 100 Wörter. Deutsch.` },
+  kpi: { name: 'KPI', color: '255,102,153',
+    sys: `Du bist IRIS, KPI-Agent. Kennzahlen, Controlling, Performance-Analyse für Bau/Immobilien.
+Max 100 Wörter. Deutsch.` }
 };
 
-// ════════════════════════════
+// ════════════════════════════════════════
 //  SETUP
-// ════════════════════════════
+// ════════════════════════════════════════
 function connect() {
   const k = document.getElementById('oai-key').value.trim();
-  if (!k || k.length < 10) { setErr('setup-err','Bitte gültigen API-Key eingeben.'); return; }
-  OAI_KEY = k;
+  if (!k) { document.getElementById('setup-err').textContent = 'API-KEY ERFORDERLICH'; return; }
+  OAI = k;
   localStorage.setItem('iris_oai', k);
   bootMain();
 }
 
 function bootMain() {
-  document.getElementById('screen-setup').style.display = 'none';
-  const m = document.getElementById('screen-main');
-  m.style.display = 'flex';
-  m.style.flexDirection = 'column';
-  setTimeout(greet, 700);
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('main').style.display = 'flex';
+  loadSideInfo();
+  setTimeout(morningBriefing, 700);
 }
 
 function disconnect() {
@@ -462,286 +792,331 @@ function disconnect() {
   location.reload();
 }
 
-// ════════════════════════════
-//  GREETING
-// ════════════════════════════
-async function greet() {
-  const txt = 'Guten Tag. Ich bin IRIS. Wie kann ich Ihnen helfen?';
-  setBubble(txt);
-  await speak(txt);
+// ════════════════════════════════════════
+//  MORNING BRIEFING
+// ════════════════════════════════════════
+async function morningBriefing() {
+  const h = new Date().getHours();
+  const greeting = h < 12 ? 'Guten Morgen' : h < 18 ? 'Guten Tag' : 'Guten Abend';
+  const d = new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
+
+  const brief = `${greeting}, Bernhard. Es ist ${d}. Ich bin IRIS, Ihr persönlicher KI-Assistent. Ich helfe Ihnen mit Recherchen, Berichten, Terminen und E-Mails. Wie kann ich Ihnen heute helfen?`;
+
+  setBubble(brief);
+  history.push({ role: 'assistant', content: brief });
+  setUI('BEGRÜSSUNG', 'speaking');
+  await speak(brief);
 }
 
-// ════════════════════════════
+// ════════════════════════════════════════
+//  SIDE INFO
+// ════════════════════════════════════════
+function loadSideInfo() {
+  // Simulated next appointment
+  const now = new Date();
+  const next = new Date(now);
+  next.setHours(now.getHours() + 2);
+  const apptTime = next.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('next-appt').textContent = `${apptTime} — Meeting`;
+  document.getElementById('email-count').textContent = '3 ungelesen';
+
+  // News feed (simulated — will be real with web search integration)
+  const newsItems = [
+    {cat:'IMMOBILIEN', txt:'Zinsentwicklung beeinflusst Baufinanzierung'},
+    {cat:'WIRTSCHAFT', txt:'DAX setzt Erholungskurs fort'},
+    {cat:'BAU', txt:'Neue VOB-Regelungen 2026 in Kraft'},
+    {cat:'KI', txt:'GPT-4o Update verbessert Reasoning'},
+  ];
+  const feed = document.getElementById('news-feed');
+  feed.innerHTML = '';
+  newsItems.forEach(n => {
+    const d = document.createElement('div');
+    d.className = 'news-item';
+    d.innerHTML = `<div class="news-item-cat">${n.cat}</div><div class="news-item-txt">${n.txt}</div>`;
+    d.onclick = () => processInput('Erzähl mir mehr über: ' + n.txt);
+    feed.appendChild(d);
+  });
+}
+
+// ════════════════════════════════════════
 //  MIC
-// ════════════════════════════
+// ════════════════════════════════════════
 function toggleMic() {
-  if (isRecording) { stopRecording(); return; }
+  if (isRec) { stopRec(); return; }
   if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-  startRecording();
+  startRec();
 }
 
-async function startRecording() {
+async function startRec() {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     audioChunks = [];
     const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus'
                : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
-    mediaRec = new MediaRecorder(stream, { mimeType:mime });
+    mediaRec = new MediaRecorder(stream, { mimeType: mime });
     mediaRec.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-    mediaRec.onstop = () => { stream.getTracks().forEach(t=>t.stop()); sendAudio(); };
+    mediaRec.onstop = () => { stream.getTracks().forEach(t => t.stop()); doSTT(); };
     mediaRec.start(100);
-    isRecording = true;
-    setViz('listening');
-    setUIState('listening','Ich höre…','Nochmal klicken zum Senden','cyan');
+    isRec = true;
+    vState = 'listening';
+    setUI('HÖRE ZU...', 'listening');
+    document.getElementById('mic-btn').classList.add('on');
+    document.getElementById('mic-btn').textContent = '⏹';
   } catch(e) {
-    setErr('main-err', e.name === 'NotAllowedError'
-      ? 'Mikrofon-Zugriff verweigert — Chrome-Einstellungen prüfen.'
-      : 'Fehler: ' + e.message);
+    showErr(e.name === 'NotAllowedError' ? 'MIKROFON VERWEIGERT' : 'ERR: ' + e.message);
   }
 }
 
-function stopRecording() {
-  if (!isRecording) return;
-  isRecording = false;
-  setViz('thinking');
-  setUIState('thinking','Verarbeite…','','purple');
+function stopRec() {
+  if (!isRec) return;
+  isRec = false;
+  vState = 'thinking';
+  setUI('ANALYSIERE...', 'thinking');
+  document.getElementById('mic-btn').classList.remove('on');
+  document.getElementById('mic-btn').textContent = '🎤';
   mediaRec.stop();
 }
 
-async function sendAudio() {
+async function doSTT() {
   try {
     const mime = mediaRec?.mimeType || 'audio/webm';
-    const ext = mime.includes('mp4') ? 'm4a' : 'webm';
-    const blob = new Blob(audioChunks, { type:mime });
+    const blob = new Blob(audioChunks, { type: mime });
     if (blob.size < 500) { resetIdle(); return; }
-
     const fd = new FormData();
-    fd.append('file', blob, 'audio.' + ext);
+    fd.append('file', blob, 'audio.' + (mime.includes('mp4') ? 'm4a' : 'webm'));
     fd.append('model', 'whisper-1');
     fd.append('language', 'de');
-
     const r = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-      method:'POST', headers:{'Authorization':'Bearer '+OAI_KEY}, body:fd
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + OAI }, body: fd
     });
-
     if (!r.ok) {
-      const e = await r.json().catch(()=>({}));
-      if (r.status === 404 || (e.error?.message||'').includes('does not have access')) {
-        setErr('main-err','Whisper nicht verfügbar — bitte Text tippen.');
+      const e = await r.json().catch(() => ({}));
+      if (r.status === 404 || (e.error?.message || '').includes('does not have access')) {
+        showErr('WHISPER N/A — BITTE TEXT EINGEBEN');
         resetIdle(); return;
       }
-      throw new Error(e.error?.message || 'STT '+r.status);
+      throw new Error(e.error?.message || 'STT ' + r.status);
     }
-
     const txt = ((await r.json()).text || '').trim();
     if (!txt) { resetIdle(); return; }
     await processInput(txt);
-  } catch(e) { setErr('main-err',e.message); resetIdle(); }
+  } catch(e) { showErr(e.message); resetIdle(); }
 }
 
-// ════════════════════════════
+// ════════════════════════════════════════
+//  TEXT INPUT
+// ════════════════════════════════════════
+function sendText() {
+  const inp = document.getElementById('txt');
+  const v = inp.value.trim();
+  if (!v) return;
+  if (!OAI) { showErr('API-KEY ERFORDERLICH'); return; }
+  inp.value = '';
+  processInput(v);
+}
+
+// ════════════════════════════════════════
 //  PIPELINE
-// ════════════════════════════
+// ════════════════════════════════════════
 async function processInput(text) {
   setBubble(text, 'user');
-  history.push({ role:'user', content:text });
-  setViz('thinking');
-  setUIState('thinking','Denke…','','purple');
+  history.push({ role: 'user', content: text });
+  msgCount++;
+  document.getElementById('msg-count').textContent = msgCount;
+  vState = 'thinking';
+  setUI('VERARBEITE...', 'thinking');
   showDots();
 
   try {
     const r = await fetch('https://api.openai.com/v1/chat/completions', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI_KEY},
-      body:JSON.stringify({ model:'gpt-4o', max_tokens:300,
-        messages:[{role:'system',content:AGENTS[agent].sys},...history.slice(-10)] })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + OAI },
+      body: JSON.stringify({
+        model: 'gpt-4o', max_tokens: 350,
+        messages: [
+          { role: 'system', content: AGENTS[agent].sys },
+          ...history.slice(-12)
+        ]
+      })
     });
-    if (!r.ok) { const e=await r.json().catch(()=>({})); throw new Error(e.error?.message||'GPT '+r.status); }
+    if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.error?.message || 'GPT ' + r.status); }
     const reply = (await r.json()).choices[0].message.content.trim();
-    history.push({ role:'assistant', content:reply });
+    history.push({ role: 'assistant', content: reply });
     setBubble(reply);
     await speak(reply);
-  } catch(e) { setErr('main-err',e.message); resetIdle(); }
+  } catch(e) { showErr(e.message); resetIdle(); }
 }
 
-// ════════════════════════════
+// ════════════════════════════════════════
 //  TTS
-// ════════════════════════════
+// ════════════════════════════════════════
 async function speak(text) {
-  setViz('speaking');
-  setUIState('speaking','Spricht…','Klicken zum Stoppen','gold');
-  document.getElementById('bubble').classList.add('speaking');
-
-  // Try OpenAI TTS first, fallback to browser TTS
+  vState = 'speaking';
+  setUI('SPRICHT...', 'speaking');
   try {
     const r = await fetch('https://api.openai.com/v1/audio/speech', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI_KEY},
-      body:JSON.stringify({ model:'tts-1', input:text, voice:'nova', speed:0.93 })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + OAI },
+      body: JSON.stringify({ model: 'tts-1', input: text, voice: 'nova', speed: 0.93 })
     });
     if (!r.ok) {
-      const e=await r.json().catch(()=>({}));
-      // No access to tts-1 → use browser TTS
-      if(r.status===404 || (e.error?.message||'').includes('does not have access')) {
+      const e = await r.json().catch(() => ({}));
+      if ((e.error?.message || '').includes('does not have access') || r.status === 404) {
         return speakBrowser(text);
       }
-      throw new Error(e.error?.message||'TTS '+r.status);
+      throw new Error(e.error?.message || 'TTS');
     }
+    usedOAI_TTS = true;
+    document.getElementById('tts-mode').textContent = 'OpenAI';
     const url = URL.createObjectURL(await r.blob());
     const audio = new Audio(url);
     currentAudio = audio;
     return new Promise(res => {
-      audio.onended = () => { currentAudio=null; URL.revokeObjectURL(url); resetIdle(); res(); };
-      audio.onerror = () => { currentAudio=null; resetIdle(); res(); };
-      audio.play().catch(() => { currentAudio=null; resetIdle(); res(); });
+      audio.onended = () => { currentAudio = null; URL.revokeObjectURL(url); resetIdle(); res(); };
+      audio.onerror = () => { currentAudio = null; resetIdle(); res(); };
+      audio.play().catch(() => { currentAudio = null; resetIdle(); res(); });
     });
-  } catch(e) {
-    // Any error → fallback to browser TTS
-    return speakBrowser(text);
-  }
+  } catch(e) { return speakBrowser(text); }
 }
 
 function speakBrowser(text) {
+  document.getElementById('tts-mode').textContent = 'Browser';
   return new Promise(res => {
     if (!window.speechSynthesis) { resetIdle(); res(); return; }
     window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = 'de-DE';
-    utt.rate = 0.92;
-    utt.pitch = 1.0;
-    // Pick best German voice
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'de-DE'; u.rate = 0.91;
     const voices = window.speechSynthesis.getVoices();
-    const deVoice = voices.find(v=>v.lang.startsWith('de') && v.name.toLowerCase().includes('female'))
-                 || voices.find(v=>v.lang.startsWith('de'))
-                 || null;
-    if (deVoice) utt.voice = deVoice;
-    utt.onend = () => { resetIdle(); res(); };
-    utt.onerror = () => { resetIdle(); res(); };
-    window.speechSynthesis.speak(utt);
+    const v = voices.find(v => v.lang.startsWith('de') && v.name.toLowerCase().includes('female'))
+           || voices.find(v => v.lang.startsWith('de')) || null;
+    if (v) u.voice = v;
+    u.onend = () => { resetIdle(); res(); };
+    u.onerror = () => { resetIdle(); res(); };
+    window.speechSynthesis.speak(u);
   });
 }
 
-// ════════════════════════════
-//  AGENTS
-// ════════════════════════════
+// ════════════════════════════════════════
+//  AGENT SWITCH
+// ════════════════════════════════════════
 function setAgent(a) {
-  agent = a; history = [];
-  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
-  document.getElementById('pill-'+a).classList.add('on');
-  document.getElementById('agent-lbl').textContent = AGENTS[a].name;
-  const msg = AGENTS[a].name + ' aktiviert. Wie kann ich helfen?';
+  agent = a;
+  history = [];
+  document.querySelectorAll('.agent-item').forEach(el => el.classList.remove('on'));
+  document.getElementById('ag-' + a).classList.add('on');
+  document.getElementById('top-agent').textContent = AGENTS[a].name;
+  document.getElementById('orb-mode').textContent = AGENTS[a].name;
+  const msg = AGENTS[a].name + '-Agent aktiviert. Wie kann ich Ihnen helfen?';
   setBubble(msg);
   speak(msg);
 }
 
-// ════════════════════════════
+// ════════════════════════════════════════
+//  SWIPE GESTURES
+// ════════════════════════════════════════
+let tSX = 0, tSY = 0, tST = 0;
+document.addEventListener('touchstart', e => {
+  tSX = e.touches[0].clientX; tSY = e.touches[0].clientY; tST = Date.now();
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  if (Date.now() - tST > 400) return;
+  const dx = e.changedTouches[0].clientX - tSX;
+  const dy = e.changedTouches[0].clientY - tSY;
+  if (Math.abs(dy) > 60 && Math.abs(dy) > Math.abs(dx) * 1.5) {
+    if (dy < 0 && !isRec && !currentAudio) startRec();
+    else if (dy > 0 && isRec) stopRec();
+  } else if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+    const keys = Object.keys(AGENTS);
+    const i = keys.indexOf(agent);
+    const next = keys[(i + (dx > 0 ? 1 : -1) + keys.length) % keys.length];
+    setAgent(next);
+  }
+}, { passive: true });
+
+// Proximity hover
+let proxT = null, proxA = false;
+document.addEventListener('mousemove', e => {
+  const orb = document.querySelector('.orb-wrap');
+  if (!orb) return;
+  const rect = orb.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+  const dist = Math.sqrt((e.clientX - cx) ** 2 + (e.clientY - cy) ** 2) - rect.width / 2;
+  if (dist < 80 && dist > 0) {
+    if (!proxA && !isRec && !currentAudio) {
+      proxA = true;
+      clearTimeout(proxT);
+      proxT = setTimeout(() => {
+        if (proxA && !isRec && !currentAudio) startRec();
+      }, 1400);
+    }
+  } else {
+    if (proxA) {
+      clearTimeout(proxT); proxA = false;
+      if (isRec && dist > 150) stopRec();
+    }
+  }
+});
+
+// ════════════════════════════════════════
 //  UI HELPERS
-// ════════════════════════════
-function setUIState(state, label, hint, hintCls) {
+// ════════════════════════════════════════
+function setUI(lbl, cls) {
   const s = document.getElementById('iris-state');
-  s.textContent = label;
-  s.className = 'iris-state ' + state;
-  const h = document.getElementById('orb-hint');
-  h.textContent = hint;
-  h.className = 'orb-hint ' + hintCls;
+  s.textContent = lbl;
+  s.className = 'iris-state ' + (cls || '');
+  document.getElementById('top-status').textContent = lbl;
+  document.getElementById('footer-status').textContent = lbl;
+  document.getElementById('orb-hint').textContent = cls === 'listening' ? 'NOCHMAL KLICKEN ZUM SENDEN' : 'KLICKEN ZUM SPRECHEN';
+  document.getElementById('orb-hint').className = 'orb-hint' + (cls ? ' active' : '');
+}
+
+function resetIdle() {
+  vState = 'idle';
+  setUI('SYSTEM BEREIT', '');
+  document.getElementById('bubble').classList.remove('speaking');
 }
 
 function setBubble(txt, type) {
   const b = document.getElementById('bubble');
   b.classList.remove('speaking');
-  if (!txt) { b.innerHTML='<span class="ph">Was möchten Sie wissen?</span>'; return; }
-  if (type==='user') b.innerHTML = '<em style="color:rgba(255,255,255,0.4);font-style:italic">'+escHtml(txt)+'</em>';
-  else b.textContent = txt;
+  if (!txt) { b.innerHTML = '<span class="ph">AWAITING INPUT...</span>'; return; }
+  if (type === 'user') {
+    b.innerHTML = `<span style="color:rgba(0,184,255,.45);letter-spacing:.06em;font-family:'Orbitron',monospace;font-size:.65rem">▶ ${esc(txt)}</span>`;
+  } else {
+    b.textContent = txt;
+    b.classList.add('speaking');
+  }
 }
 
 function showDots() {
-  document.getElementById('bubble').innerHTML =
-    '<div class="dots"><span></span><span></span><span></span></div>';
+  document.getElementById('bubble').innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
 }
 
-function resetIdle() {
-  setViz('idle');
-  setUIState('','Bereit','Klicken oder Schweben zum Sprechen','');
-  document.getElementById('bubble').classList.remove('speaking');
-}
-
-function setErr(id, msg) {
-  const e = document.getElementById(id);
-  if (!e) return;
-  e.textContent = '⚠ ' + msg;
-  setTimeout(()=>{ if(e) e.textContent=''; }, 9000);
+function showErr(m) {
+  const e = document.getElementById('main-err');
+  e.textContent = '⚠ ' + m;
+  setTimeout(() => { if (e) e.textContent = ''; }, 9000);
 }
 
 function clearSession() {
   if (currentAudio) currentAudio.pause();
-  history = []; resetIdle(); setBubble('');
-  setTimeout(greet, 300);
+  history = []; msgCount = 0;
+  document.getElementById('msg-count').textContent = '0';
+  resetIdle(); setBubble('');
+  setTimeout(morningBriefing, 400);
 }
 
-function escHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// ════════════════════════════
-//  GESTURES
-// ════════════════════════════
-let touchSX=0,touchSY=0,touchST=0;
-document.addEventListener('touchstart',e=>{
-  touchSX=e.touches[0].clientX; touchSY=e.touches[0].clientY; touchST=Date.now();
-},{passive:true});
-document.addEventListener('touchend',e=>{
-  if(Date.now()-touchST>400) return;
-  const dx=e.changedTouches[0].clientX-touchSX, dy=e.changedTouches[0].clientY-touchSY;
-  if(Math.abs(dy)>60 && Math.abs(dy)>Math.abs(dx)*1.5) {
-    if(dy<0 && !isRecording && !currentAudio){ showGHint('↑ Aufnahme'); startRecording(); }
-    else if(dy>0 && isRecording){ showGHint('↓ Senden'); stopRecording(); }
-  } else if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.5) {
-    const keys=['chat','write','risk','research','claim','kpi'];
-    const i=keys.indexOf(agent);
-    const next=keys[(i+(dx>0?1:-1)+keys.length)%keys.length];
-    showGHint((dx>0?'→ ':'← ')+AGENTS[next].name);
-    setAgent(next);
-  }
-},{passive:true});
-
-// Proximity hover
-let proxTimer=null, proxActive=false;
-document.addEventListener('mousemove',e=>{
-  if(!document.getElementById('screen-main').style.display || document.getElementById('screen-main').style.display==='none') return;
-  const oEl=document.getElementById('orb-click');
-  const rect=oEl.getBoundingClientRect();
-  const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2, rad=rect.width/2;
-  const dist=Math.sqrt((e.clientX-cx)**2+(e.clientY-cy)**2)-rad;
-
-  if(dist<90 && dist>0) {
-    if(!proxActive && !isRecording && !currentAudio) {
-      proxActive=true;
-      clearTimeout(proxTimer);
-      proxTimer=setTimeout(()=>{
-        if(proxActive && !isRecording && !currentAudio){ showGHint('⊙ Auto-Start'); startRecording(); }
-      },1300);
-    }
-  } else {
-    if(proxActive) {
-      clearTimeout(proxTimer); proxActive=false;
-      if(isRecording && dist>170){ showGHint('Sende…'); stopRecording(); }
-    }
-  }
-});
-
-function showGHint(txt) {
-  const e=document.getElementById('gesture-hint');
-  e.textContent=txt; e.style.opacity='1';
-  clearTimeout(e._t);
-  e._t=setTimeout(()=>{ e.style.opacity='0'; },2000);
-}
-
-// ════════════════════════════
+// ════════════════════════════════════════
 //  BOOT
-// ════════════════════════════
+// ════════════════════════════════════════
 window.speechSynthesis && window.speechSynthesis.getVoices();
-window.addEventListener('load',()=>{
-  const k=localStorage.getItem('iris_oai');
-  if(k && k.length > 10){ OAI_KEY=k; bootMain(); }
-  // else: stay on setup screen
+setTimeout(() => window.speechSynthesis && window.speechSynthesis.getVoices(), 500);
+
+window.addEventListener('load', () => {
+  const k = localStorage.getItem('iris_oai');
+  if (k && k.length > 10) { OAI = k; bootMain(); }
 });
 </script>
 </body>
