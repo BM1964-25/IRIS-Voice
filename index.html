@@ -4,387 +4,417 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IRIS</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
 <style>
-:root {
-  --navy: #080f1e;
-  --navy2: #0e1a30;
-  --gold: #c9a84c;
-  --gold2: #e8d080;
-  --goldd: rgba(201,168,76,0.25);
-  --cream: #f0ebe0;
-  --dim: rgba(240,235,224,0.38);
-  --ok: #3ecf7a;
-  --red: #e05555;
-}
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-html, body { width:100%; height:100%; overflow:hidden; }
-body {
-  font-family: 'Syne', sans-serif;
-  background: var(--navy);
-  color: var(--cream);
-  display: flex; align-items: center; justify-content: center;
-}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; background:#000; }
+body { font-family:'Syne',sans-serif; color:#fff; display:flex; align-items:center; justify-content:center; }
 
-/* ── Animated background ── */
-.bg {
-  position: fixed; inset: 0; pointer-events: none; overflow: hidden;
-}
-.bg-orb {
-  position: absolute; border-radius: 50%;
-  filter: blur(80px); opacity: 0.12;
-  animation: drift 18s ease-in-out infinite alternate;
-}
-.bg-orb.a { width:600px; height:600px; background:var(--gold); top:-20%; left:-15%; animation-duration:20s; }
-.bg-orb.b { width:400px; height:400px; background:#1a3a6e; bottom:-10%; right:-10%; animation-duration:15s; animation-delay:-7s; }
-.bg-orb.c { width:300px; height:300px; background:var(--gold); top:50%; left:50%; animation-duration:12s; animation-delay:-3s; opacity:0.06; }
-@keyframes drift {
-  from { transform: translate(0,0) scale(1); }
-  to   { transform: translate(40px, 30px) scale(1.08); }
-}
+/* ── Canvas background ── */
+#canvas { position:fixed; inset:0; z-index:0; }
 
-/* ══════════════════════════
-   SETUP SCREEN
-══════════════════════════ */
+/* ── Setup ── */
 #screen-setup {
-  position: fixed; inset: 0; z-index: 100;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 1.6rem; padding: 2rem;
-  background: rgba(8,15,30,0.97);
-  backdrop-filter: blur(20px);
+  position:fixed; inset:0; z-index:100;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.8rem;
+  background:rgba(0,0,0,0.92); backdrop-filter:blur(20px);
 }
-.setup-iris-logo {
-  font-weight: 800; font-size: 3.5rem; letter-spacing: 0.3em;
-  color: var(--gold);
-  text-shadow: 0 0 60px rgba(201,168,76,0.4), 0 0 120px rgba(201,168,76,0.15);
-  animation: logo-breathe 3s ease-in-out infinite;
+.setup-logo {
+  font-size:5rem; font-weight:800; letter-spacing:0.4em;
+  background:linear-gradient(135deg,#00f5ff,#a855f7,#f59e0b,#3b82f6);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 30px rgba(0,245,255,0.4));
+  animation:logo-pulse 3s ease-in-out infinite;
 }
-@keyframes logo-breathe {
-  0%,100% { text-shadow: 0 0 40px rgba(201,168,76,0.3), 0 0 80px rgba(201,168,76,0.1); }
-  50% { text-shadow: 0 0 70px rgba(201,168,76,0.6), 0 0 130px rgba(201,168,76,0.25); }
+@keyframes logo-pulse {
+  0%,100% { filter:drop-shadow(0 0 20px rgba(0,245,255,0.3)); }
+  50% { filter:drop-shadow(0 0 50px rgba(168,85,247,0.6)); }
 }
-.setup-tagline {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic; font-size: 1.1rem;
-  color: var(--dim); letter-spacing: 0.05em;
+.setup-sub {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:1rem; letter-spacing:0.08em;
+  color:rgba(255,255,255,0.4);
 }
-.setup-box {
-  display: flex; flex-direction: column; gap: 0.8rem;
-  width: 100%; max-width: 380px;
-}
-.setup-label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); }
 .setup-inp {
-  background: rgba(255,255,255,0.06); border: 1px solid var(--goldd);
-  border-radius: 10px; padding: 0.9rem 1.1rem; color: var(--cream);
-  font-family: 'Syne', sans-serif; font-size: 0.9rem; outline: none; width: 100%;
-  transition: border-color 0.25s, box-shadow 0.25s;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(0,245,255,0.3);
+  border-radius:12px; padding:0.9rem 1.2rem;
+  color:#fff; font-family:'Syne',sans-serif; font-size:0.9rem;
+  outline:none; width:340px; transition:all 0.3s;
 }
-.setup-inp:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.12); }
-.setup-inp::placeholder { color: var(--dim); }
+.setup-inp:focus { border-color:#00f5ff; box-shadow:0 0 0 3px rgba(0,245,255,0.12),0 0 20px rgba(0,245,255,0.1); }
+.setup-inp::placeholder { color:rgba(255,255,255,0.25); }
+.setup-lbl { font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(0,245,255,0.6); align-self:flex-start; margin-left:calc(50% - 170px); }
 .setup-btn {
-  background: linear-gradient(135deg, var(--gold), #a07830);
-  color: var(--navy); border: none; border-radius: 10px;
-  padding: 0.95rem; font-family: 'Syne', sans-serif; font-weight: 800;
-  font-size: 0.9rem; letter-spacing: 0.12em; cursor: pointer;
-  transition: all 0.2s; width: 100%;
-  box-shadow: 0 4px 24px rgba(201,168,76,0.25);
+  width:340px; padding:1rem;
+  background:linear-gradient(135deg,rgba(0,245,255,0.15),rgba(168,85,247,0.15));
+  border:1px solid rgba(0,245,255,0.4);
+  border-radius:12px; color:#00f5ff;
+  font-family:'Syne',sans-serif; font-weight:700;
+  font-size:0.85rem; letter-spacing:0.18em; cursor:pointer;
+  transition:all 0.3s;
+  box-shadow:0 0 20px rgba(0,245,255,0.1);
 }
-.setup-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,168,76,0.35); }
-.setup-btn:active { transform: translateY(0); }
-.setup-err { font-size: 0.72rem; color: var(--red); min-height: 1em; text-align: center; }
-.setup-note { font-size: 0.68rem; color: var(--dim); text-align: center; max-width: 320px; line-height: 1.7; }
+.setup-btn:hover { background:linear-gradient(135deg,rgba(0,245,255,0.25),rgba(168,85,247,0.25)); box-shadow:0 0 40px rgba(0,245,255,0.2); transform:translateY(-2px); }
+.setup-err { font-size:0.7rem; color:#f87171; min-height:1em; }
+.setup-note { font-size:0.65rem; color:rgba(255,255,255,0.25); text-align:center; max-width:300px; line-height:1.7; }
 
-/* ══════════════════════════
-   MAIN INTERFACE
-══════════════════════════ */
+/* ── Main ── */
 #screen-main {
-  display: none;
-  position: fixed; inset: 0;
-  flex-direction: column; align-items: center; justify-content: space-between;
-  padding: 2rem 1.5rem 1.5rem;
+  display:none; position:fixed; inset:0; z-index:10;
+  flex-direction:column; align-items:center; justify-content:space-between;
+  padding:1.5rem;
 }
 
-/* Top bar */
+/* Topbar */
 .topbar {
-  width: 100%; display: flex; align-items: center; justify-content: space-between;
-  max-width: 640px;
+  width:100%; max-width:700px;
+  display:flex; align-items:center; justify-content:space-between;
 }
-.topbar-logo { font-weight: 800; font-size: 1.3rem; letter-spacing: 0.22em; color: var(--gold); }
-.topbar-status {
-  display: flex; align-items: center; gap: 0.45rem;
-  font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim);
+.top-logo {
+  font-size:1.4rem; font-weight:800; letter-spacing:0.25em;
+  background:linear-gradient(135deg,#00f5ff,#a855f7);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
 }
-.sdot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 6px var(--ok); }
-.topbar-actions { display: flex; gap: 0.4rem; }
-.tbtn {
-  background: transparent; border: 1px solid var(--goldd); color: var(--dim);
-  border-radius: 6px; padding: 0.3rem 0.65rem; font-size: 0.62rem;
-  letter-spacing: 0.08em; cursor: pointer; transition: all 0.15s;
-}
-.tbtn:hover { border-color: var(--gold); color: var(--gold); }
+.top-status { display:flex; align-items:center; gap:0.5rem; font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.35); }
+.sdot { width:6px; height:6px; border-radius:50%; background:#3ecf7a; box-shadow:0 0 8px #3ecf7a; }
+.top-btns { display:flex; gap:0.4rem; }
+.tbtn { background:transparent; border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.35); border-radius:6px; padding:0.28rem 0.65rem; font-size:0.6rem; letter-spacing:0.08em; cursor:pointer; transition:all 0.2s; }
+.tbtn:hover { border-color:rgba(0,245,255,0.4); color:#00f5ff; }
 
-/* Center — Orb */
-.orb-section {
-  display: flex; flex-direction: column; align-items: center; gap: 1.4rem;
-  flex: 1; justify-content: center;
+/* Center */
+.center-area {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:1.2rem; flex:1;
 }
 
-/* IRIS text above orb */
+/* IRIS state label */
 .iris-state {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic; font-size: 1.15rem;
-  color: var(--dim); letter-spacing: 0.06em;
-  min-height: 1.6rem; text-align: center;
-  transition: color 0.4s;
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:1.1rem; letter-spacing:0.1em;
+  color:rgba(255,255,255,0.35); transition:all 0.4s;
+  text-shadow:none;
 }
-.iris-state.active { color: var(--gold); }
-.iris-state.speak { color: var(--ok); }
+.iris-state.listening { color:#00f5ff; text-shadow:0 0 20px rgba(0,245,255,0.5); }
+.iris-state.thinking { color:#a855f7; text-shadow:0 0 20px rgba(168,85,247,0.5); }
+.iris-state.speaking { color:#f59e0b; text-shadow:0 0 20px rgba(245,158,11,0.5); }
 
-/* The Orb */
-.orb-container { position: relative; cursor: pointer; }
-.orb-main {
-  width: 200px; height: 200px; border-radius: 50%;
-  position: relative; z-index: 2;
-  display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(circle at 35% 30%,
-    rgba(201,168,76,0.18) 0%,
-    rgba(14,26,48,0.98) 45%,
-    var(--navy) 100%);
-  border: 1.5px solid rgba(201,168,76,0.2);
-  transition: transform 0.25s, border-color 0.4s;
-  user-select: none;
+/* Orb wrapper — canvas handles the visuals */
+.orb-click-area {
+  width:280px; height:280px; border-radius:50%;
+  cursor:pointer; position:relative;
+  display:flex; align-items:center; justify-content:center;
+  -webkit-tap-highlight-color:transparent;
 }
-.orb-inner-text {
-  font-weight: 800; font-size: 1.8rem; letter-spacing: 0.25em;
-  color: var(--gold);
-  text-shadow: 0 0 30px rgba(201,168,76,0.5);
-  transition: opacity 0.3s;
+.orb-label {
+  position:relative; z-index:2;
+  font-size:2rem; font-weight:800; letter-spacing:0.3em;
+  background:linear-gradient(135deg,#00f5ff,#a855f7,#f59e0b);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  pointer-events:none; transition:opacity 0.3s;
 }
 
-/* Rings */
-.orb-ring {
-  position: absolute; border-radius: 50%;
-  border: 1px solid rgba(201,168,76,0.1);
-  top: 50%; left: 50%; transform: translate(-50%,-50%);
-}
-.orb-ring-1 { width: 240px; height: 240px; }
-.orb-ring-2 { width: 285px; height: 285px; border-color: rgba(201,168,76,0.06); }
-.orb-ring-3 { width: 340px; height: 340px; border-color: rgba(201,168,76,0.03); }
-
-/* Orb states */
-@keyframes orb-idle {
-  0%,100% {
-    box-shadow: 0 0 30px rgba(201,168,76,0.08), 0 0 80px rgba(201,168,76,0.04), inset 0 0 40px rgba(0,0,0,0.5);
-  }
-  50% {
-    box-shadow: 0 0 55px rgba(201,168,76,0.16), 0 0 120px rgba(201,168,76,0.07), inset 0 0 40px rgba(0,0,0,0.5);
-  }
-}
-@keyframes orb-listen {
-  0%,100% {
-    box-shadow: 0 0 50px rgba(201,168,76,0.6), 0 0 100px rgba(201,168,76,0.25), 0 0 180px rgba(201,168,76,0.1);
-    border-color: rgba(201,168,76,0.7);
-  }
-  50% {
-    box-shadow: 0 0 80px rgba(201,168,76,0.9), 0 0 160px rgba(201,168,76,0.4), 0 0 260px rgba(201,168,76,0.15);
-    border-color: var(--gold2);
-  }
-}
-@keyframes orb-think {
-  0%,100% { box-shadow: 0 0 40px rgba(201,168,76,0.3), inset 0 0 40px rgba(0,0,0,0.4); border-color: rgba(201,168,76,0.4); }
-  50% { box-shadow: 0 0 70px rgba(201,168,76,0.55), inset 0 0 40px rgba(0,0,0,0.4); border-color: var(--gold); }
-}
-@keyframes orb-speak {
-  0%,100% { box-shadow: 0 0 50px rgba(62,207,122,0.5), 0 0 100px rgba(62,207,122,0.18); border-color: rgba(62,207,122,0.6); }
-  50% { box-shadow: 0 0 80px rgba(62,207,122,0.75), 0 0 160px rgba(62,207,122,0.3); border-color: var(--ok); }
-}
-@keyframes ring-pulse {
-  0% { transform: translate(-50%,-50%) scale(1); opacity: 0.5; }
-  100% { transform: translate(-50%,-50%) scale(1.35); opacity: 0; }
-}
-
-.orb-main.idle { animation: orb-idle 4s ease-in-out infinite; }
-.orb-main.listening { animation: orb-listen 0.8s ease-in-out infinite; transform: scale(1.06); }
-.orb-main.thinking { animation: orb-think 1.1s ease-in-out infinite; }
-.orb-main.speaking { animation: orb-speak 0.55s ease-in-out infinite; transform: scale(1.04); }
-.orb-main.listening + .orb-ring-1 { animation: ring-pulse 1.1s ease-out infinite; }
-.orb-main.listening + .orb-ring-1 + .orb-ring-2 { animation: ring-pulse 1.1s ease-out 0.35s infinite; }
-
-/* Wave visualizer inside orb */
-.orb-wave {
-  position: absolute; bottom: 42px;
-  display: flex; align-items: flex-end; gap: 3px;
-  opacity: 0; transition: opacity 0.3s;
-}
-.orb-wave.show { opacity: 1; }
-.orb-wave span {
-  display: block; width: 3px; border-radius: 2px; background: var(--gold);
-  height: 4px; transition: height 0.08s;
-}
-.orb-wave.on span { animation: ow 0.6s ease-in-out infinite; }
-.orb-wave.on span:nth-child(2){animation-delay:.08s}
-.orb-wave.on span:nth-child(3){animation-delay:.16s}
-.orb-wave.on span:nth-child(4){animation-delay:.24s}
-.orb-wave.on span:nth-child(5){animation-delay:.12s}
-.orb-wave.on span:nth-child(6){animation-delay:.2s}
-.orb-wave.on span:nth-child(7){animation-delay:.04s}
-@keyframes ow { 0%,100%{height:4px} 50%{height:20px} }
-
-/* Orb hint below */
+/* Hint */
 .orb-hint {
-  font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--dim); transition: color 0.3s; text-align: center;
+  font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase;
+  color:rgba(255,255,255,0.25); transition:color 0.3s;
 }
-.orb-hint.gold { color: var(--gold); }
-.orb-hint.green { color: var(--ok); }
+.orb-hint.cyan { color:#00f5ff; }
+.orb-hint.purple { color:#a855f7; }
+.orb-hint.gold { color:#f59e0b; }
+.orb-hint.green { color:#3ecf7a; }
 
-/* Hold button */
-.hold-area {
-  display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
+/* Bubble */
+.bubble {
+  max-width:480px; width:100%; min-height:3.5rem;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px; padding:0.9rem 1.3rem;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem; line-height:1.6; text-align:center;
+  color:rgba(255,255,255,0.8);
+  backdrop-filter:blur(10px);
+  display:flex; align-items:center; justify-content:center;
+  transition:border-color 0.4s;
 }
-.hold-btn {
-  width: 72px; height: 72px; border-radius: 50%;
-  background: rgba(201,168,76,0.1);
-  border: 2px solid rgba(201,168,76,0.3);
-  color: var(--gold); font-size: 1.6rem;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; user-select: none;
-  transition: all 0.15s;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: none;
+.bubble.speaking { border-color:rgba(245,158,11,0.3); }
+.bubble .ph { color:rgba(255,255,255,0.2); font-style:italic; }
+.dots span {
+  display:inline-block; width:6px; height:6px; border-radius:50%;
+  margin:0 3px;
+  animation:db 1.1s ease-in-out infinite;
 }
-.hold-btn:hover { background: rgba(201,168,76,0.18); border-color: var(--gold); }
-.hold-btn.recording { background: var(--gold); color: var(--navy); border-color: var(--gold2); transform: scale(1.1); box-shadow: 0 0 30px rgba(201,168,76,0.4); }
-.hold-label { font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); }
-
-/* Transcript bubble */
-.transcript-bubble {
-  background: rgba(14,26,48,0.85);
-  border: 1px solid var(--goldd);
-  border-radius: 14px; padding: 0.8rem 1.2rem;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1rem; line-height: 1.55; color: var(--cream);
-  max-width: 480px; width: 100%; text-align: center;
-  min-height: 3rem; display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(10px);
-}
-.transcript-bubble .placeholder { color: var(--dim); font-style: italic; }
-
-/* Dots */
-.dots-wrap span {
-  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
-  background: var(--gold); margin: 0 2.5px;
-  animation: db 1.1s ease-in-out infinite;
-}
-.dots-wrap span:nth-child(2){animation-delay:.18s}.dots-wrap span:nth-child(3){animation-delay:.36s}
-@keyframes db{0%,100%{transform:translateY(0);opacity:.25}50%{transform:translateY(-6px);opacity:1}}
+.dots span:nth-child(1){background:#00f5ff;animation-delay:0s}
+.dots span:nth-child(2){background:#a855f7;animation-delay:.18s}
+.dots span:nth-child(3){background:#f59e0b;animation-delay:.36s}
+@keyframes db{0%,100%{transform:translateY(0);opacity:.25}50%{transform:translateY(-7px);opacity:1}}
 
 /* Agent pills */
-.agent-pills {
-  display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;
-  max-width: 500px;
+.pills {
+  display:flex; gap:0.45rem; flex-wrap:wrap; justify-content:center;
+  max-width:480px;
 }
-.agent-pill {
-  background: rgba(201,168,76,0.06);
-  border: 1px solid rgba(201,168,76,0.18);
-  border-radius: 20px; padding: 0.3rem 0.8rem;
-  font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--dim); cursor: pointer; transition: all 0.2s;
+.pill {
+  border-radius:20px; padding:0.28rem 0.75rem;
+  font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase;
+  cursor:pointer; transition:all 0.2s;
+  border:1px solid rgba(255,255,255,0.1);
+  color:rgba(255,255,255,0.3);
+  background:transparent;
 }
-.agent-pill:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.1); }
-.agent-pill.on { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.12); }
+.pill:hover { border-color:rgba(0,245,255,0.4); color:#00f5ff; }
+.pill.on { border-color:rgba(0,245,255,0.5); color:#00f5ff; background:rgba(0,245,255,0.08); box-shadow:0 0 12px rgba(0,245,255,0.15); }
+
+/* Gesture legend */
+.gesture-legend {
+  display:flex; gap:1.5rem; justify-content:center;
+}
+.gl-item { display:flex; flex-direction:column; align-items:center; gap:0.2rem; }
+.gl-icon { font-size:0.85rem; color:rgba(255,255,255,0.2); }
+.gl-lbl { font-size:0.5rem; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.15); }
+
+/* Gesture hint overlay */
+#gesture-hint {
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-200px);
+  background:rgba(0,245,255,0.1); border:1px solid rgba(0,245,255,0.3);
+  backdrop-filter:blur(12px); border-radius:30px;
+  padding:0.45rem 1.2rem;
+  font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase;
+  color:#00f5ff; z-index:999; pointer-events:none;
+  opacity:0; transition:opacity 0.3s;
+}
 
 /* Error */
-.main-err { font-size: 0.7rem; color: var(--red); min-height: 1em; text-align: center; }
+.main-err { font-size:0.68rem; color:#f87171; min-height:1em; text-align:center; }
 </style>
 </head>
 <body>
 
-<div class="bg">
-  <div class="bg-orb a"></div>
-  <div class="bg-orb b"></div>
-  <div class="bg-orb c"></div>
-</div>
+<canvas id="canvas"></canvas>
+<div id="gesture-hint"></div>
 
 <!-- ══ SETUP ══ -->
 <div id="screen-setup">
-  <div class="setup-iris-logo">IRIS</div>
-  <div class="setup-tagline">Intelligent Real Estate Intelligence System</div>
-
-  <div class="setup-box">
-    <div class="setup-label">OpenAI API-Key</div>
-    <input class="setup-inp" type="password" id="oai-key"
-      placeholder="sk-proj-… oder sk-…" autocomplete="off"
-      onkeydown="if(event.key==='Enter')connect()">
-    <button class="setup-btn" onclick="connect()">IRIS STARTEN</button>
-    <div class="setup-err" id="setup-err"></div>
-  </div>
-  <p class="setup-note">
-    Mikrofon benötigt HTTPS oder localhost.<br>
-    Texteingabe funktioniert immer.
-  </p>
+  <div class="setup-logo">IRIS</div>
+  <div class="setup-sub">Intelligent Real Estate Intelligence System</div>
+  <div class="setup-lbl">OpenAI API-Key</div>
+  <input class="setup-inp" type="password" id="oai-key" placeholder="sk-proj-… oder sk-…" autocomplete="off" onkeydown="if(event.key==='Enter')connect()">
+  <button class="setup-btn" onclick="connect()">IRIS AKTIVIEREN</button>
+  <div class="setup-err" id="setup-err"></div>
+  <p class="setup-note">Mikrofon benötigt HTTPS oder localhost · Texteingabe immer verfügbar</p>
 </div>
 
 <!-- ══ MAIN ══ -->
 <div id="screen-main">
-
-  <!-- Top -->
   <div class="topbar">
-    <div class="topbar-logo">IRIS</div>
-    <div class="topbar-status">
-      <div class="sdot"></div>
-      <span id="agent-label">Gespräch</span>
-    </div>
-    <div class="topbar-actions">
+    <div class="top-logo">IRIS</div>
+    <div class="top-status"><div class="sdot"></div><span id="agent-lbl">Gespräch</span></div>
+    <div class="top-btns">
       <button class="tbtn" onclick="clearSession()">Neu</button>
       <button class="tbtn" onclick="disconnect()">✕</button>
     </div>
   </div>
 
-  <!-- Orb section -->
-  <div class="orb-section">
-
+  <div class="center-area">
     <div class="iris-state" id="iris-state">Bereit</div>
 
-    <div class="orb-container" onclick="toggleMic()">
-      <div class="orb-main idle" id="orb">
-        <div class="orb-wave" id="orb-wave">
-          <span></span><span></span><span></span><span></span>
-          <span></span><span></span><span></span>
-        </div>
-        <span class="orb-inner-text" id="orb-txt">IRIS</span>
-      </div>
-      <div class="orb-ring orb-ring-1"></div>
-      <div class="orb-ring orb-ring-2"></div>
-      <div class="orb-ring orb-ring-3"></div>
+    <div class="orb-click-area" id="orb-click" onclick="toggleMic()">
+      <div class="orb-label" id="orb-lbl">IRIS</div>
     </div>
 
-    <div class="orb-hint" id="orb-hint">Klicken zum Sprechen</div>
+    <div class="orb-hint" id="orb-hint">Klicken oder Schweben zum Sprechen</div>
 
-    <!-- Transcript / response bubble -->
-    <div class="transcript-bubble" id="bubble">
-      <span class="placeholder">Was möchten Sie wissen?</span>
+    <div class="bubble" id="bubble"><span class="ph">Was möchten Sie wissen?</span></div>
+
+    <div class="pills">
+      <div class="pill on" id="pill-chat" onclick="setAgent('chat')">💬 Gespräch</div>
+      <div class="pill" id="pill-write" onclick="setAgent('write')">✍️ Schreiben</div>
+      <div class="pill" id="pill-risk" onclick="setAgent('risk')">⚠️ Risiko</div>
+      <div class="pill" id="pill-research" onclick="setAgent('research')">🔍 Recherche</div>
+      <div class="pill" id="pill-claim" onclick="setAgent('claim')">⚖️ Claim</div>
+      <div class="pill" id="pill-kpi" onclick="setAgent('kpi')">📊 KPI</div>
     </div>
-
-    <!-- Agent pills -->
-    <div class="agent-pills">
-      <div class="agent-pill on" id="pill-chat" onclick="setAgent('chat')">💬 Gespräch</div>
-      <div class="agent-pill" id="pill-write" onclick="setAgent('write')">✍️ Schreiben</div>
-      <div class="agent-pill" id="pill-risk" onclick="setAgent('risk')">⚠️ Risiko</div>
-      <div class="agent-pill" id="pill-research" onclick="setAgent('research')">🔍 Recherche</div>
-      <div class="agent-pill" id="pill-claim" onclick="setAgent('claim')">⚖️ Claim</div>
-      <div class="agent-pill" id="pill-kpi" onclick="setAgent('kpi')">📊 KPI</div>
-    </div>
-
   </div>
 
   <div class="main-err" id="main-err"></div>
 
+  <div class="gesture-legend">
+    <div class="gl-item"><div class="gl-icon">↑</div><div class="gl-lbl">Start</div></div>
+    <div class="gl-item"><div class="gl-icon">↓</div><div class="gl-lbl">Senden</div></div>
+    <div class="gl-item"><div class="gl-icon">←→</div><div class="gl-lbl">Agent</div></div>
+    <div class="gl-item"><div class="gl-icon">⊙</div><div class="gl-lbl">Hover</div></div>
+  </div>
 </div>
 
 <script>
 // ════════════════════════════
-//  CONFIG
+//  CANVAS VISUALIZER
+// ════════════════════════════
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let W, H, CX, CY;
+let vizState = 'idle'; // idle | listening | thinking | speaking
+let vizIntensity = 0;
+let animFrame;
+let time = 0;
+
+function resizeCanvas() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  CX = W / 2; CY = H / 2;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// Color palettes per state
+const COLORS = {
+  idle:      ['#00f5ff','#3b82f6','#a855f7','#1e40af'],
+  listening: ['#00f5ff','#06b6d4','#0ea5e9','#00e5ff'],
+  thinking:  ['#a855f7','#8b5cf6','#c084fc','#7c3aed'],
+  speaking:  ['#f59e0b','#f97316','#fbbf24','#ef4444']
+};
+
+function drawFrame() {
+  animFrame = requestAnimationFrame(drawFrame);
+  time += 0.012;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Dark gradient background
+  const bg = ctx.createRadialGradient(CX,CY,0,CX,CY,Math.max(W,H)*0.7);
+  bg.addColorStop(0,'rgba(5,5,20,1)');
+  bg.addColorStop(1,'rgba(0,0,0,1)');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,W,H);
+
+  const cols = COLORS[vizState] || COLORS.idle;
+  const targetIntensity = vizState === 'idle' ? 0.35 : vizState === 'thinking' ? 0.65 : 0.9;
+  vizIntensity += (targetIntensity - vizIntensity) * 0.04;
+
+  const BASE = Math.min(W,H) * 0.18;
+
+  // ── Draw rings ──
+  const ringCount = 6;
+  for (let i = 0; i < ringCount; i++) {
+    const phase = (time * (0.4 + i * 0.15)) + (i * Math.PI * 2 / ringCount);
+    let r;
+    if (vizState === 'speaking') {
+      r = BASE + i * 22 + Math.sin(phase * 3) * 18 * vizIntensity * (1 + i * 0.2);
+    } else if (vizState === 'listening') {
+      r = BASE + i * 20 + Math.sin(phase * 2) * 14 * vizIntensity;
+    } else if (vizState === 'thinking') {
+      r = BASE + i * 20 + Math.sin(phase) * 10 * vizIntensity;
+    } else {
+      r = BASE + i * 18 + Math.sin(phase * 0.5) * 6;
+    }
+
+    const col = cols[i % cols.length];
+    const alpha = (0.12 + vizIntensity * 0.18) * (1 - i * 0.12);
+
+    ctx.beginPath();
+    ctx.arc(CX, CY, r, 0, Math.PI * 2);
+    ctx.strokeStyle = col;
+    ctx.lineWidth = vizState === 'speaking' ? 2.5 - i*0.2 : 1.5;
+    ctx.globalAlpha = alpha;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Rotating color arcs ──
+  for (let a = 0; a < 4; a++) {
+    const arcR = BASE * (1.8 + a * 0.55);
+    const speed = (0.3 + a * 0.12) * (a % 2 === 0 ? 1 : -1);
+    const startAngle = time * speed + a * Math.PI * 0.5;
+    const arcLen = (Math.PI * 0.4 + vizIntensity * Math.PI * 0.5);
+
+    const grad = ctx.createLinearGradient(
+      CX + Math.cos(startAngle) * arcR,
+      CY + Math.sin(startAngle) * arcR,
+      CX + Math.cos(startAngle + arcLen) * arcR,
+      CY + Math.sin(startAngle + arcLen) * arcR
+    );
+    grad.addColorStop(0, cols[a % cols.length] + '00');
+    grad.addColorStop(0.5, cols[a % cols.length]);
+    grad.addColorStop(1, cols[(a+1) % cols.length] + '00');
+
+    ctx.beginPath();
+    ctx.arc(CX, CY, arcR, startAngle, startAngle + arcLen);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 2.5;
+    ctx.globalAlpha = 0.5 * vizIntensity + 0.15;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Radial lines (listening/speaking) ──
+  if (vizState === 'listening' || vizState === 'speaking') {
+    const lineCount = vizState === 'speaking' ? 24 : 16;
+    for (let l = 0; l < lineCount; l++) {
+      const angle = (l / lineCount) * Math.PI * 2 + time * 0.5;
+      const len = (20 + Math.sin(time * 4 + l * 0.8) * 30) * vizIntensity;
+      const inner = BASE * 0.95;
+      const col = cols[l % cols.length];
+      ctx.beginPath();
+      ctx.moveTo(CX + Math.cos(angle) * inner, CY + Math.sin(angle) * inner);
+      ctx.lineTo(CX + Math.cos(angle) * (inner + len), CY + Math.sin(angle) * (inner + len));
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 1.5;
+      ctx.globalAlpha = 0.5 * vizIntensity;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // ── Particles ──
+  if (vizState !== 'idle') {
+    for (let p = 0; p < 8; p++) {
+      const pAngle = (p / 8) * Math.PI * 2 + time * 0.8;
+      const pR = BASE * 1.2 + Math.sin(time * 2 + p) * BASE * 0.4;
+      const px = CX + Math.cos(pAngle) * pR;
+      const py = CY + Math.sin(pAngle) * pR;
+      const col = cols[p % cols.length];
+      ctx.beginPath();
+      ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = col;
+      ctx.globalAlpha = 0.7 * vizIntensity;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // ── Center glow ──
+  const glowR = BASE * 0.85;
+  const glow = ctx.createRadialGradient(CX,CY,0,CX,CY,glowR);
+  const glowCol = cols[0];
+  glow.addColorStop(0, glowCol + '18');
+  glow.addColorStop(0.5, glowCol + '08');
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.beginPath();
+  ctx.arc(CX, CY, glowR, 0, Math.PI * 2);
+  ctx.fill();
+
+  // ── Outer ambient glow ──
+  for (let g = 0; g < 3; g++) {
+    const ambR = Math.min(W,H) * (0.55 + g * 0.15);
+    const amb = ctx.createRadialGradient(CX,CY,ambR*0.7,CX,CY,ambR);
+    const ac = cols[g % cols.length];
+    amb.addColorStop(0, 'transparent');
+    amb.addColorStop(1, ac + Math.round(vizIntensity * 18).toString(16).padStart(2,'0'));
+    ctx.fillStyle = amb;
+    ctx.beginPath();
+    ctx.arc(CX, CY, ambR, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+drawFrame();
+
+function setViz(state) {
+  vizState = state;
+}
+
+// ════════════════════════════
+//  APP STATE
 // ════════════════════════════
 let OAI_KEY = '';
 let agent = 'chat';
@@ -395,41 +425,12 @@ let audioChunks = [];
 let isRecording = false;
 
 const AGENTS = {
-  chat: {
-    name: 'Gespräch',
-    sys: `Du bist IRIS — Intelligent Real Estate Intelligence System.
-KI-Sprachassistentin von Metzger Real Estate Advisory & BuiltSmart AI.
-Führe natürliche, professionelle Gespräche über Bau und Immobilien.
-Antworte prägnant, maximal 80 Wörter. Perfekt für Sprachausgabe optimiert.
-Sprich Bernhard mit "Sie" an. Antworte immer auf Deutsch.`
-  },
-  write: {
-    name: 'Schreib-Agent',
-    sys: `Du bist IRIS, Schreib-Agent für Bau- und Immobilienwirtschaft.
-Erstelle: Managementberichte, Briefe, Exposés, Protokolle, Angebote.
-Frage bei Bedarf nach Details. Max 100 Wörter für Sprachausgabe. Deutsch.`
-  },
-  risk: {
-    name: 'Risiko-Agent',
-    sys: `Du bist IRIS, Risiko-Agent für Bau- und Immobilienwirtschaft.
-Prüfe Verträge, identifiziere Risiken, bewerte Claims, §650f BGB, VOB.
-Klar und handlungsorientiert. Max 100 Wörter. Deutsch.`
-  },
-  research: {
-    name: 'Recherche-Agent',
-    sys: `Du bist IRIS, Recherche-Agent für Bau- und Immobilienwirtschaft.
-Analysiere Markt, Preise, Standorte, Trends. Faktenbasiert. Max 100 Wörter. Deutsch.`
-  },
-  claim: {
-    name: 'Claim-Agent',
-    sys: `Du bist IRIS, Claim-Agent für Bau- und Immobilienwirtschaft.
-Prüfe Nachträge, VOB-Ansprüche, Bauzeitverzögerungen, Schadensersatz. Max 100 Wörter. Deutsch.`
-  },
-  kpi: {
-    name: 'KPI-Agent',
-    sys: `Du bist IRIS, KPI-Agent für Bau- und Immobilienwirtschaft.
-Analysiere Kennzahlen, Controlling, Performance-Metriken. Max 100 Wörter. Deutsch.`
-  }
+  chat:     { name:'Gespräch',      sys:`Du bist IRIS — KI-Sprachassistentin von Metzger Real Estate Advisory. Natürliches, professionelles Gespräch über Bau und Immobilien. Max 80 Wörter. Deutsch. Siezen.` },
+  write:    { name:'Schreib-Agent', sys:`Du bist IRIS, Schreib-Agent. Managementberichte, Briefe, Exposés, Protokolle. Max 100 Wörter. Deutsch.` },
+  risk:     { name:'Risiko-Agent',  sys:`Du bist IRIS, Risiko-Agent. Verträge, §650f BGB, VOB, Claims. Max 100 Wörter. Deutsch.` },
+  research: { name:'Recherche',     sys:`Du bist IRIS, Recherche-Agent. Markt, Preise, Standort, Trends. Max 100 Wörter. Deutsch.` },
+  claim:    { name:'Claim-Agent',   sys:`Du bist IRIS, Claim-Agent. Nachträge, VOB, Bauzeitverzögerung. Max 100 Wörter. Deutsch.` },
+  kpi:      { name:'KPI-Agent',     sys:`Du bist IRIS, KPI-Agent. Kennzahlen, Controlling, Performance. Max 100 Wörter. Deutsch.` }
 };
 
 // ════════════════════════════
@@ -437,17 +438,18 @@ Analysiere Kennzahlen, Controlling, Performance-Metriken. Max 100 Wörter. Deuts
 // ════════════════════════════
 function connect() {
   const k = document.getElementById('oai-key').value.trim();
-  if (!k) { setErr('setup-err', 'Bitte API-Key eingeben.'); return; }
+  if (!k) { setErr('setup-err','Bitte API-Key eingeben.'); return; }
   OAI_KEY = k;
   localStorage.setItem('iris_oai', k);
-  startIRIS();
+  bootMain();
 }
 
-function startIRIS() {
+function bootMain() {
   document.getElementById('screen-setup').style.display = 'none';
-  document.getElementById('screen-main').style.display = 'flex';
-  // Auto-greet after short delay
-  setTimeout(greet, 600);
+  const m = document.getElementById('screen-main');
+  m.style.display = 'flex';
+  m.style.flexDirection = 'column';
+  setTimeout(greet, 700);
 }
 
 function disconnect() {
@@ -462,13 +464,11 @@ function disconnect() {
 async function greet() {
   const txt = 'Guten Tag. Ich bin IRIS. Wie kann ich Ihnen helfen?';
   setBubble(txt);
-  setState('Begrüßung', 'active');
-  history.push({ role: 'assistant', content: txt });
   await speak(txt);
 }
 
 // ════════════════════════════
-//  MICROPHONE
+//  MIC
 // ════════════════════════════
 function toggleMic() {
   if (isRecording) { stopRecording(); return; }
@@ -478,44 +478,37 @@ function toggleMic() {
 
 async function startRecording() {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
     audioChunks = [];
-    const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-      ? 'audio/webm;codecs=opus'
-      : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
-    mediaRec = new MediaRecorder(stream, { mimeType: mime });
+    const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus'
+               : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
+    mediaRec = new MediaRecorder(stream, { mimeType:mime });
     mediaRec.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-    mediaRec.onstop = () => { stream.getTracks().forEach(t => t.stop()); sendAudio(); };
+    mediaRec.onstop = () => { stream.getTracks().forEach(t=>t.stop()); sendAudio(); };
     mediaRec.start(100);
     isRecording = true;
-    setOrb('listening');
-    setState('Ich höre…', 'active');
-    setHint('Nochmal klicken zum Senden', 'gold');
-    document.getElementById('orb-wave').classList.add('show', 'on');
-    setBubble('');
+    setViz('listening');
+    setUIState('listening','Ich höre…','Nochmal klicken zum Senden','cyan');
   } catch(e) {
-    const msg = e.name === 'NotAllowedError'
-      ? 'Mikrofon-Zugriff verweigert. Bitte in Chrome erlauben.'
-      : 'Fehler: ' + e.message;
-    setErr('main-err', msg);
+    setErr('main-err', e.name === 'NotAllowedError'
+      ? 'Mikrofon-Zugriff verweigert — Chrome-Einstellungen prüfen.'
+      : 'Fehler: ' + e.message);
   }
 }
 
 function stopRecording() {
   if (!isRecording) return;
   isRecording = false;
-  document.getElementById('orb-wave').classList.remove('on');
-  setOrb('thinking');
-  setState('Verarbeite…', 'active');
-  setHint('', '');
+  setViz('thinking');
+  setUIState('thinking','Verarbeite…','','purple');
   mediaRec.stop();
 }
 
 async function sendAudio() {
   try {
-    const mime = mediaRec ? mediaRec.mimeType : 'audio/webm';
+    const mime = mediaRec?.mimeType || 'audio/webm';
     const ext = mime.includes('mp4') ? 'm4a' : 'webm';
-    const blob = new Blob(audioChunks, { type: mime });
+    const blob = new Blob(audioChunks, { type:mime });
     if (blob.size < 500) { resetIdle(); return; }
 
     const fd = new FormData();
@@ -524,127 +517,84 @@ async function sendAudio() {
     fd.append('language', 'de');
 
     const r = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + OAI_KEY },
-      body: fd
+      method:'POST', headers:{'Authorization':'Bearer '+OAI_KEY}, body:fd
     });
 
     if (!r.ok) {
-      const e = await r.json().catch(() => ({}));
-      const msg = e.error?.message || '';
-      if (msg.includes('does not have access') || r.status === 404 || r.status === 400) {
-        setErr('main-err', 'Spracheingabe nicht verfügbar für diesen Key. Bitte Text-Modus nutzen.');
+      const e = await r.json().catch(()=>({}));
+      if (r.status === 404 || (e.error?.message||'').includes('does not have access')) {
+        setErr('main-err','Whisper nicht verfügbar — bitte Text tippen.');
         resetIdle(); return;
       }
-      throw new Error(msg || 'STT Fehler ' + r.status);
+      throw new Error(e.error?.message || 'STT '+r.status);
     }
 
-    const d = await r.json();
-    const txt = (d.text || '').trim();
+    const txt = ((await r.json()).text || '').trim();
     if (!txt) { resetIdle(); return; }
     await processInput(txt);
-
-  } catch(e) {
-    setErr('main-err', e.message);
-    resetIdle();
-  }
+  } catch(e) { setErr('main-err',e.message); resetIdle(); }
 }
 
 // ════════════════════════════
-//  CORE PIPELINE
+//  PIPELINE
 // ════════════════════════════
 async function processInput(text) {
   setBubble(text, 'user');
-  history.push({ role: 'user', content: text });
-  setOrb('thinking');
-  setState('Denke…', 'active');
+  history.push({ role:'user', content:text });
+  setViz('thinking');
+  setUIState('thinking','Denke…','','purple');
   showDots();
 
   try {
     const r = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + OAI_KEY
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        max_tokens: 300,
-        messages: [
-          { role: 'system', content: AGENTS[agent].sys },
-          ...history.slice(-10)
-        ]
-      })
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI_KEY},
+      body:JSON.stringify({ model:'gpt-4o', max_tokens:300,
+        messages:[{role:'system',content:AGENTS[agent].sys},...history.slice(-10)] })
     });
-
-    if (!r.ok) {
-      const e = await r.json().catch(() => ({}));
-      throw new Error(e.error?.message || 'GPT Fehler ' + r.status);
-    }
-
-    const d = await r.json();
-    const reply = d.choices[0].message.content.trim();
-    history.push({ role: 'assistant', content: reply });
+    if (!r.ok) { const e=await r.json().catch(()=>({})); throw new Error(e.error?.message||'GPT '+r.status); }
+    const reply = (await r.json()).choices[0].message.content.trim();
+    history.push({ role:'assistant', content:reply });
     setBubble(reply);
     await speak(reply);
-
-  } catch(e) {
-    setErr('main-err', e.message);
-    resetIdle();
-  }
+  } catch(e) { setErr('main-err',e.message); resetIdle(); }
 }
 
 // ════════════════════════════
 //  TTS
 // ════════════════════════════
 async function speak(text) {
-  setOrb('speaking');
-  setState('Spricht…', 'speak');
-  setHint('Klicken zum Unterbrechen', 'green');
+  setViz('speaking');
+  setUIState('speaking','Spricht…','Klicken zum Stoppen','gold');
+  document.getElementById('bubble').classList.add('speaking');
 
   try {
     const r = await fetch('https://api.openai.com/v1/audio/speech', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + OAI_KEY
-      },
-      body: JSON.stringify({
-        model: 'tts-1', input: text, voice: 'nova', speed: 0.93
-      })
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI_KEY},
+      body:JSON.stringify({ model:'tts-1', input:text, voice:'nova', speed:0.93 })
     });
+    if (!r.ok) { const e=await r.json().catch(()=>({})); throw new Error(e.error?.message||'TTS '+r.status); }
 
-    if (!r.ok) {
-      const e = await r.json().catch(() => ({}));
-      throw new Error(e.error?.message || 'TTS Fehler ' + r.status);
-    }
-
-    const blob = await r.blob();
-    const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(await r.blob());
     const audio = new Audio(url);
     currentAudio = audio;
-
-    return new Promise(resolve => {
-      audio.onended = () => { currentAudio = null; URL.revokeObjectURL(url); resetIdle(); resolve(); };
-      audio.onerror = () => { currentAudio = null; resetIdle(); resolve(); };
-      audio.play().catch(() => { currentAudio = null; resetIdle(); resolve(); });
+    return new Promise(res => {
+      audio.onended = () => { currentAudio=null; URL.revokeObjectURL(url); resetIdle(); res(); };
+      audio.onerror = () => { currentAudio=null; resetIdle(); res(); };
+      audio.play().catch(() => { currentAudio=null; resetIdle(); res(); });
     });
-
-  } catch(e) {
-    setErr('main-err', e.message);
-    resetIdle();
-  }
+  } catch(e) { setErr('main-err',e.message); resetIdle(); }
 }
 
 // ════════════════════════════
 //  AGENTS
 // ════════════════════════════
 function setAgent(a) {
-  agent = a;
-  document.querySelectorAll('.agent-pill').forEach(p => p.classList.remove('on'));
-  document.getElementById('pill-' + a).classList.add('on');
-  document.getElementById('agent-label').textContent = AGENTS[a].name;
-  history = [];
+  agent = a; history = [];
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pill-'+a).classList.add('on');
+  document.getElementById('agent-lbl').textContent = AGENTS[a].name;
   const msg = AGENTS[a].name + ' aktiviert. Wie kann ich helfen?';
   setBubble(msg);
   speak(msg);
@@ -653,245 +603,110 @@ function setAgent(a) {
 // ════════════════════════════
 //  UI HELPERS
 // ════════════════════════════
-function setOrb(s) {
-  const o = document.getElementById('orb');
-  o.className = 'orb-main ' + s;
-}
-
-function setState(txt, cls) {
-  const e = document.getElementById('iris-state');
-  e.textContent = txt;
-  e.className = 'iris-state ' + cls;
-}
-
-function setHint(txt, cls) {
-  const e = document.getElementById('orb-hint');
-  e.textContent = txt;
-  e.className = 'orb-hint ' + cls;
+function setUIState(state, label, hint, hintCls) {
+  const s = document.getElementById('iris-state');
+  s.textContent = label;
+  s.className = 'iris-state ' + state;
+  const h = document.getElementById('orb-hint');
+  h.textContent = hint;
+  h.className = 'orb-hint ' + hintCls;
 }
 
 function setBubble(txt, type) {
   const b = document.getElementById('bubble');
-  if (!txt) {
-    b.innerHTML = '<span class="placeholder"><div class="dots-wrap"><span></span><span></span><span></span></div></span>';
-  } else if (type === 'user') {
-    b.innerHTML = '<em style="color:var(--dim);font-family:\'Cormorant Garamond\',serif">' + escHtml(txt) + '</em>';
-  } else {
-    b.textContent = txt;
-  }
+  b.classList.remove('speaking');
+  if (!txt) { b.innerHTML='<span class="ph">Was möchten Sie wissen?</span>'; return; }
+  if (type==='user') b.innerHTML = '<em style="color:rgba(255,255,255,0.4);font-style:italic">'+escHtml(txt)+'</em>';
+  else b.textContent = txt;
 }
 
 function showDots() {
   document.getElementById('bubble').innerHTML =
-    '<span class="dots-wrap"><span></span><span></span><span></span></span>';
+    '<div class="dots"><span></span><span></span><span></span></div>';
 }
 
 function resetIdle() {
-  setOrb('idle');
-  setState('Bereit', '');
-  setHint('Klicken zum Sprechen', '');
-  document.getElementById('orb-wave').classList.remove('show', 'on');
+  setViz('idle');
+  setUIState('','Bereit','Klicken oder Schweben zum Sprechen','');
+  document.getElementById('bubble').classList.remove('speaking');
 }
 
 function setErr(id, msg) {
   const e = document.getElementById(id);
   if (!e) return;
   e.textContent = '⚠ ' + msg;
-  setTimeout(() => { if (e) e.textContent = ''; }, 9000);
+  setTimeout(()=>{ if(e) e.textContent=''; }, 9000);
 }
 
 function clearSession() {
   if (currentAudio) currentAudio.pause();
-  history = [];
-  resetIdle();
-  setBubble('Was möchten Sie wissen?');
+  history = []; resetIdle(); setBubble('');
   setTimeout(greet, 300);
 }
 
-function escHtml(t) {
-  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function escHtml(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // ════════════════════════════
-//  AUTO RESTORE
+//  GESTURES
 // ════════════════════════════
-window.addEventListener('load', () => {
-  const k = localStorage.getItem('iris_oai');
-  if (k) { OAI_KEY = k; startIRIS(); }
-});
-
-// ════════════════════════════
-//  GESTURE CONTROL
-// ════════════════════════════
-
-// ── Swipe gestures ──
-let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
-const SWIPE_MIN = 60, SWIPE_MAX_TIME = 400;
-
-document.addEventListener('touchstart', e => {
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
-  touchStartTime = Date.now();
-}, { passive: true });
-
-document.addEventListener('touchend', e => {
-  if (Date.now() - touchStartTime > SWIPE_MAX_TIME) return;
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  const dy = e.changedTouches[0].clientY - touchStartY;
-  const absDx = Math.abs(dx), absDy = Math.abs(dy);
-
-  if (absDy > SWIPE_MIN && absDy > absDx * 1.5) {
-    // Vertical swipe
-    if (dy < 0) {
-      // Swipe UP → start recording
-      if (!isRecording && !currentAudio) {
-        showGestureHint('↑ Aufnahme gestartet');
-        startRecording();
-      }
-    } else {
-      // Swipe DOWN → stop & send
-      if (isRecording) {
-        showGestureHint('↓ Sende…');
-        stopRecording();
-      }
-    }
-  } else if (absDx > SWIPE_MIN && absDx > absDy * 1.5) {
-    // Horizontal swipe → cycle agents
-    const agentKeys = ['chat','write','risk','research','claim','kpi'];
-    const idx = agentKeys.indexOf(agent);
-    let next;
-    if (dx > 0) {
-      next = agentKeys[(idx + 1) % agentKeys.length];
-      showGestureHint('→ ' + AGENTS[next].name);
-    } else {
-      next = agentKeys[(idx - 1 + agentKeys.length) % agentKeys.length];
-      showGestureHint('← ' + AGENTS[next].name);
-    }
+let touchSX=0,touchSY=0,touchST=0;
+document.addEventListener('touchstart',e=>{
+  touchSX=e.touches[0].clientX; touchSY=e.touches[0].clientY; touchST=Date.now();
+},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(Date.now()-touchST>400) return;
+  const dx=e.changedTouches[0].clientX-touchSX, dy=e.changedTouches[0].clientY-touchSY;
+  if(Math.abs(dy)>60 && Math.abs(dy)>Math.abs(dx)*1.5) {
+    if(dy<0 && !isRecording && !currentAudio){ showGHint('↑ Aufnahme'); startRecording(); }
+    else if(dy>0 && isRecording){ showGHint('↓ Senden'); stopRecording(); }
+  } else if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.5) {
+    const keys=['chat','write','risk','research','claim','kpi'];
+    const i=keys.indexOf(agent);
+    const next=keys[(i+(dx>0?1:-1)+keys.length)%keys.length];
+    showGHint((dx>0?'→ ':'← ')+AGENTS[next].name);
     setAgent(next);
   }
-}, { passive: true });
+},{passive:true});
 
-// ── Proximity / Hover → auto-start ──
-let proximityTimer = null;
-let orbProximityActive = false;
-const ORB_EL = () => document.getElementById('orb');
+// Proximity hover
+let proxTimer=null, proxActive=false;
+document.addEventListener('mousemove',e=>{
+  if(!document.getElementById('screen-main').style.display || document.getElementById('screen-main').style.display==='none') return;
+  const oEl=document.getElementById('orb-click');
+  const rect=oEl.getBoundingClientRect();
+  const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2, rad=rect.width/2;
+  const dist=Math.sqrt((e.clientX-cx)**2+(e.clientY-cy)**2)-rad;
 
-function getOrbCenter() {
-  const r = ORB_EL().getBoundingClientRect();
-  return { x: r.left + r.width / 2, y: r.top + r.height / 2, radius: r.width / 2 };
-}
-
-function distToOrb(cx, cy) {
-  const o = getOrbCenter();
-  return Math.sqrt((cx - o.x) ** 2 + (cy - o.y) ** 2) - o.radius;
-}
-
-document.addEventListener('mousemove', e => {
-  if (!document.getElementById('screen-main').style.display || document.getElementById('screen-main').style.display === 'none') return;
-  const dist = distToOrb(e.clientX, e.clientY);
-  const PROX_ZONE = 80; // px outside orb edge
-
-  if (dist < PROX_ZONE && dist > 0) {
-    // In proximity zone — show proximity indicator
-    const intensity = 1 - (dist / PROX_ZONE);
-    updateProximityGlow(intensity);
-
-    if (!orbProximityActive && !isRecording && !currentAudio) {
-      orbProximityActive = true;
-      clearTimeout(proximityTimer);
-      proximityTimer = setTimeout(() => {
-        if (orbProximityActive && !isRecording && !currentAudio) {
-          showGestureHint('🎙 Auto-Start durch Näherung');
-          startRecording();
-        }
-      }, 1200); // 1.2s hover → auto start
+  if(dist<90 && dist>0) {
+    if(!proxActive && !isRecording && !currentAudio) {
+      proxActive=true;
+      clearTimeout(proxTimer);
+      proxTimer=setTimeout(()=>{
+        if(proxActive && !isRecording && !currentAudio){ showGHint('⊙ Auto-Start'); startRecording(); }
+      },1300);
     }
-  } else if (dist <= 0) {
-    // Inside orb — clear proximity
-    clearTimeout(proximityTimer);
-    orbProximityActive = false;
-    updateProximityGlow(0);
   } else {
-    // Outside zone
-    if (orbProximityActive) {
-      clearTimeout(proximityTimer);
-      orbProximityActive = false;
-      updateProximityGlow(0);
-      // If recording and mouse left far → auto stop
-      if (isRecording && dist > 160) {
-        showGestureHint('Aufnahme beendet');
-        stopRecording();
-      }
+    if(proxActive) {
+      clearTimeout(proxTimer); proxActive=false;
+      if(isRecording && dist>170){ showGHint('Sende…'); stopRecording(); }
     }
   }
 });
 
-function updateProximityGlow(intensity) {
-  const orb = ORB_EL();
-  if (intensity <= 0) {
-    orb.style.filter = '';
-    return;
-  }
-  const alpha = (intensity * 0.4).toFixed(2);
-  const spread = Math.round(intensity * 40);
-  orb.style.filter = `drop-shadow(0 0 ${spread}px rgba(201,168,76,${alpha}))`;
+function showGHint(txt) {
+  const e=document.getElementById('gesture-hint');
+  e.textContent=txt; e.style.opacity='1';
+  clearTimeout(e._t);
+  e._t=setTimeout(()=>{ e.style.opacity='0'; },2000);
 }
 
-// ── Gesture hint overlay ──
-function showGestureHint(text) {
-  let el = document.getElementById('gesture-hint');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'gesture-hint';
-    el.style.cssText = `
-      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -180px);
-      background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.4);
-      backdrop-filter: blur(12px); border-radius: 30px;
-      padding: 0.5rem 1.2rem; font-family: 'Syne', sans-serif;
-      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--gold); z-index: 999; pointer-events: none;
-      transition: opacity 0.3s;
-    `;
-    document.body.appendChild(el);
-  }
-  el.textContent = text;
-  el.style.opacity = '1';
-  clearTimeout(el._timer);
-  el._timer = setTimeout(() => { el.style.opacity = '0'; }, 2200);
-}
-
-// ── Gesture legend ──
-function addGestureLegend() {
-  const leg = document.createElement('div');
-  leg.style.cssText = `
-    position: fixed; bottom: 4.5rem; left: 50%; transform: translateX(-50%);
-    display: flex; gap: 1.2rem; z-index: 10; pointer-events: none;
-  `;
-  const items = [
-    { icon: '↑', label: 'Start' },
-    { icon: '↓', label: 'Senden' },
-    { icon: '←→', label: 'Agent' },
-    { icon: '⊙', label: 'Hover' }
-  ];
-  items.forEach(item => {
-    const d = document.createElement('div');
-    d.style.cssText = `
-      display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
-      font-family: 'Syne', sans-serif;
-    `;
-    d.innerHTML = `
-      <span style="font-size:0.9rem;color:rgba(201,168,76,0.5)">${item.icon}</span>
-      <span style="font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(240,235,224,0.25)">${item.label}</span>
-    `;
-    leg.appendChild(d);
-  });
-  document.body.appendChild(leg);
-}
-
-// Init legend when main screen shows
-const _origStartIRIS = startIRIS;
-startIRIS = function() { _origStartIRIS(); addGestureLegend(); };
-
+// ════════════════════════════
+//  BOOT
+// ════════════════════════════
+window.addEventListener('load',()=>{
+  const k=localStorage.getItem('iris_oai');
+  if(k){ OAI_KEY=k; bootMain(); }
+});
 </script>
 </body>
 </html>
