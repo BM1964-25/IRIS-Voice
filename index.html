@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>I.R.I.S. — Integrated Reasoning & Intelligence System</title>
+<!-- v13.2 cache-bust -->
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--c:#00ccff;--c3:#00ff99;--c4:#ff6600;--c5:#aa44ff;--c6:#ffcc00;--bg:#000a12;}
@@ -850,6 +851,7 @@ async function speakTriple(germanPart1, englishPart, germanPart2){
       await speakOpenAI(germanPart2, 'alloy', 'de');
       resetIdle(); autoMic(); return;
     }catch(e){
+      console.error('OpenAI TTS error:', e.message);
       // Fall through to browser TTS
     }
   }
@@ -868,13 +870,18 @@ async function speakOpenAI(text, voice, lang){
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},
     body:JSON.stringify({model:'tts-1-hd',input:text,voice:voice,speed:.93})
   });
-  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'TTS');}
-  const url=URL.createObjectURL(await r.blob());
-  return new Promise(res=>{
+  if(!r.ok){
+    const e=await r.json().catch(()=>({}));
+    throw new Error(e.error?.message||'TTS fehler '+r.status);
+  }
+  const blob=await r.blob();
+  const url=URL.createObjectURL(blob);
+  return new Promise((res,rej)=>{
     const audio=new Audio(url);
-    audio.onended=()=>{URL.revokeObjectURL(url);res();};
-    audio.onerror=()=>{URL.revokeObjectURL(url);res();};
-    audio.play().catch(()=>res());
+    currentAudio=audio;
+    audio.onended=()=>{currentAudio=null;URL.revokeObjectURL(url);res();};
+    audio.onerror=(e)=>{currentAudio=null;URL.revokeObjectURL(url);rej(new Error('Audio play error'));};
+    audio.play().catch(e=>{currentAudio=null;URL.revokeObjectURL(url);rej(e);});
   });
 }
 
