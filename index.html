@@ -123,6 +123,22 @@ canvas#orb{display:block;}
 .dots span{display:inline-block;width:5px;height:5px;border-radius:50%;margin:0 2.5px;animation:db 1s ease-in-out infinite;}
 .dots span:nth-child(1){background:var(--c)}.dots span:nth-child(2){background:var(--c5);animation-delay:.18s}.dots span:nth-child(3){background:var(--c4);animation-delay:.36s}
 @keyframes db{0%,100%{transform:translateY(0);opacity:.2}50%{transform:translateY(-6px);opacity:1}}
+
+/* ── MOBILE OPTIMIZATION ── */
+@media (max-width: 768px) {
+  .lpanel { width: 0; overflow: hidden; position: fixed; left: -160px; top: 0; bottom: 0; z-index: 50; transition: left .3s; }
+  .lpanel.mobile-open { width: 155px; left: 0; }
+  .rpanel { width: 0; overflow: hidden; position: fixed; right: -180px; top: 0; bottom: 0; z-index: 50; transition: right .3s; }
+  .rpanel.mobile-open { width: 175px; right: 0; }
+  .mobile-toggle-l { display: flex !important; }
+  .mobile-toggle-r { display: flex !important; }
+  .orb-wrap { width: 280px !important; height: 280px !important; }
+  .bubble { font-size: .78rem; }
+}
+.mobile-toggle-l, .mobile-toggle-r { display: none; }
+.mobile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 45; display: none; }
+.mobile-overlay.show { display: block; }
+
 ::-webkit-scrollbar{width:2px;}
 ::-webkit-scrollbar-thumb{background:rgba(0,204,255,.15);}
 </style>
@@ -130,6 +146,7 @@ canvas#orb{display:block;}
 <body>
 <canvas id="gc"></canvas>
 
+<div class="mobile-overlay" id="mobile-overlay" onclick="closeMobilePanels()"></div>
 <!-- SETUP -->
 <div id="setup">
   <div class="slogo">I.R.I.S.</div>
@@ -156,6 +173,7 @@ canvas#orb{display:block;}
     <div style="display:flex;align-items:center;gap:.5rem">
       <div class="hstatus"><div class="sdot"></div><span id="tstxt">ONLINE</span></div>
       <div style="font-family:'Orbitron',monospace;font-size:.38rem;color:rgba(0,204,255,.25)" id="engine-badge">GPT-4o-mini</div>
+      <button class="hbtn mobile-toggle-l" onclick="toggleMobilePanel('l')">☰</button>
       <button class="hbtn" onclick="clearSession()">NEW</button>
       <button class="hbtn" onclick="disconnect()">EXIT</button>
     </div>
@@ -173,6 +191,7 @@ canvas#orb{display:block;}
       <div class="ag a-write" id="ag-write" onclick="setAgent('write')"><div class="ag-ico">✍️</div><div><div class="ag-n">Schreiben</div><div class="ag-d">Berichte</div></div></div>
       <div class="ag a-research" id="ag-research" onclick="setAgent('research')"><div class="ag-ico">🔍</div><div><div class="ag-n">Recherche</div><div class="ag-d">Analyse</div></div></div>
       <div class="ag a-kpi" id="ag-kpi" onclick="setAgent('kpi')"><div class="ag-ico">📊</div><div><div class="ag-n">KPI</div><div class="ag-d">Controlling</div></div></div>
+      <div class="ag" id="ag-ms365" onclick="setAgent('ms365')" style="--ag-color:#0078d4"><div class="ag-ico" style="color:#0078d4;border-color:#0078d4">📧</div><div><div class="ag-n" style="color:#0078d4">MS 365</div><div class="ag-d">Outlook·Teams</div></div></div>
       <div class="plbl" style="margin-top:.35rem">Briefing</div>
       <div class="ic"><div class="ic-l">Kalender</div><div class="ic-v loading" id="ic-cal">Lädt...</div></div>
       <div class="ic"><div class="ic-l">E-Mail</div><div class="ic-v loading" id="ic-mail">Lädt...</div></div>
@@ -203,6 +222,7 @@ canvas#orb{display:block;}
       <div class="met"><div class="ml">Session</div><div class="mv" id="mc">0</div><div class="ms">Nachrichten</div></div>
       <div class="met"><div class="ml">TTS</div><div class="mv" style="font-size:.58rem" id="ttsm">Browser</div><div class="ms">Sprachausgabe</div></div>
       <div class="met"><div class="ml">Google</div><div class="mv" style="font-size:.56rem;color:var(--c3)">Cal+Mail</div><div class="ms">verbunden</div></div>
+      <div class="met"><div class="ml">Microsoft 365</div><div class="mv" style="font-size:.56rem;color:#0078d4" id="ms365-st">Bereit</div><div class="ms">Outlook·Teams</div></div>
       <div class="rplbl" style="margin-top:.28rem">World Feed</div>
       <div id="nfeed"><div class="ni"><div class="ni-c">LADEN</div><div class="ni-t" style="color:rgba(0,204,255,.22);font-style:italic">Nachrichten...</div></div></div>
     </div>
@@ -470,7 +490,7 @@ let calData='',mailData='';
 let recogB=null;
 
 // Claude-capable agents
-const CLAUDE_AGENTS=['risk','write','research','kpi'];
+const CLAUDE_AGENTS=['risk','write','research','kpi','ms365'];
 
 const AGENTS={
   chat:{name:'GESPRÄCH',sys:`Du bist I.R.I.S. — Integrated Reasoning & Intelligence System, die persönliche KI-Zentrale von Bernhard Metzger. Sprich Bernhard immer mit "du" an — persönlich, direkt. Max 80 Wörter. Deutsch.`},
@@ -480,7 +500,8 @@ const AGENTS={
   risk:{name:'RISIKO',sys:`Du bist I.R.I.S., Risiko-Agent für Bau- und Immobilienwirtschaft. Sprich Bernhard mit "du" an. §650f BGB, VOB, Verträge, Claims, Baurecht. Präzise und handlungsorientiert. Max 120 Wörter. Deutsch.`},
   write:{name:'SCHREIBEN',sys:`Du bist I.R.I.S., Schreib-Agent für Bau- und Immobilienwirtschaft. Sprich Bernhard mit "du" an. Managementberichte, Briefe, Exposés, Protokolle — professionell und prägnant. Max 120 Wörter. Deutsch.`},
   research:{name:'RECHERCHE',sys:`Du bist I.R.I.S., Recherche-Agent für Bau- und Immobilienwirtschaft. Sprich Bernhard mit "du" an. Marktanalyse, Preise, Standorte, Trends — faktenbasiert. Max 120 Wörter. Deutsch.`},
-  kpi:{name:'KPI',sys:`Du bist I.R.I.S., KPI-Agent für Bau- und Immobilienwirtschaft. Sprich Bernhard mit "du" an. Kennzahlen, Controlling, Performance-Analyse. Max 120 Wörter. Deutsch.`}
+  kpi:{name:'KPI',sys:`Du bist I.R.I.S., KPI-Agent für Bau- und Immobilienwirtschaft. Sprich Bernhard mit "du" an. Kennzahlen, Controlling, Performance-Analyse. Max 120 Wörter. Deutsch.`},
+  ms365:{name:'MS 365',sys:`Du bist I.R.I.S., Microsoft 365 Agent. Sprich Bernhard mit "du" an. Outlook, Teams, Calendar, OneDrive. Max 100 Wörter. Deutsch.`}
 };
 
 // ══ CONNECT ══
@@ -495,6 +516,7 @@ function connect(){
   }
   document.getElementById('setup').style.display='none';
   document.getElementById('main').style.display='flex';
+  setTimeout(startWakeWord, 2000);
   resizeOrb();
   setTimeout(morningBriefing,700);
 }
@@ -576,6 +598,7 @@ function setAgent(a){
   const eng=chooseEngine(a);
   document.getElementById('engine-badge').textContent=eng==='claude'?'Claude':'GPT-4o-mini';
   if(a==='cal'){fetchAndSpeakCalendar();return;}
+  if(a==='ms365'){setAgentMS365();return;}
   if(a==='mail'){fetchAndSpeakMail();return;}
   if(a==='news'){fetchAndSpeakNews();return;}
   if(a==='chat'){const msg='Hallo Bernhard, wie kann ich dir helfen?';setBubble(msg);speak(msg);return;}
@@ -679,6 +702,66 @@ async function processInput(text){
 }
 
 
+
+// ══ WAKE WORD — "Hey IRIS" ══
+let wakeRecog = null;
+let wakeActive = false;
+
+function startWakeWord() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR || wakeActive) return;
+  try {
+    wakeRecog = new SR();
+    wakeRecog.lang = 'de-DE';
+    wakeRecog.continuous = true;
+    wakeRecog.interimResults = true;
+
+    wakeRecog.onresult = (e) => {
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const txt = e.results[i][0].transcript.toLowerCase();
+        if (txt.includes('hey iris') || txt.includes('hei iris') || txt.includes('hi iris') || txt.includes('hey I.R.I.S')) {
+          wakeRecog.stop();
+          wakeActive = false;
+          showWakeIndicator();
+          setTimeout(() => startSTT(), 600);
+          return;
+        }
+      }
+    };
+    wakeRecog.onend = () => {
+      wakeActive = false;
+      // Restart wake word listener after 1s
+      if (!isRec && !currentAudio) {
+        setTimeout(startWakeWord, 1000);
+      }
+    };
+    wakeRecog.onerror = () => {
+      wakeActive = false;
+      setTimeout(startWakeWord, 3000);
+    };
+    wakeRecog.start();
+    wakeActive = true;
+    // Show wake indicator in hint
+    const h = document.getElementById('hint');
+    if (h && !isRec) {
+      h.textContent = 'KLICKEN ZUM SPRECHEN · "HEY IRIS" AKTIVIERT';
+    }
+  } catch(e) {
+    wakeActive = false;
+  }
+}
+
+function showWakeIndicator() {
+  const h = document.getElementById('hint');
+  if (h) { h.textContent = 'WAKE WORD ERKANNT — HÖRE ZU...'; h.className = 'hint on'; }
+  vSt = 'listening'; setUI('WAKE WORD ERKANNT', 'L');
+}
+
+function stopWakeWord() {
+  if (wakeRecog) { try { wakeRecog.stop(); } catch(e){} wakeRecog = null; }
+  wakeActive = false;
+}
+
 // ══ SPEAK MIXED (German + English tagline) ══
 async function speakMixed(germanText, englishText){
   vSt='speaking';setUI('SPRICHT...','S');
@@ -708,6 +791,42 @@ async function speakMixed(germanText, englishText){
     window.speechSynthesis.speak(u);
   });
   resetIdle();autoMic();
+}
+
+
+// ══ MICROSOFT 365 INTEGRATION ══
+// Uses Claude's connected Microsoft 365 MCP via Anthropic API
+async function fetchMS365Data() {
+  if (!ANT) return null;
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANT,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 300,
+        system: 'Du bist ein Assistent der Microsoft 365 Daten zusammenfasst. Antworte auf Deutsch in maximal 2 Sätzen.',
+        messages: [{ role: 'user', content: 'Fasse meine wichtigsten Microsoft 365 Aktivitäten von heute zusammen (Outlook E-Mails, Teams-Nachrichten, Calendar). Falls kein Zugriff, sage das kurz.' }],
+        mcp_servers: [{ type: 'url', url: 'https://microsoft365.mcp.claude.com/mcp', name: 'microsoft365' }]
+      })
+    });
+    if (!r.ok) return null;
+    const d = await r.json();
+    return d.content?.[0]?.text || null;
+  } catch(e) { return null; }
+}
+
+async function setAgentMS365() {
+  setBubble('Lade Microsoft 365 Daten...');
+  vSt = 'thinking'; setUI('LADE MS365...', 'T');
+  const data = await fetchMS365Data();
+  const txt = data || 'Microsoft 365 Integration: Verbinde deinen Anthropic Key für Outlook, Teams und OneDrive Zugriff.';
+  setBubble(txt); history.push({ role: 'assistant', content: txt });
+  await speak(txt);
 }
 
 // ══ TTS ══
@@ -741,7 +860,14 @@ function speakBrowser(text){
     window.speechSynthesis.speak(u);
   });
 }
-function autoMic(){setTimeout(()=>{if(!isRec&&!currentAudio)startSTT();},900);}
+function autoMic(){
+  setTimeout(()=>{
+    if(!isRec&&!currentAudio){
+      // Restart wake word listener instead of always-on STT
+      startWakeWord();
+    }
+  },1200);
+}
 
 // ══ UI ══
 function setUI(lbl,cls){
@@ -772,11 +898,32 @@ document.addEventListener('touchend',e=>{
   else if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5){const keys=Object.keys(AGENTS),i=keys.indexOf(agent),next=keys[(i+(dx>0?1:-1)+keys.length)%keys.length];setAgent(next);}
 },{passive:true});
 
+
+// ══ MOBILE PANELS ══
+function toggleMobilePanel(side) {
+  const overlay = document.getElementById('mobile-overlay');
+  if (side === 'l') {
+    const p = document.querySelector('.lpanel');
+    p.classList.toggle('mobile-open');
+    overlay.classList.toggle('show', p.classList.contains('mobile-open'));
+  } else {
+    const p = document.querySelector('.rpanel');
+    p.classList.toggle('mobile-open');
+    overlay.classList.toggle('show', p.classList.contains('mobile-open'));
+  }
+}
+function closeMobilePanels() {
+  document.querySelector('.lpanel').classList.remove('mobile-open');
+  document.querySelector('.rpanel').classList.remove('mobile-open');
+  document.getElementById('mobile-overlay').classList.remove('show');
+}
+
 // ══ BOOT ══
 window.speechSynthesis&&window.speechSynthesis.getVoices();
 setTimeout(()=>window.speechSynthesis&&window.speechSynthesis.getVoices(),500);
 window.addEventListener('load',()=>{
   resizeOrb();
+  setTimeout(startWakeWord, 3000); // Start wake word listener
   const k=localStorage.getItem('iris_oai');
   const a=localStorage.getItem('iris_ant');
   if(k&&k.length>10){
