@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I.R.I.S. — BuiltSmart AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; background:#000a12; overflow:hidden; font-family:'Rajdhani',sans-serif; color:#00ccff; }
+
+/* ── Teaser page (shown before launching IRIS) ── */
+#teaser {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1.5rem; background: #000a12;
+}
+.t-logo {
+  font-family: 'Orbitron', monospace; font-weight: 900;
+  font-size: clamp(2.5rem, 8vw, 5rem); letter-spacing: .35em; color: #00ccff;
+  text-shadow: 0 0 40px rgba(0,204,255,.9), 0 0 80px rgba(0,204,255,.4);
+  animation: pulse 3s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { text-shadow: 0 0 20px rgba(0,204,255,.5), 0 0 40px rgba(0,204,255,.2); }
+  50% { text-shadow: 0 0 60px rgba(0,204,255,1), 0 0 120px rgba(0,204,255,.5); }
+}
+.t-sub { font-family:'Orbitron',monospace; font-size:.6rem; letter-spacing:.25em; color:rgba(0,204,255,.3); text-align:center; }
+.t-tag { font-size:.9rem; color:rgba(0,204,255,.25); letter-spacing:.06em; text-align:center; font-style:italic; max-width:420px; line-height:1.8; }
+.t-btn {
+  background: linear-gradient(135deg, rgba(0,204,255,.12), rgba(0,68,170,.12));
+  border: 1px solid rgba(0,204,255,.4); border-radius: 4px;
+  padding: 1rem 3rem; color: #00ccff;
+  font-family: 'Orbitron', monospace; font-weight: 700;
+  font-size: .75rem; letter-spacing: .22em; cursor: pointer;
+  transition: all .25s; margin-top: .5rem;
+}
+.t-btn:hover {
+  background: linear-gradient(135deg, rgba(0,204,255,.22), rgba(0,68,170,.22));
+  box-shadow: 0 0 30px rgba(0,204,255,.3); transform: translateY(-2px);
+}
+.t-badge {
+  display: flex; align-items: center; gap: .5rem;
+  font-family:'Orbitron',monospace; font-size:.48rem;
+  letter-spacing:.16em; color:rgba(0,204,255,.25);
+}
+.t-dot { width:5px; height:5px; border-radius:50%; background:#00ff99; box-shadow:0 0 6px #00ff99; animation:sd 2s ease-in-out infinite; }
+@keyframes sd{0%,100%{opacity:1}50%{opacity:.15}}
+.t-features {
+  display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center;
+  max-width: 500px;
+}
+.t-feat {
+  display: flex; flex-direction: column; align-items: center; gap: .3rem;
+  font-size:.62rem; letter-spacing:.1em; text-transform:uppercase;
+  color:rgba(0,204,255,.35);
+}
+.t-feat-icon { font-size:1.4rem; }
+.t-footer {
+  position: absolute; bottom: 1rem;
+  font-family:'Orbitron',monospace; font-size:.38rem;
+  letter-spacing:.12em; color:rgba(0,204,255,.15);
+}
+
+/* ── IRIS iframe ── */
+#iris-frame {
+  position: fixed; inset: 0; z-index: 10;
+  width: 100%; height: 100%; border: none;
+  display: none;
+}
+
+/* ── Floating launch button (when IRIS is open) ── */
+#iris-close {
+  position: fixed; top: 10px; right: 10px; z-index: 200;
+  background: rgba(0,204,255,.08); border: 1px solid rgba(0,204,255,.2);
+  border-radius: 20px; padding: .3rem .8rem;
+  font-family:'Orbitron',monospace; font-size:.48rem;
+  letter-spacing:.12em; color:rgba(0,204,255,.4);
+  cursor: pointer; display: none; transition: all .2s;
+}
+#iris-close:hover { color:#00ccff; border-color:#00ccff; }
+
+/* Canvas for animated background */
+canvas { position:fixed; inset:0; z-index:0; }
+</style>
+</head>
+<body>
+
+<canvas id="bgc"></canvas>
+
+<!-- TEASER -->
+<div id="teaser">
+  <div class="t-logo">I.R.I.S.</div>
+  <div class="t-sub">Integrated Reasoning &amp; Intelligence System</div>
+  <div class="t-tag">Your personal intelligent operating system<br>for knowledge, decisions and automation.</div>
+
+  <div class="t-features">
+    <div class="t-feat"><div class="t-feat-icon">🎤</div>Sprachsteuerung</div>
+    <div class="t-feat"><div class="t-feat-icon">📅</div>Google Calendar</div>
+    <div class="t-feat"><div class="t-feat-icon">✉️</div>Gmail</div>
+    <div class="t-feat"><div class="t-feat-icon">🔍</div>Recherche</div>
+    <div class="t-feat"><div class="t-feat-icon">⚠️</div>Risiko-Agent</div>
+    <div class="t-feat"><div class="t-feat-icon">✍️</div>Schreib-Agent</div>
+  </div>
+
+  <button class="t-btn" onclick="launchIRIS()">▶ I.R.I.S. STARTEN</button>
+
+  <div class="t-badge">
+    <div class="t-dot"></div>
+    System online · BuiltSmart AI · Bernhard Metzger
+  </div>
+
+  <div class="t-footer">© 2026 I.R.I.S. · BUILTSMART AI · BUILTSMART HUB · BERNHARD METZGER</div>
+</div>
+
+<!-- IRIS IFRAME -->
+<iframe id="iris-frame"
+  src="https://bm1964-25.github.io/IRIS-Voice"
+  allow="microphone; camera; autoplay; clipboard-write"
+  allowfullscreen>
+</iframe>
+
+<button id="iris-close" onclick="closeIRIS()">✕ SCHLIESSEN</button>
+
+<script>
+// ── BG CANVAS ──
+const c = document.getElementById('bgc'), x = c.getContext('2d');
+function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+let t = 0;
+function draw() {
+  requestAnimationFrame(draw); t += .01;
+  const W = c.width, H = c.height;
+  x.fillStyle = '#000a12'; x.fillRect(0,0,W,H);
+  const hs = 36;
+  x.strokeStyle = 'rgba(0,180,230,0.022)'; x.lineWidth = .5;
+  for (let r = -1; r < H/(hs*.75)+2; r++) for (let cl = -1; cl < W/(hs*1.73)+2; cl++) {
+    const px = cl*hs*1.73+(r%2)*hs*.865, py = r*hs*.75;
+    x.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const a = Math.PI/3*i-Math.PI/6;
+      i===0 ? x.moveTo(px+hs*.46*Math.cos(a),py+hs*.46*Math.sin(a))
+             : x.lineTo(px+hs*.46*Math.cos(a),py+hs*.46*Math.sin(a));
+    }
+    x.closePath(); x.stroke();
+  }
+  const g = x.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.min(W,H)*.5);
+  g.addColorStop(0,'rgba(0,80,180,.04)'); g.addColorStop(1,'transparent');
+  x.fillStyle = g; x.fillRect(0,0,W,H);
+}
+draw();
+
+// ── LAUNCH / CLOSE ──
+function launchIRIS() {
+  document.getElementById('teaser').style.display = 'none';
+  document.getElementById('iris-frame').style.display = 'block';
+  document.getElementById('iris-close').style.display = 'block';
+}
+function closeIRIS() {
+  document.getElementById('iris-frame').style.display = 'none';
+  document.getElementById('iris-close').style.display = 'none';
+  document.getElementById('teaser').style.display = 'flex';
+}
+</script>
+</body>
+</html>
