@@ -201,7 +201,7 @@ canvas#orb{display:block;}
     <!-- RIGHT — Dashboard -->
     <div class="rpanel">
       <div class="rplbl">System</div>
-      <div class="met"><div class="ml">Engine</div><div class="mv" style="font-size:.65rem">GPT-4o</div><div class="ms">OpenAI aktiv</div></div>
+      <div class="met"><div class="ml">Engine</div><div class="mv" style="font-size:.65rem">GPT-4o-mini</div><div class="ms">OpenAI aktiv</div></div>
       <div class="met"><div class="ml">Session</div><div class="mv" id="mc">0</div><div class="ms">Nachrichten</div></div>
       <div class="met"><div class="ml">TTS</div><div class="mv" style="font-size:.62rem" id="ttsm">Browser</div><div class="ms">Sprachausgabe</div></div>
       <div class="met"><div class="ml">Google</div><div class="mv" style="font-size:.58rem;color:var(--c3)">Cal+Mail</div><div class="ms">verbunden</div></div>
@@ -518,7 +518,7 @@ async function fetchNewsData(){
     try{
       const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},
-        body:JSON.stringify({model:'gpt-4o',max_tokens:60,
+        body:JSON.stringify({model:'gpt-4o-mini',max_tokens:60,
           messages:[{role:'system',content:'Antworte in einem prägnanten Satz auf Deutsch.'},{role:'user',content:t.q}]})});
       if(r.ok){const d=await r.json();results.push({cat:t.cat,txt:d.choices[0].message.content.trim()});}
     }catch(e){}
@@ -563,7 +563,7 @@ async function processInput(text){
   try{
     const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},
-      body:JSON.stringify({model:'gpt-4o',max_tokens:350,messages:[{role:'system',content:sys},...history.slice(-12)]})});
+      body:JSON.stringify({model:'gpt-4o-mini',max_tokens:350,messages:[{role:'system',content:sys},...history.slice(-12)]})});
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'GPT '+r.status);}
     const reply=(await r.json()).choices[0].message.content.trim();
     history.push({role:'assistant',content:reply});setBubble(reply);await speak(reply);
