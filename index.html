@@ -3,61 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IRIS v8 — BuiltSmart AI</title>
+<title>IRIS — BuiltSmart AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --c:#00b8ff;--c2:#0066cc;--c3:#00ff88;--c4:#ff6b00;--c5:#a855f7;--c6:#ffcc00;
-  --bg:#020810;--bg2:#040f1a;
-}
+:root{--c:#00ccff;--c2:#0044aa;--c3:#00ff99;--c4:#ff6600;--c5:#aa44ff;--c6:#ffcc00;--bg:#000508;}
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);}
 body{font-family:'Rajdhani',sans-serif;color:var(--c);}
-#bg-canvas{position:fixed;inset:0;z-index:0;}
 
-/* SETUP */
-#setup{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;background:rgba(2,8,16,.97);}
-.s-logo{font-family:'Orbitron',monospace;font-size:3.5rem;font-weight:900;letter-spacing:.35em;color:var(--c);text-shadow:0 0 40px rgba(0,184,255,.8);animation:lb 3s ease-in-out infinite;}
-@keyframes lb{0%,100%{text-shadow:0 0 20px rgba(0,184,255,.6)}50%{text-shadow:0 0 60px rgba(0,184,255,1),0 0 100px rgba(0,184,255,.4)}}
-.s-sub{font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:.25em;color:rgba(0,184,255,.35);}
-.s-box{background:rgba(0,184,255,.03);border:1px solid rgba(0,184,255,.18);border-radius:3px;padding:1.2rem;display:flex;flex-direction:column;gap:.7rem;width:340px;}
-.s-lbl{font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:.2em;color:rgba(0,184,255,.38);}
-.s-inp{background:rgba(0,184,255,.05);border:1px solid rgba(0,184,255,.22);border-radius:2px;padding:.72rem 1rem;color:var(--c);font-family:'Orbitron',monospace;font-size:.68rem;outline:none;width:100%;letter-spacing:.06em;}
-.s-inp:focus{border-color:var(--c);}
-.s-inp::placeholder{color:rgba(0,184,255,.18);}
-.s-btn{background:linear-gradient(135deg,rgba(0,184,255,.1),rgba(0,102,204,.1));border:1px solid rgba(0,184,255,.38);border-radius:2px;padding:.8rem;color:var(--c);font-family:'Orbitron',monospace;font-weight:700;font-size:.68rem;letter-spacing:.2em;cursor:pointer;transition:all .2s;}
-.s-btn:hover{background:linear-gradient(135deg,rgba(0,184,255,.2),rgba(0,102,204,.2));box-shadow:0 0 20px rgba(0,184,255,.2);}
-.s-err{font-size:.55rem;color:#ff4455;font-family:'Orbitron',monospace;min-height:.9em;}
-.s-note{font-size:.58rem;color:rgba(0,184,255,.22);text-align:center;max-width:300px;line-height:1.7;letter-spacing:.04em;}
+/* ── MAIN CANVAS ── */
+#gc{position:fixed;inset:0;z-index:0;}
 
-/* MAIN */
+/* ── SETUP ── */
+#setup{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;background:rgba(0,5,8,.97);}
+.slogo{font-family:'Orbitron',monospace;font-size:5rem;font-weight:900;letter-spacing:.4em;background:linear-gradient(135deg,#00ccff,#0066ff,#00ccff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 30px rgba(0,204,255,.6));animation:spulse 3s ease-in-out infinite;}
+@keyframes spulse{0%,100%{filter:drop-shadow(0 0 20px rgba(0,204,255,.4))}50%{filter:drop-shadow(0 0 60px rgba(0,204,255,.9))}}
+.ssub{font-family:'Orbitron',monospace;font-size:.65rem;letter-spacing:.3em;color:rgba(0,204,255,.35);text-transform:uppercase;}
+.sbox{background:rgba(0,204,255,.03);border:1px solid rgba(0,204,255,.2);border-radius:4px;padding:1.5rem;display:flex;flex-direction:column;gap:.8rem;width:380px;}
+.slbl{font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.22em;color:rgba(0,204,255,.38);text-transform:uppercase;}
+.sinp{background:rgba(0,204,255,.05);border:1px solid rgba(0,204,255,.25);border-radius:3px;padding:.85rem 1.1rem;color:var(--c);font-family:'Orbitron',monospace;font-size:.72rem;outline:none;width:100%;letter-spacing:.06em;transition:all .2s;}
+.sinp:focus{border-color:var(--c);box-shadow:0 0 0 2px rgba(0,204,255,.1);}
+.sinp::placeholder{color:rgba(0,204,255,.18);}
+.sbtn{background:linear-gradient(135deg,rgba(0,204,255,.12),rgba(0,68,170,.12));border:1px solid rgba(0,204,255,.4);border-radius:3px;padding:.9rem;color:var(--c);font-family:'Orbitron',monospace;font-weight:700;font-size:.72rem;letter-spacing:.22em;cursor:pointer;transition:all .25s;}
+.sbtn:hover{background:linear-gradient(135deg,rgba(0,204,255,.22),rgba(0,68,170,.22));box-shadow:0 0 30px rgba(0,204,255,.25);}
+.serr{font-size:.58rem;color:#ff4455;font-family:'Orbitron',monospace;min-height:.9em;}
+.snote{font-size:.6rem;color:rgba(0,204,255,.22);text-align:center;max-width:320px;line-height:1.8;letter-spacing:.04em;}
+
+/* ── MAIN ── */
 #main{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;}
 
 /* TOPBAR */
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1.2rem;border-bottom:1px solid rgba(0,184,255,.1);background:rgba(2,8,16,.88);backdrop-filter:blur(12px);flex-shrink:0;}
-.t-logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.1rem;letter-spacing:.3em;color:var(--c);text-shadow:0 0 18px rgba(0,184,255,.6);}
-.t-agent{font-family:'Orbitron',monospace;font-size:.55rem;color:rgba(0,184,255,.45);letter-spacing:.14em;margin-left:.8rem;}
-.t-meta{display:flex;align-items:center;gap:1rem;}
-.t-clock{font-family:'Orbitron',monospace;font-size:.72rem;color:rgba(0,184,255,.55);letter-spacing:.1em;}
-.t-status{display:flex;align-items:center;gap:.35rem;font-size:.5rem;letter-spacing:.16em;color:rgba(0,184,255,.4);}
-.sdot{width:5px;height:5px;border-radius:50%;background:var(--c3);box-shadow:0 0 6px var(--c3);animation:sd 2s ease-in-out infinite;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1.4rem;background:rgba(0,5,8,.7);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,204,255,.08);flex-shrink:0;position:relative;z-index:20;}
+.tlogo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.1rem;letter-spacing:.28em;color:var(--c);text-shadow:0 0 20px rgba(0,204,255,.7);}
+.tagent{font-family:'Orbitron',monospace;font-size:.5rem;color:rgba(0,204,255,.38);letter-spacing:.14em;margin-left:.7rem;}
+.tclock{font-family:'Orbitron',monospace;font-size:.72rem;color:rgba(0,204,255,.5);letter-spacing:.12em;}
+.tstatus{display:flex;align-items:center;gap:.4rem;font-size:.5rem;letter-spacing:.16em;color:rgba(0,204,255,.4);font-family:'Orbitron',monospace;}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--c3);box-shadow:0 0 7px var(--c3);animation:sd 2s ease-in-out infinite;}
 @keyframes sd{0%,100%{opacity:1}50%{opacity:.15}}
-.t-btns{display:flex;gap:.4rem;}
-.tbtn{background:transparent;border:1px solid rgba(0,184,255,.15);border-radius:2px;padding:.22rem .6rem;color:rgba(0,184,255,.35);font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:.1em;cursor:pointer;transition:all .2s;}
+.tbtns{display:flex;gap:.4rem;}
+.tbtn{background:transparent;border:1px solid rgba(0,204,255,.15);border-radius:2px;padding:.22rem .65rem;color:rgba(0,204,255,.35);font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:.1em;cursor:pointer;transition:all .2s;}
 .tbtn:hover{border-color:var(--c);color:var(--c);}
+.tbtn.active{border-color:rgba(0,204,255,.4);color:var(--c);background:rgba(0,204,255,.06);}
 
-/* BODY */
-.body{flex:1;display:flex;overflow:hidden;}
+/* CENTER — Full screen orb */
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;}
 
-/* LEFT */
-.lpanel{width:200px;flex-shrink:0;border-right:1px solid rgba(0,184,255,.09);background:rgba(2,8,16,.75);backdrop-filter:blur(8px);display:flex;flex-direction:column;overflow-y:auto;padding:.6rem 0;}
-.p-lbl{font-family:'Orbitron',monospace;font-size:.44rem;letter-spacing:.2em;color:rgba(0,184,255,.28);padding:.4rem .8rem .3rem;border-bottom:1px solid rgba(0,184,255,.07);margin-bottom:.3rem;}
-.ag{display:flex;align-items:center;gap:.5rem;padding:.42rem .7rem;border:1px solid transparent;border-radius:2px;cursor:pointer;transition:all .18s;margin:0 .4rem .18rem;}
-.ag:hover{border-color:rgba(0,184,255,.22);background:rgba(0,184,255,.04);}
-.ag.on{border-color:rgba(0,184,255,.45);background:rgba(0,184,255,.07);}
-.ag-ico{width:24px;height:24px;border-radius:2px;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0;}
-.ag-n{font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.07em;}
-.ag-d{font-size:.55rem;color:rgba(255,255,255,.28);margin-top:.05rem;}
+/* Scan line */
+.scan{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0%,rgba(0,204,255,.6) 30%,rgba(0,204,255,.8) 50%,rgba(0,204,255,.6) 70%,transparent 100%);animation:scanmove 5s linear infinite;pointer-events:none;z-index:3;}
+@keyframes scanmove{0%{top:-2px;opacity:.8}100%{top:100%;opacity:0}}
+
+/* Corner brackets - large */
+.frame{position:absolute;inset:20px;pointer-events:none;z-index:3;}
+.fc{position:absolute;width:40px;height:40px;border-color:rgba(0,204,255,.3);border-style:solid;}
+.fc.tl{top:0;left:0;border-width:2px 0 0 2px;}
+.fc.tr{top:0;right:0;border-width:2px 2px 0 0;}
+.fc.bl{bottom:0;left:0;border-width:0 0 2px 2px;}
+.fc.br{bottom:0;right:0;border-width:0 2px 2px 0;}
+
+/* State label */
+.ist{font-family:'Orbitron',monospace;font-size:.75rem;letter-spacing:.28em;color:rgba(0,204,255,.35);transition:all .4s;text-align:center;position:absolute;top:18%;z-index:5;}
+.ist.L{color:var(--c3);text-shadow:0 0 15px rgba(0,255,153,.5);}
+.ist.T{color:var(--c5);text-shadow:0 0 15px rgba(170,68,255,.5);}
+.ist.S{color:var(--c4);text-shadow:0 0 15px rgba(255,102,0,.5);}
+
+/* ORB — HUGE */
+.orb-wrap{position:relative;width:520px;height:520px;cursor:pointer;flex-shrink:0;z-index:4;}
+canvas#orb{position:absolute;inset:0;}
+.orb-ct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;pointer-events:none;}
+.orb-name{font-family:'Orbitron',monospace;font-weight:900;font-size:3.5rem;letter-spacing:.4em;color:var(--c);text-shadow:0 0 40px rgba(0,204,255,1),0 0 80px rgba(0,204,255,.5),0 0 120px rgba(0,204,255,.2);}
+.orb-sub{font-family:'Orbitron',monospace;font-size:.55rem;letter-spacing:.22em;color:rgba(0,204,255,.3);text-transform:uppercase;}
+
+/* Hint below orb */
+.hint{font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:.2em;color:rgba(0,204,255,.25);text-align:center;position:absolute;bottom:16%;z-index:5;transition:color .3s;}
+.hint.on{color:var(--c);}
+
+/* Bubble */
+.bubble{position:absolute;bottom:8%;left:50%;transform:translateX(-50%);max-width:600px;width:calc(100% - 3rem);background:rgba(0,204,255,.04);border:1px solid rgba(0,204,255,.15);border-radius:3px;padding:.7rem 1.1rem;font-size:.92rem;line-height:1.65;color:rgba(0,204,255,.82);text-align:center;min-height:48px;display:flex;align-items:center;justify-content:center;letter-spacing:.03em;z-index:5;backdrop-filter:blur(10px);}
+.bubble .ph{color:rgba(0,204,255,.2);font-family:'Orbitron',monospace;font-size:.55rem;letter-spacing:.12em;}
+
+/* Agent pills — floating */
+.pills{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;max-width:600px;z-index:5;}
+.pill{border:1px solid rgba(0,204,255,.18);border-radius:20px;padding:.28rem .8rem;font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;color:rgba(0,204,255,.38);background:rgba(0,5,8,.6);backdrop-filter:blur(8px);}
+.pill:hover{border-color:rgba(0,204,255,.5);color:var(--c);}
+.pill.on{border-color:var(--c);color:var(--c);background:rgba(0,204,255,.1);box-shadow:0 0 12px rgba(0,204,255,.2);}
+
+/* DASHBOARD PANEL — slide in from right */
+.dashboard{position:fixed;top:0;right:-320px;bottom:0;width:300px;background:rgba(0,5,8,.92);border-left:1px solid rgba(0,204,255,.12);backdrop-filter:blur(20px);z-index:50;transition:right .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:0;}
+.dashboard.open{right:0;}
+.dash-top{padding:.7rem .8rem;border-bottom:1px solid rgba(0,204,255,.1);display:flex;align-items:center;justify-content:space-between;}
+.dash-title{font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:.2em;color:rgba(0,204,255,.5);}
+.dash-close{background:transparent;border:none;color:rgba(0,204,255,.35);font-size:.9rem;cursor:pointer;font-family:'Orbitron',monospace;letter-spacing:.1em;}
+.dash-close:hover{color:var(--c);}
+.dash-body{flex:1;overflow-y:auto;padding:.6rem .7rem;display:flex;flex-direction:column;gap:.5rem;}
+.plbl{font-family:'Orbitron',monospace;font-size:.42rem;letter-spacing:.2em;color:rgba(0,204,255,.28);padding-bottom:.3rem;border-bottom:1px solid rgba(0,204,255,.07);margin-bottom:.2rem;}
+.ag{display:flex;align-items:center;gap:.5rem;padding:.42rem .6rem;border:1px solid transparent;border-radius:2px;cursor:pointer;transition:all .18s;margin-bottom:.18rem;}
+.ag:hover{border-color:rgba(0,204,255,.22);background:rgba(0,204,255,.04);}
+.ag.on{border-color:rgba(0,204,255,.45);background:rgba(0,204,255,.07);}
+.ag-ico{width:22px;height:22px;border-radius:2px;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;}
+.ag-n{font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:.06em;}
+.ag-d{font-size:.52rem;color:rgba(255,255,255,.25);}
 .a-chat .ag-ico,.a-chat .ag-n{color:var(--c);}
 .a-news .ag-ico,.a-news .ag-n{color:#00ddff;}
 .a-cal .ag-ico,.a-cal .ag-n{color:var(--c3);}
@@ -66,178 +110,140 @@ body{font-family:'Rajdhani',sans-serif;color:var(--c);}
 .a-write .ag-ico,.a-write .ag-n{color:#00ddaa;}
 .a-research .ag-ico,.a-research .ag-n{color:var(--c5);}
 .a-kpi .ag-ico,.a-kpi .ag-n{color:#ff6699;}
+.ic{background:rgba(0,204,255,.025);border:1px solid rgba(0,204,255,.09);border-radius:2px;padding:.45rem .6rem;margin-bottom:.25rem;}
+.ic-l{font-family:'Orbitron',monospace;font-size:.4rem;letter-spacing:.14em;color:rgba(0,204,255,.3);margin-bottom:.2rem;}
+.ic-v{font-size:.64rem;color:rgba(0,204,255,.75);line-height:1.4;}
+.ic-v.loading{color:rgba(0,204,255,.28);font-style:italic;}
+.met{background:rgba(0,204,255,.025);border:1px solid rgba(0,204,255,.09);border-radius:2px;padding:.45rem .6rem;}
+.ml{font-family:'Orbitron',monospace;font-size:.4rem;letter-spacing:.14em;color:rgba(0,204,255,.3);margin-bottom:.15rem;}
+.mv{font-size:.82rem;font-weight:600;color:var(--c);font-family:'Orbitron',monospace;}
+.ms{font-size:.52rem;color:rgba(0,204,255,.35);margin-top:.05rem;}
+.ni{border-left:2px solid rgba(0,204,255,.25);padding:.3rem .5rem;margin-bottom:.25rem;cursor:pointer;transition:all .15s;}
+.ni:hover{border-left-color:var(--c);background:rgba(0,204,255,.04);}
+.ni-c{font-family:'Orbitron',monospace;font-size:.4rem;letter-spacing:.12em;color:rgba(0,204,255,.35);}
+.ni-t{font-size:.6rem;color:rgba(0,204,255,.62);line-height:1.35;margin-top:.1rem;}
 
-.ic{background:rgba(0,184,255,.025);border:1px solid rgba(0,184,255,.09);border-radius:2px;padding:.45rem .6rem;margin:.18rem .5rem;}
-.ic-lbl{font-family:'Orbitron',monospace;font-size:.44rem;letter-spacing:.16em;color:rgba(0,184,255,.3);margin-bottom:.2rem;}
-.ic-val{font-size:.68rem;color:rgba(0,184,255,.75);line-height:1.4;}
+/* BOTTOM INPUT */
+.bottom{position:fixed;bottom:0;left:0;right:0;z-index:20;padding:.6rem 1rem;display:flex;gap:.5rem;align-items:center;background:rgba(0,5,8,.75);backdrop-filter:blur(20px);border-top:1px solid rgba(0,204,255,.08);}
+.mic{width:40px;height:40px;border-radius:50%;flex-shrink:0;background:rgba(0,204,255,.07);border:1.5px solid rgba(0,204,255,.28);color:var(--c);display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;transition:all .2s;}
+.mic:hover{background:rgba(0,204,255,.15);border-color:var(--c);}
+.mic.on{background:rgba(0,255,153,.12);border-color:var(--c3);color:var(--c3);box-shadow:0 0 16px rgba(0,255,153,.3);}
+.tinp{flex:1;background:rgba(0,204,255,.04);border:1px solid rgba(0,204,255,.16);border-radius:2px;padding:.62rem .9rem;color:var(--c);font-family:'Orbitron',monospace;font-size:.62rem;outline:none;letter-spacing:.05em;}
+.tinp:focus{border-color:rgba(0,204,255,.45);}
+.tinp::placeholder{color:rgba(0,204,255,.18);}
+.ssend{background:rgba(0,204,255,.09);border:1.5px solid rgba(0,204,255,.3);border-radius:2px;padding:.62rem 1rem;color:var(--c);font-family:'Orbitron',monospace;font-size:.58rem;font-weight:700;letter-spacing:.12em;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.ssend:hover{background:rgba(0,204,255,.18);box-shadow:0 0 14px rgba(0,204,255,.22);}
 
-/* CENTER */
-.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.65rem;position:relative;overflow:hidden;}
-.scan{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,184,255,.45),transparent);animation:sc 4.5s linear infinite;pointer-events:none;}
-@keyframes sc{0%{top:0;opacity:.7}100%{top:100%;opacity:0}}
-.iris-st{font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.22em;color:rgba(0,184,255,.35);transition:all .4s;min-height:1.1rem;}
-.iris-st.L{color:var(--c3);text-shadow:0 0 10px rgba(0,255,136,.5);}
-.iris-st.T{color:var(--c5);text-shadow:0 0 10px rgba(168,85,247,.5);}
-.iris-st.S{color:var(--c4);text-shadow:0 0 10px rgba(255,107,0,.5);}
+.ebar{position:fixed;bottom:52px;left:0;right:0;z-index:21;font-family:'Orbitron',monospace;font-size:.5rem;color:#ff4455;letter-spacing:.07em;text-align:center;padding:.2rem;pointer-events:none;}
+.fbar{position:fixed;bottom:0;left:0;right:0;z-index:19;padding:.22rem 1rem;display:flex;justify-content:space-between;pointer-events:none;}
+.fbar span{font-family:'Orbitron',monospace;font-size:.38rem;letter-spacing:.1em;color:rgba(0,204,255,.15);}
 
-.orb-wrap{position:relative;width:260px;height:260px;cursor:pointer;flex-shrink:0;}
-canvas#orb{position:absolute;inset:0;}
-.orb-ct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.15rem;pointer-events:none;}
-.orb-name{font-family:'Orbitron',monospace;font-weight:900;font-size:1.4rem;letter-spacing:.35em;color:var(--c);text-shadow:0 0 25px rgba(0,184,255,.9);}
-.orb-ver{font-family:'Orbitron',monospace;font-size:.42rem;letter-spacing:.18em;color:rgba(0,184,255,.3);}
-.brks{position:absolute;inset:0;pointer-events:none;}
-.bk{position:absolute;width:16px;height:16px;border-color:rgba(0,184,255,.3);border-style:solid;}
-.bk.tl{top:0;left:0;border-width:1.5px 0 0 1.5px;}
-.bk.tr{top:0;right:0;border-width:1.5px 1.5px 0 0;}
-.bk.bl{bottom:0;left:0;border-width:0 0 1.5px 1.5px;}
-.bk.br{bottom:0;right:0;border-width:0 1.5px 1.5px 0;}
-
-.hint{font-family:'Orbitron',monospace;font-size:.48rem;letter-spacing:.16em;color:rgba(0,184,255,.28);transition:color .3s;}
-.hint.on{color:var(--c);}
-
-.bubble{max-width:480px;width:calc(100% - 2rem);background:rgba(0,184,255,.03);border:1px solid rgba(0,184,255,.13);border-radius:2px;padding:.6rem .9rem;font-size:.82rem;line-height:1.6;color:rgba(0,184,255,.78);text-align:center;min-height:44px;display:flex;align-items:center;justify-content:center;letter-spacing:.03em;transition:border-color .4s;}
-.bubble.S{border-color:rgba(255,107,0,.25);}
-.bubble .ph{color:rgba(0,184,255,.22);letter-spacing:.1em;font-family:'Orbitron',monospace;font-size:.55rem;}
-
-/* RIGHT */
-.rpanel{width:185px;flex-shrink:0;border-left:1px solid rgba(0,184,255,.09);background:rgba(2,8,16,.75);backdrop-filter:blur(8px);display:flex;flex-direction:column;padding:.6rem .7rem;gap:.5rem;overflow-y:auto;}
-.met{background:rgba(0,184,255,.025);border:1px solid rgba(0,184,255,.09);border-radius:2px;padding:.45rem .6rem;}
-.met-l{font-family:'Orbitron',monospace;font-size:.42rem;letter-spacing:.16em;color:rgba(0,184,255,.3);margin-bottom:.15rem;}
-.met-v{font-size:.88rem;font-weight:600;color:var(--c);font-family:'Orbitron',monospace;}
-.met-s{font-size:.55rem;color:rgba(0,184,255,.38);margin-top:.08rem;}
-.ni{background:rgba(0,184,255,.02);border-left:2px solid rgba(0,184,255,.28);padding:.35rem .5rem;margin-bottom:.25rem;cursor:pointer;transition:all .18s;border-radius:0 2px 2px 0;}
-.ni:hover{border-left-color:var(--c);background:rgba(0,184,255,.05);}
-.ni-cat{font-family:'Orbitron',monospace;font-size:.42rem;letter-spacing:.14em;color:rgba(0,184,255,.38);}
-.ni-txt{font-size:.62rem;color:rgba(0,184,255,.65);line-height:1.4;margin-top:.1rem;}
-
-/* BOTTOM */
-.bottom{border-top:1px solid rgba(0,184,255,.1);padding:.55rem .9rem;display:flex;gap:.5rem;align-items:center;background:rgba(2,8,16,.88);backdrop-filter:blur(10px);flex-shrink:0;}
-.mic{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:rgba(0,184,255,.07);border:1.5px solid rgba(0,184,255,.28);color:var(--c);display:flex;align-items:center;justify-content:center;font-size:.95rem;cursor:pointer;transition:all .2s;}
-.mic:hover{background:rgba(0,184,255,.15);border-color:var(--c);}
-.mic.on{background:rgba(0,255,136,.12);border-color:var(--c3);color:var(--c3);box-shadow:0 0 14px rgba(0,255,136,.25);}
-.tinp{flex:1;background:rgba(0,184,255,.04);border:1px solid rgba(0,184,255,.18);border-radius:2px;padding:.58rem .9rem;color:var(--c);font-family:'Orbitron',monospace;font-size:.64rem;outline:none;letter-spacing:.05em;}
-.tinp:focus{border-color:rgba(0,184,255,.5);}
-.tinp::placeholder{color:rgba(0,184,255,.18);}
-.sbtn{background:rgba(0,184,255,.09);border:1.5px solid rgba(0,184,255,.32);border-radius:2px;padding:.58rem 1rem;color:var(--c);font-family:'Orbitron',monospace;font-size:.58rem;font-weight:700;letter-spacing:.14em;cursor:pointer;transition:all .2s;white-space:nowrap;}
-.sbtn:hover{background:rgba(0,184,255,.18);box-shadow:0 0 12px rgba(0,184,255,.22);}
-
-.ebar{font-family:'Orbitron',monospace;font-size:.5rem;color:#ff4455;letter-spacing:.07em;text-align:center;padding:.18rem .9rem;min-height:1rem;flex-shrink:0;}
-.fbar{padding:.3rem 1rem;display:flex;justify-content:space-between;border-top:1px solid rgba(0,184,255,.05);background:rgba(2,8,16,.9);flex-shrink:0;}
-.fbar span{font-family:'Orbitron',monospace;font-size:.4rem;letter-spacing:.1em;color:rgba(0,184,255,.18);}
-.dots span{display:inline-block;width:4px;height:4px;border-radius:50%;margin:0 2px;animation:db 1s ease-in-out infinite;}
+.dots span{display:inline-block;width:5px;height:5px;border-radius:50%;margin:0 2.5px;animation:db 1s ease-in-out infinite;}
 .dots span:nth-child(1){background:var(--c)}.dots span:nth-child(2){background:var(--c5);animation-delay:.18s}.dots span:nth-child(3){background:var(--c4);animation-delay:.36s}
-@keyframes db{0%,100%{transform:translateY(0);opacity:.2}50%{transform:translateY(-5px);opacity:1}}
+@keyframes db{0%,100%{transform:translateY(0);opacity:.2}50%{transform:translateY(-6px);opacity:1}}
 ::-webkit-scrollbar{width:2px;}
-::-webkit-scrollbar-thumb{background:rgba(0,184,255,.18);border-radius:2px;}
+::-webkit-scrollbar-thumb{background:rgba(0,204,255,.18);}
+
+@media(max-width:600px){.orb-wrap{width:320px;height:320px;}.orb-name{font-size:2.2rem;}}
 </style>
 </head>
 <body>
-<canvas id="bg-canvas"></canvas>
+<canvas id="gc"></canvas>
 
 <!-- SETUP -->
 <div id="setup">
-  <div class="s-logo">IRIS</div>
-  <div class="s-sub">Intelligent Real Estate Intelligence System · v8.0</div>
-  <div class="s-box">
-    <div class="s-lbl">OpenAI API Authorization</div>
-    <input class="s-inp" type="password" id="oai-key" placeholder="sk-proj-…" autocomplete="off" onkeydown="if(event.key==='Enter')connect()">
-    <button class="s-btn" onclick="connect()">▶ IRIS v8 AKTIVIEREN</button>
-    <div class="s-err" id="serr"></div>
+  <div class="slogo">IRIS</div>
+  <div class="ssub">Intelligent Real Estate Intelligence System · v9</div>
+  <div class="sbox">
+    <div class="slbl">OpenAI API Authorization</div>
+    <input class="sinp" type="password" id="oai-key" placeholder="sk-proj-…" autocomplete="off" onkeydown="if(event.key==='Enter')connect()">
+    <button class="sbtn" onclick="connect()">▶ IRIS AKTIVIEREN</button>
+    <div class="serr" id="serr"></div>
   </div>
-  <p class="s-note">Mikrofon · Google Calendar · Gmail · Web Search<br>Alle Systeme werden beim Start initialisiert</p>
+  <p class="snote">Google Calendar · Gmail · Web Search · Sprachsteuerung<br>Alle Systeme werden beim Start initialisiert</p>
 </div>
 
 <!-- MAIN -->
 <div id="main">
+  <!-- TOPBAR -->
   <div class="topbar">
     <div style="display:flex;align-items:baseline;gap:.6rem">
-      <div class="t-logo">IRIS</div>
-      <div class="t-agent" id="t-agent">GESPRÄCH</div>
+      <div class="tlogo">IRIS</div>
+      <div class="tagent" id="tagent">GESPRÄCH</div>
     </div>
-    <div class="t-meta">
-      <div class="t-clock" id="clock">--:--:--</div>
-      <div class="t-status"><div class="sdot"></div><span id="tstatus">ONLINE</span></div>
-    </div>
-    <div class="t-btns">
+    <div class="tclock" id="clock">--:--:--</div>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <div class="tstatus"><div class="sdot"></div><span id="tstxt">ONLINE</span></div>
+      <button class="tbtn" id="dash-btn" onclick="toggleDash()">DASHBOARD</button>
       <button class="tbtn" onclick="clearSession()">NEW</button>
-      <button class="tbtn" onclick="toggleSidebars()">PANELS</button>
       <button class="tbtn" onclick="disconnect()">EXIT</button>
     </div>
   </div>
 
-  <div class="body">
-    <!-- LEFT -->
-    <div class="lpanel" id="lpanel">
-      <div class="p-lbl">Agenten</div>
-      <div class="ag a-chat on" id="ag-chat" onclick="setAgent('chat')">
-        <div class="ag-ico">💬</div>
-        <div><div class="ag-n">Gespräch</div><div class="ag-d">Freier Dialog</div></div>
-      </div>
-      <div class="ag a-news" id="ag-news" onclick="setAgent('news')">
-        <div class="ag-ico">📡</div>
-        <div><div class="ag-n">News</div><div class="ag-d">Live · Web</div></div>
-      </div>
-      <div class="ag a-cal" id="ag-cal" onclick="setAgent('cal')">
-        <div class="ag-ico">📅</div>
-        <div><div class="ag-n">Kalender</div><div class="ag-d">Google Cal</div></div>
-      </div>
-      <div class="ag a-mail" id="ag-mail" onclick="setAgent('mail')">
-        <div class="ag-ico">✉️</div>
-        <div><div class="ag-n">E-Mail</div><div class="ag-d">Gmail · MCP</div></div>
-      </div>
-      <div class="ag a-risk" id="ag-risk" onclick="setAgent('risk')">
-        <div class="ag-ico">⚠️</div>
-        <div><div class="ag-n">Risiko</div><div class="ag-d">§650f · VOB</div></div>
-      </div>
-      <div class="ag a-write" id="ag-write" onclick="setAgent('write')">
-        <div class="ag-ico">✍️</div>
-        <div><div class="ag-n">Schreiben</div><div class="ag-d">Berichte · Briefe</div></div>
-      </div>
-      <div class="ag a-research" id="ag-research" onclick="setAgent('research')">
-        <div class="ag-ico">🔍</div>
-        <div><div class="ag-n">Recherche</div><div class="ag-d">Markt · Analyse</div></div>
-      </div>
-      <div class="ag a-kpi" id="ag-kpi" onclick="setAgent('kpi')">
-        <div class="ag-ico">📊</div>
-        <div><div class="ag-n">KPI</div><div class="ag-d">Kennzahlen</div></div>
-      </div>
-
-      <div class="p-lbl" style="margin-top:.4rem">Briefing</div>
-      <div class="ic"><div class="ic-lbl">Nächster Termin</div><div class="ic-val" id="ic-appt">Lädt...</div></div>
-      <div class="ic"><div class="ic-lbl">E-Mails</div><div class="ic-val" id="ic-mail">—</div></div>
-      <div class="ic"><div class="ic-lbl">Datum</div><div class="ic-val" id="ic-date">—</div></div>
-      <div class="ic"><div class="ic-lbl">Wetter</div><div class="ic-val" id="ic-weather">—</div></div>
+  <!-- CENTER -->
+  <div class="center">
+    <div class="scan"></div>
+    <div class="frame">
+      <div class="fc tl"></div><div class="fc tr"></div>
+      <div class="fc bl"></div><div class="fc br"></div>
     </div>
 
-    <!-- CENTER -->
-    <div class="center">
-      <div class="scan"></div>
-      <div class="iris-st" id="ist">SYSTEM BEREIT</div>
-      <div class="orb-wrap" onclick="toggleMic()">
-        <canvas id="orb" width="260" height="260"></canvas>
-        <div class="brks">
-          <div class="bk tl"></div><div class="bk tr"></div>
-          <div class="bk bl"></div><div class="bk br"></div>
-        </div>
-        <div class="orb-ct">
-          <div class="orb-name">IRIS</div>
-          <div class="orb-ver" id="orb-ver">v8.0</div>
-        </div>
-      </div>
-      <div class="hint" id="hint">KLICKEN ZUM SPRECHEN</div>
-      <div class="bubble" id="bubble"><span class="ph">AWAITING INPUT...</span></div>
+    <div class="ist" id="ist">SYSTEM BEREIT</div>
+
+    <!-- AGENT PILLS — top -->
+    <div class="pills" style="top:26%;">
+      <div class="pill on" id="p-chat" onclick="setAgent('chat')">💬 Chat</div>
+      <div class="pill" id="p-news" onclick="setAgent('news')">📡 News</div>
+      <div class="pill" id="p-cal" onclick="setAgent('cal')">📅 Kalender</div>
+      <div class="pill" id="p-mail" onclick="setAgent('mail')">✉️ E-Mail</div>
+      <div class="pill" id="p-risk" onclick="setAgent('risk')">⚠️ Risiko</div>
+      <div class="pill" id="p-write" onclick="setAgent('write')">✍️ Schreiben</div>
+      <div class="pill" id="p-research" onclick="setAgent('research')">🔍 Recherche</div>
+      <div class="pill" id="p-kpi" onclick="setAgent('kpi')">📊 KPI</div>
     </div>
 
-    <!-- RIGHT -->
-    <div class="rpanel" id="rpanel">
-      <div class="p-lbl" style="font-family:'Orbitron',monospace;font-size:.44rem;letter-spacing:.2em;color:rgba(0,184,255,.28);padding-bottom:.3rem;border-bottom:1px solid rgba(0,184,255,.07);">System</div>
-      <div class="met"><div class="met-l">KI-Engine</div><div class="met-v" style="font-size:.7rem">GPT-4o</div><div class="met-s">OpenAI · aktiv</div></div>
-      <div class="met"><div class="met-l">Nachrichten</div><div class="met-v" id="mc">0</div><div class="met-s">Session</div></div>
-      <div class="met"><div class="met-l">TTS</div><div class="met-v" style="font-size:.7rem" id="tts-m">Browser</div><div class="met-s">Sprachausgabe</div></div>
-      <div class="met"><div class="met-l">Google MCP</div><div class="met-v" style="font-size:.65rem;color:var(--c3)" id="mcp-st">Bereit</div><div class="met-s">Cal · Gmail · Drive</div></div>
+    <!-- BIG ORB -->
+    <div class="orb-wrap" onclick="toggleMic()">
+      <canvas id="orb" width="520" height="520"></canvas>
+      <div class="orb-ct">
+        <div class="orb-name">IRIS</div>
+        <div class="orb-sub" id="osub">v9.0 · BUILTSMART AI</div>
+      </div>
+    </div>
 
-      <div class="p-lbl" style="font-family:'Orbitron',monospace;font-size:.44rem;letter-spacing:.2em;color:rgba(0,184,255,.28);padding-bottom:.3rem;border-bottom:1px solid rgba(0,184,255,.07);margin-top:.3rem;">World Feed</div>
-      <div id="nfeed"><div class="ni"><div class="ni-cat">LADEN...</div><div class="ni-txt">Nachrichten werden abgerufen</div></div></div>
+    <div class="hint" id="hint">KLICKEN ZUM SPRECHEN</div>
+    <div class="bubble" id="bubble"><span class="ph">AWAITING INPUT...</span></div>
+  </div>
+
+  <!-- DASHBOARD PANEL -->
+  <div class="dashboard" id="dashboard">
+    <div class="dash-top">
+      <div class="dash-title">IRIS DASHBOARD</div>
+      <button class="dash-close" onclick="toggleDash()">✕ CLOSE</button>
+    </div>
+    <div class="dash-body">
+      <div class="plbl">Agenten</div>
+      <div class="ag a-chat on" id="ag-chat" onclick="setAgent('chat')"><div class="ag-ico">💬</div><div><div class="ag-n">Gespräch</div><div class="ag-d">Freier Dialog</div></div></div>
+      <div class="ag a-news" id="ag-news" onclick="setAgent('news')"><div class="ag-ico">📡</div><div><div class="ag-n">News</div><div class="ag-d">Live Web</div></div></div>
+      <div class="ag a-cal" id="ag-cal" onclick="setAgent('cal')"><div class="ag-ico">📅</div><div><div class="ag-n">Kalender</div><div class="ag-d">Google Cal</div></div></div>
+      <div class="ag a-mail" id="ag-mail" onclick="setAgent('mail')"><div class="ag-ico">✉️</div><div><div class="ag-n">E-Mail</div><div class="ag-d">Gmail</div></div></div>
+      <div class="ag a-risk" id="ag-risk" onclick="setAgent('risk')"><div class="ag-ico">⚠️</div><div><div class="ag-n">Risiko</div><div class="ag-d">§650f VOB</div></div></div>
+      <div class="ag a-write" id="ag-write" onclick="setAgent('write')"><div class="ag-ico">✍️</div><div><div class="ag-n">Schreiben</div><div class="ag-d">Berichte</div></div></div>
+      <div class="ag a-research" id="ag-research" onclick="setAgent('research')"><div class="ag-ico">🔍</div><div><div class="ag-n">Recherche</div><div class="ag-d">Analyse</div></div></div>
+      <div class="ag a-kpi" id="ag-kpi" onclick="setAgent('kpi')"><div class="ag-ico">📊</div><div><div class="ag-n">KPI</div><div class="ag-d">Kennzahlen</div></div></div>
+
+      <div class="plbl" style="margin-top:.4rem">Briefing</div>
+      <div class="ic"><div class="ic-l">Kalender</div><div class="ic-v loading" id="ic-cal">Lädt...</div></div>
+      <div class="ic"><div class="ic-l">E-Mail</div><div class="ic-v loading" id="ic-mail">Lädt...</div></div>
+      <div class="ic"><div class="ic-l">Datum</div><div class="ic-v" id="ic-date">—</div></div>
+
+      <div class="plbl" style="margin-top:.4rem">System</div>
+      <div class="met"><div class="ml">Engine</div><div class="mv" style="font-size:.65rem">GPT-4o</div><div class="ms">OpenAI aktiv</div></div>
+      <div class="met"><div class="ml">Session</div><div class="mv" id="mc">0</div><div class="ms">Nachrichten</div></div>
+      <div class="met"><div class="ml">Google</div><div class="mv" style="font-size:.6rem;color:var(--c3)">Cal+Mail</div><div class="ms">verbunden</div></div>
+
+      <div class="plbl" style="margin-top:.4rem">World Feed</div>
+      <div id="nfeed"><div class="ni"><div class="ni-c">LADEN</div><div class="ni-t">Nachrichten...</div></div></div>
     </div>
   </div>
 
@@ -245,7 +251,7 @@ canvas#orb{position:absolute;inset:0;}
   <div class="bottom">
     <button class="mic" id="mic" onclick="toggleMic()">🎤</button>
     <input class="tinp" id="txt" placeholder="HEY IRIS, ..." onkeydown="if(event.key==='Enter')sendText()">
-    <button class="sbtn" onclick="sendText()">SENDEN ▶</button>
+    <button class="ssend" onclick="sendText()">SENDEN ▶</button>
   </div>
   <div class="fbar">
     <span>© 2026 BUILTSMART AI · BUILTSMART HUB · BERNHARD METZGER</span>
@@ -254,206 +260,270 @@ canvas#orb{position:absolute;inset:0;}
 </div>
 
 <script>
-// ══ BACKGROUND CANVAS ══
-const bgC=document.getElementById('bg-canvas'),bgX=bgC.getContext('2d');
-function rBg(){bgC.width=window.innerWidth;bgC.height=window.innerHeight;}
-rBg(); window.addEventListener('resize',rBg);
+const GOOGLE_API='https://script.google.com/macros/s/AKfycbxJ-DbcK2cAJgPXJvcucqFBC2z5kYL01_RpWYIr8CW8bPc_GfcXnETSa1WZfGbkJ8ZyRw/exec';
+
+// ══ BG CANVAS ══
+const gc=document.getElementById('gc'),gx=gc.getContext('2d');
+function rGc(){gc.width=window.innerWidth;gc.height=window.innerHeight;}
+rGc();window.addEventListener('resize',()=>{rGc();});
 let bgT=0;
 function dBg(){
-  const W=bgC.width,H=bgC.height;
-  bgX.fillStyle='#020810';bgX.fillRect(0,0,W,H);
-  const hs=32;
-  bgX.strokeStyle='rgba(0,184,255,0.032)';bgX.lineWidth=.5;
+  const W=gc.width,H=gc.height;
+  gx.fillStyle='#000508';gx.fillRect(0,0,W,H);
+  // Hex grid
+  const hs=36;
+  gx.strokeStyle='rgba(0,204,255,0.028)';gx.lineWidth=.5;
   for(let r=-1;r<H/(hs*.75)+2;r++)for(let c=-1;c<W/(hs*1.73)+2;c++){
     const x=c*hs*1.73+(r%2)*hs*.865,y=r*hs*.75;
-    bgX.beginPath();
-    for(let i=0;i<6;i++){const a=Math.PI/3*i-Math.PI/6;i===0?bgX.moveTo(x+hs*.46*Math.cos(a),y+hs*.46*Math.sin(a)):bgX.lineTo(x+hs*.46*Math.cos(a),y+hs*.46*Math.sin(a));}
-    bgX.closePath();bgX.stroke();
+    gx.beginPath();
+    for(let i=0;i<6;i++){const a=Math.PI/3*i-Math.PI/6;i===0?gx.moveTo(x+hs*.46*Math.cos(a),y+hs*.46*Math.sin(a)):gx.lineTo(x+hs*.46*Math.cos(a),y+hs*.46*Math.sin(a));}
+    gx.closePath();gx.stroke();
   }
-  const g=bgX.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.min(W,H)*.42);
-  g.addColorStop(0,'rgba(0,80,180,.055)');g.addColorStop(1,'transparent');
-  bgX.fillStyle=g;bgX.fillRect(0,0,W,H);
-  for(let l=0;l<8;l++){
-    const y=55+l*55+Math.sin(bgT*.65+l)*10,len=30+Math.sin(bgT*1.1+l*.8)*18,a=.055+Math.sin(bgT+l)*.025;
-    bgX.strokeStyle=`rgba(0,184,255,${a})`;bgX.lineWidth=.5;
-    bgX.beginPath();bgX.moveTo(14,y);bgX.lineTo(14+len,y);bgX.stroke();
-    bgX.beginPath();bgX.moveTo(W-14,y);bgX.lineTo(W-14-len,y);bgX.stroke();
-    bgX.beginPath();bgX.moveTo(14,y-2.5);bgX.lineTo(14,y+2.5);bgX.stroke();
-    bgX.beginPath();bgX.moveTo(W-14,y-2.5);bgX.lineTo(W-14,y+2.5);bgX.stroke();
+  // Center ambient
+  const cg=gx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.min(W,H)*.5);
+  cg.addColorStop(0,'rgba(0,100,220,.05)');cg.addColorStop(1,'transparent');
+  gx.fillStyle=cg;gx.fillRect(0,0,W,H);
+  // Data streams
+  for(let l=0;l<10;l++){
+    const y=50+l*60+Math.sin(bgT*.55+l)*12,len=28+Math.sin(bgT*1.1+l*.7)*18;
+    const a=.04+Math.sin(bgT+l)*.018;
+    gx.strokeStyle=`rgba(0,204,255,${a})`;gx.lineWidth=.5;
+    gx.beginPath();gx.moveTo(12,y);gx.lineTo(12+len,y);gx.stroke();
+    gx.beginPath();gx.moveTo(W-12,y);gx.lineTo(W-12-len,y);gx.stroke();
+    gx.beginPath();gx.moveTo(12,y-2.5);gx.lineTo(12,y+2.5);gx.stroke();
+    gx.beginPath();gx.moveTo(W-12,y-2.5);gx.lineTo(W-12,y+2.5);gx.stroke();
   }
 }
 
 // ══ ORB CANVAS ══
-const oC=document.getElementById('orb'),oX=oC.getContext('2d');
-const OW=260,OH=260,CX=130,CY=130;
-let vSt='idle',vI=0,oT=0,sRot=0;
-const SYMS=['◈','⬡','△','○','◇','⊕','⌬','⬢'];
-const SLBLS=['RISK','KPI','DATA','AI','LEX','PLAN','COST','TIME'];
-let wd=new Array(64).fill(0),wt=new Array(64).fill(0);
-const SC={idle:'0,184,255',listening:'0,255,136',thinking:'168,85,247',speaking:'255,107,0'};
+const oc=document.getElementById('orb'),ox=oc.getContext('2d');
+const OW=520,OH=520,CX=260,CY=260;
+let vSt='idle',vI=0,oT=0,sR=0;
+const SYMS=['◈','⬡','△','○','◇','⊕','⌬','⬢','✦','◎'];
+const SLBLS=['RISK','KPI','DATA','AI','LEX','PLAN','COST','TIME','BUILD','INFO'];
+let wd=new Array(128).fill(0),wt=new Array(128).fill(0);
+const SC={idle:'0,204,255',listening:'0,255,153',thinking:'170,68,255',speaking:'255,102,0'};
 
 function dOrb(){
-  oX.clearRect(0,0,OW,OH);
-  const tgt=vSt==='idle'?.26:vSt==='thinking'?.55:.92;
+  ox.clearRect(0,0,OW,OH);
+  const tgt=vSt==='idle'?.22:vSt==='thinking'?.55:.95;
   vI+=(tgt-vI)*.055;
-  for(let i=0;i<64;i++){
-    wt[i]=vSt==='speaking'?Math.random()*.7+.1:vSt==='listening'?Math.random()*.38+.05:Math.sin(oT*2+i*.15)*.07+.07;
-    wd[i]+=(wt[i]-wd[i])*.14;
+  for(let i=0;i<128;i++){
+    wt[i]=vSt==='speaking'?Math.random()*.75+.08:vSt==='listening'?Math.random()*.42+.05:Math.sin(oT*1.8+i*.1)*.07+.07;
+    wd[i]+=(wt[i]-wd[i])*.12;
   }
   const C=SC[vSt]||SC.idle;
 
-  // Outer dashes
-  for(let d=0;d<18;d++){const a=(d/18)*Math.PI*2+sRot*.35;oX.beginPath();oX.arc(CX,CY,122,a,a+.12);oX.strokeStyle=`rgba(${C},${.2*vI+.07})`;oX.lineWidth=2;oX.stroke();}
+  // Outer orbit dashes
+  for(let d=0;d<24;d++){const a=(d/24)*Math.PI*2+sR*.28;ox.beginPath();ox.arc(CX,CY,245,a,a+.1);ox.strokeStyle=`rgba(${C},${.16*vI+.05})`;ox.lineWidth=2.5;ox.stroke();}
+  for(let d=0;d<12;d++){const a=(d/12)*Math.PI*2-sR*.18;ox.beginPath();ox.arc(CX,CY,230,a,a+.08);ox.strokeStyle=`rgba(${C},${.08*vI+.03})`;ox.lineWidth=1;ox.stroke();}
 
-  // Symbol ring
-  for(let s=0;s<8;s++){
-    const a=(s/8)*Math.PI*2+sRot,R=108,sx=CX+Math.cos(a)*R,sy=CY+Math.sin(a)*R;
-    oX.save();oX.translate(sx,sy);oX.rotate(a+Math.PI/2);
-    oX.font=`${7+vI*4}px Orbitron,monospace`;oX.fillStyle=`rgba(${C},${.38*vI+.12})`;
-    oX.textAlign='center';oX.textBaseline='middle';oX.fillText(SYMS[s],0,0);oX.restore();
-    if(vI>.25){
-      oX.font='4.5px Orbitron,monospace';oX.fillStyle=`rgba(${C},${(vI-.25)*.55})`;
-      oX.textAlign='center';oX.textBaseline='middle';
-      oX.fillText(SLBLS[s],CX+Math.cos(a)*93,CY+Math.sin(a)*93);
+  // Symbol ring — 10 symbols
+  for(let s=0;s<10;s++){
+    const a=(s/10)*Math.PI*2+sR,R=210;
+    const sx=CX+Math.cos(a)*R,sy=CY+Math.sin(a)*R;
+    ox.save();ox.translate(sx,sy);ox.rotate(a+Math.PI/2);
+    ox.font=`${9+vI*5}px Orbitron,monospace`;
+    ox.fillStyle=`rgba(${C},${.4*vI+.12})`;
+    ox.textAlign='center';ox.textBaseline='middle';ox.fillText(SYMS[s],0,0);ox.restore();
+    if(vI>.2){
+      ox.font='5.5px Orbitron,monospace';
+      ox.fillStyle=`rgba(${C},${(vI-.2)*.55})`;
+      ox.textAlign='center';ox.textBaseline='middle';
+      ox.fillText(SLBLS[s],CX+Math.cos(a)*185,CY+Math.sin(a)*185);
     }
   }
 
   // Inner rings
-  for(let i=0;i<5;i++){
-    const ph=oT*(0.28+i*.11)+i*Math.PI/2.5;
-    let r=vSt==='speaking'?46+i*10+Math.sin(ph*3.5)*10*vI*(1+i*.14):vSt==='listening'?46+i*9+Math.sin(ph*2.2)*7*vI:46+i*8+Math.sin(ph*.55)*3.5;
-    oX.beginPath();oX.arc(CX,CY,r,0,Math.PI*2);
-    oX.strokeStyle=`rgba(${C},${(0.09+vI*.15)*(1-i*.14)})`;oX.lineWidth=vSt==='speaking'?1.7-i*.13:1;oX.stroke();
+  for(let i=0;i<7;i++){
+    const ph=oT*(0.25+i*.09)+i*Math.PI/3.5;
+    let r=vSt==='speaking'?70+i*16+Math.sin(ph*3.5)*14*vI*(1+i*.12):vSt==='listening'?70+i*15+Math.sin(ph*2.2)*10*vI:70+i*13+Math.sin(ph*.5)*5;
+    ox.beginPath();ox.arc(CX,CY,r,0,Math.PI*2);
+    ox.strokeStyle=`rgba(${C},${(0.07+vI*.13)*(1-i*.11)})`;
+    ox.lineWidth=vSt==='speaking'?2.2-i*.18:1.2;ox.stroke();
   }
 
   // Counter-rotating arcs
-  for(let a=0;a<3;a++){
-    const aR=48+a*15,spd=(0.55+a*.18)*(a%2?1:-1),sa=oT*spd+a*Math.PI*.66,al=Math.PI*(.26+vI*.38);
-    oX.beginPath();oX.arc(CX,CY,aR,sa,sa+al);
-    oX.strokeStyle=`rgba(${C},${.5*vI+.1})`;oX.lineWidth=1.6;oX.stroke();
+  for(let a=0;a<4;a++){
+    const aR=75+a*22,spd=(0.45+a*.14)*(a%2?1:-1);
+    const sa=oT*spd+a*Math.PI*.5,al=Math.PI*(.22+vI*.38);
+    ox.beginPath();ox.arc(CX,CY,aR,sa,sa+al);
+    ox.strokeStyle=`rgba(${C},${.5*vI+.08})`;ox.lineWidth=2;ox.stroke();
   }
 
-  // Waveform ring
-  const wR=82;
-  oX.beginPath();
-  for(let i=0;i<64;i++){const a=(i/64)*Math.PI*2-Math.PI/2,amp=wd[i]*20*vI,r=wR+amp,x=CX+Math.cos(a)*r,y=CY+Math.sin(a)*r;i===0?oX.moveTo(x,y):oX.lineTo(x,y);}
-  oX.closePath();oX.strokeStyle=`rgba(${C},${.55*vI+.09})`;oX.lineWidth=1.4;oX.stroke();
+  // WAVEFORM RING — large
+  const wR=155;
+  ox.beginPath();
+  for(let i=0;i<128;i++){
+    const a=(i/128)*Math.PI*2-Math.PI/2,amp=wd[i]*32*vI,r=wR+amp;
+    const x=CX+Math.cos(a)*r,y=CY+Math.sin(a)*r;
+    i===0?ox.moveTo(x,y):ox.lineTo(x,y);
+  }
+  ox.closePath();ox.strokeStyle=`rgba(${C},${.55*vI+.07})`;ox.lineWidth=1.8;ox.stroke();
 
-  // Spikes
+  // Radial spikes
   if(vSt!=='idle'){
-    const cnt=vSt==='speaking'?22:14;
-    for(let s=0;s<cnt;s++){const a=(s/cnt)*Math.PI*2+oT*.5,l=(5+Math.sin(oT*5+s)*13)*vI;
-      oX.beginPath();oX.moveTo(CX+Math.cos(a)*44,CY+Math.sin(a)*44);oX.lineTo(CX+Math.cos(a)*(44+l),CY+Math.sin(a)*(44+l));
-      oX.strokeStyle=`rgba(${C},${.38*vI})`;oX.lineWidth=.9;oX.stroke();}
+    const cnt=vSt==='speaking'?32:20;
+    for(let s=0;s<cnt;s++){
+      const a=(s/cnt)*Math.PI*2+oT*.45,l=(8+Math.sin(oT*5+s*.9)*20)*vI;
+      ox.beginPath();ox.moveTo(CX+Math.cos(a)*66,CY+Math.sin(a)*66);
+      ox.lineTo(CX+Math.cos(a)*(66+l),CY+Math.sin(a)*(66+l));
+      ox.strokeStyle=`rgba(${C},${.38*vI})`;ox.lineWidth=1.2;ox.stroke();
+    }
   }
 
   // Center glow
-  const grd=oX.createRadialGradient(CX,CY,0,CX,CY,42);
-  grd.addColorStop(0,`rgba(${C},${.1*vI})`);grd.addColorStop(1,'transparent');
-  oX.fillStyle=grd;oX.beginPath();oX.arc(CX,CY,42,0,Math.PI*2);oX.fill();
+  const grd=ox.createRadialGradient(CX,CY,0,CX,CY,65);
+  grd.addColorStop(0,`rgba(${C},${.14*vI})`);grd.addColorStop(1,'transparent');
+  ox.fillStyle=grd;ox.beginPath();ox.arc(CX,CY,65,0,Math.PI*2);ox.fill();
 
   // Particles
-  for(let p=0;p<7;p++){const pA=(p/7)*Math.PI*2+oT*.75,pR=52+Math.sin(oT*1.8+p)*22*vI;
-    oX.beginPath();oX.arc(CX+Math.cos(pA)*pR,CY+Math.sin(pA)*pR,1.6,0,Math.PI*2);
-    oX.fillStyle=`rgba(${C},${.65*vI})`;oX.fill();}
-
-  sRot+=.0038;
+  for(let p=0;p<10;p++){
+    const pA=(p/10)*Math.PI*2+oT*.65,pR=85+Math.sin(oT*1.8+p)*35*vI;
+    ox.beginPath();ox.arc(CX+Math.cos(pA)*pR,CY+Math.sin(pA)*pR,2.2,0,Math.PI*2);
+    ox.fillStyle=`rgba(${C},${.65*vI})`;ox.fill();
+  }
+  sR+=.003;
 }
 
-function loop(){requestAnimationFrame(loop);bgT+=.011;oT+=.013;dBg();dOrb();}
+function loop(){requestAnimationFrame(loop);bgT+=.01;oT+=.012;dBg();dOrb();}
 loop();
 
 // ══ CLOCK ══
 function tick(){
-  const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');
-  document.getElementById('clock').textContent=`${h}:${m}:${s}`;
-  document.getElementById('ic-date').textContent=n.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'short'});
+  const n=new Date();
+  document.getElementById('clock').textContent=
+    String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
+  document.getElementById('ic-date').textContent=
+    n.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
 }
 setInterval(tick,1000);tick();
 
 // ══ STATE ══
 let OAI='',agent='chat',history=[],currentAudio=null,mediaRec=null,audioChunks=[],isRec=false,msgCnt=0;
+let calData='',mailData='';
 
 const AGENTS={
-  chat:{name:'GESPRÄCH',sys:`Du bist IRIS v8 — persönliche KI-Zentrale von Bernhard Metzger, BuiltSmart AI. Professionell, prägnant, hilfreich. Max 90 Wörter. Deutsch. Duze Bernhard. Duzen. Sprich Bernhard persönlich mit "du" an.`},
-  news:{name:'NEWS',sys:`Du bist IRIS, News-Agent. Sprich Bernhard mit "du" an. Fasse aktuelle Weltlage, Wirtschaft, Immobilienmarkt zusammen. Strukturiert und faktenbasiert. Max 100 Wörter. Deutsch.`},
-  cal:{name:'KALENDER',sys:`Du bist IRIS, Kalender-Agent (Google Calendar verbunden via MCP). Hilf bei Terminplanung, erstelle Einträge, fasse Kalender zusammen. Max 100 Wörter. Deutsch.`},
-  mail:{name:'E-MAIL',sys:`Du bist IRIS, E-Mail-Agent (Gmail verbunden via MCP). Lies E-Mails vor, verfasse Antworten, erstelle Vorlagen. Max 100 Wörter. Deutsch.`},
-  risk:{name:'RISIKO',sys:`Du bist IRIS, Risiko-Agent. Sprich Bernhard mit "du" an. §650f BGB, VOB, Verträge, Claims, Baurecht. Klar und handlungsorientiert. Max 100 Wörter. Deutsch.`},
-  write:{name:'SCHREIBEN',sys:`Du bist IRIS, Schreib-Agent. Sprich Bernhard mit "du" an. Managementberichte, Briefe, Exposés, Protokolle. Professionell und prägnant. Max 100 Wörter. Deutsch.`},
-  research:{name:'RECHERCHE',sys:`Du bist IRIS, Recherche-Agent. Sprich Bernhard mit "du" an. Marktanalyse, Preise, Standorte, Trends. Faktenbasiert. Max 100 Wörter. Deutsch.`},
-  kpi:{name:'KPI',sys:`Du bist IRIS, KPI-Agent. Sprich Bernhard mit "du" an. Kennzahlen, Controlling, Performance-Analyse. Max 100 Wörter. Deutsch.`}
+  chat:{name:'GESPRÄCH',sys:`Du bist IRIS v9, persönliche KI-Zentrale von Bernhard Metzger, BuiltSmart AI. Sprich Bernhard immer mit "du" an — persönlich, direkt, professionell. Max 80 Wörter. Deutsch.`},
+  news:{name:'NEWS',sys:`Du bist IRIS, News-Agent. Sprich Bernhard mit "du" an. Fasse aktuelle Nachrichten strukturiert zusammen. Max 90 Wörter. Deutsch.`},
+  cal:{name:'KALENDER',sys:`Du bist IRIS, Kalender-Agent. Sprich Bernhard mit "du" an. Helfe mit Terminplanung. Kalenderdaten: CALDATA. Max 90 Wörter. Deutsch.`},
+  mail:{name:'E-MAIL',sys:`Du bist IRIS, E-Mail-Agent. Sprich Bernhard mit "du" an. Verfasse und fasse E-Mails zusammen. Maildaten: MAILDATA. Max 90 Wörter. Deutsch.`},
+  risk:{name:'RISIKO',sys:`Du bist IRIS, Risiko-Agent. Sprich Bernhard mit "du" an. §650f BGB, VOB, Verträge, Claims. Max 90 Wörter. Deutsch.`},
+  write:{name:'SCHREIBEN',sys:`Du bist IRIS, Schreib-Agent. Sprich Bernhard mit "du" an. Berichte, Briefe, Exposés, Protokolle. Max 90 Wörter. Deutsch.`},
+  research:{name:'RECHERCHE',sys:`Du bist IRIS, Recherche-Agent. Sprich Bernhard mit "du" an. Markt, Preise, Standort, Trends. Max 90 Wörter. Deutsch.`},
+  kpi:{name:'KPI',sys:`Du bist IRIS, KPI-Agent. Sprich Bernhard mit "du" an. Kennzahlen, Controlling, Performance. Max 90 Wörter. Deutsch.`}
 };
 
 // ══ SETUP ══
 function connect(){
   const k=document.getElementById('oai-key').value.trim();
-  if(!k){document.getElementById('serr').textContent='KEY REQUIRED';return;}
+  if(!k){document.getElementById('serr').textContent='KEY ERFORDERLICH';return;}
   OAI=k;localStorage.setItem('iris_oai',k);
   document.getElementById('setup').style.display='none';
   document.getElementById('main').style.display='flex';
-  initSideInfo();
-  fetchNews();
-  setTimeout(morningBriefing,800);
+  setTimeout(morningBriefing,700);
 }
 function disconnect(){if(currentAudio)currentAudio.pause();localStorage.removeItem('iris_oai');location.reload();}
+function toggleDash(){
+  const d=document.getElementById('dashboard'),b=document.getElementById('dash-btn');
+  const open=d.classList.toggle('open');
+  b.classList.toggle('active',open);
+}
 
-// ══ MORNING BRIEFING via GPT-4o ══
+// ══ MORNING BRIEFING ══
 async function morningBriefing(){
   const h=new Date().getHours();
   const gr=h<12?'Guten Morgen':h<18?'Guten Tag':'Guten Abend';
   const d=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const prompt=`Erstelle ein kurzes Morning Briefing für Bernhard Metzger. Heute ist ${d}. Begrüße ihn mit "${gr}, Bernhard." Sprich ihn mit "du" an, persönlich und direkt. Erwähne: 1) Datum/Tag, 2) dass du IRIS bist und seine KI-Zentrale, 3) du für Recherche, Berichte, Kalender und E-Mails bereit bist. Max 60 Wörter. Natürlich und professionell.`;
-  setBubble('');showDots();
-  setUI('MORNING BRIEFING','S');
+  setBubble(`${gr}, Bernhard. Lade deine Daten...`);
+  vSt='thinking';setUI('LADE DATEN...','T');
   try{
-    const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},body:JSON.stringify({model:'gpt-4o',max_tokens:150,messages:[{role:'user',content:prompt}]})});
-    if(!r.ok)throw new Error('GPT');
-    const txt=(await r.json()).choices[0].message.content.trim();
+    const r=await fetch(GOOGLE_API+'?action=briefing');
+    const data=await r.json();
+    if(data.calendar){calData=data.calendar.summary;document.getElementById('ic-cal').textContent=data.calendar.next;document.getElementById('ic-cal').classList.remove('loading');}
+    if(data.gmail){mailData=data.gmail.summary;document.getElementById('ic-mail').textContent=data.gmail.count+' ungelesen';document.getElementById('ic-mail').classList.remove('loading');}
+    const txt=data.briefingText||`${gr}, Bernhard! Ich bin IRIS, deine KI-Zentrale. Wie kann ich dir helfen?`;
     setBubble(txt);history.push({role:'assistant',content:txt});
-    await speak(txt);
+    await speakBrowser(txt);resetIdle();autoRestartMic();
   }catch(e){
-    const fb=`${gr}, Bernhard. Ich bin IRIS, deine persönliche KI-Zentrale. Heute ist ${d}. Wie kann ich dir helfen?`;
-    setBubble(fb);history.push({role:'assistant',content:fb});await speak(fb);
+    const txt=`${gr}, Bernhard! Ich bin IRIS, deine persönliche KI-Zentrale. Wie kann ich dir heute helfen?`;
+    setBubble(txt);history.push({role:'assistant',content:txt});
+    await speakBrowser(txt);resetIdle();autoRestartMic();
   }
 }
 
-// ══ FETCH NEWS ══
-async function fetchNews(){
+// ══ AGENT SWITCH ══
+function setAgent(a){
+  agent=a;history=[];
+  document.querySelectorAll('.ag,.pill').forEach(el=>el.classList.remove('on'));
+  const agEl=document.getElementById('ag-'+a);if(agEl)agEl.classList.add('on');
+  const pEl=document.getElementById('p-'+a);if(pEl)pEl.classList.add('on');
+  document.getElementById('tagent').textContent=AGENTS[a].name;
+  document.getElementById('osub').textContent=AGENTS[a].name+' · BUILTSMART AI';
+  if(a==='cal'){fetchAndSpeakCalendar();return;}
+  if(a==='mail'){fetchAndSpeakMail();return;}
+  if(a==='news'){fetchAndSpeakNews();return;}
+  if(a==='chat'){const msg='Hallo Bernhard, wie kann ich dir helfen?';setBubble(msg);speakBrowser(msg).then(()=>{resetIdle();autoRestartMic();});return;}
+  const names={risk:'Risiko',write:'Schreib',research:'Recherche',kpi:'KPI'};
+  const msg=`${names[a]}-Modus aktiv. Stell mir deine Frage.`;
+  setBubble(msg);speakBrowser(msg).then(()=>{resetIdle();autoRestartMic();});
+}
+
+// ══ FETCH GOOGLE DATA ══
+async function fetchAndSpeakCalendar(){
+  setBubble('Lade deinen Kalender...');vSt='thinking';setUI('LADE KALENDER...','T');
+  try{
+    const r=await fetch(GOOGLE_API+'?action=calendar');
+    const d=await r.json();
+    const txt=d.summary||'Keine Termine gefunden.';
+    calData=txt;document.getElementById('ic-cal').textContent=d.next||'—';
+    document.getElementById('ic-cal').classList.remove('loading');
+    setBubble(txt);history.push({role:'assistant',content:txt});
+    await speakBrowser(txt);resetIdle();autoRestartMic();
+  }catch(e){const txt='Kalender konnte nicht geladen werden.';setBubble(txt);await speakBrowser(txt);resetIdle();}
+}
+
+async function fetchAndSpeakMail(){
+  setBubble('Lade deine E-Mails...');vSt='thinking';setUI('LADE E-MAILS...','T');
+  try{
+    const r=await fetch(GOOGLE_API+'?action=gmail');
+    const d=await r.json();
+    const txt=d.summary||'Keine E-Mails gefunden.';
+    mailData=txt;document.getElementById('ic-mail').textContent=d.count+' ungelesen';
+    document.getElementById('ic-mail').classList.remove('loading');
+    setBubble(txt);history.push({role:'assistant',content:txt});
+    await speakBrowser(txt);resetIdle();autoRestartMic();
+  }catch(e){const txt='E-Mails konnten nicht geladen werden.';setBubble(txt);await speakBrowser(txt);resetIdle();}
+}
+
+async function fetchAndSpeakNews(){
+  setBubble('Lade aktuelle Nachrichten...');vSt='thinking';setUI('LADE NEWS...','T');
   const topics=[
-    {cat:'IMMOBILIEN',q:'Wie entwickeln sich die Immobilienpreise in Deutschland aktuell? Ein Satz.'},
-    {cat:'WIRTSCHAFT',q:'Was ist die aktuellste wichtige Wirtschaftsnachricht? Ein Satz.'},
-    {cat:'BAU',q:'Was ist aktuell wichtig in der Baubranche Deutschland? Ein Satz.'},
-    {cat:'KI',q:'Was ist die neueste wichtige KI-Nachricht? Ein Satz.'},
+    {cat:'Immobilien',q:'Aktuelle Entwicklung am deutschen Immobilienmarkt? Ein kurzer Satz.'},
+    {cat:'Wirtschaft',q:'Wichtigste aktuelle Wirtschaftsnachricht Deutschland? Ein kurzer Satz.'},
+    {cat:'Bau',q:'Aktuelles Wichtiges aus der deutschen Baubranche? Ein kurzer Satz.'},
   ];
-  const feed=document.getElementById('nfeed');
-  feed.innerHTML='';
+  const results=[];
   for(const t of topics){
     try{
-      const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},body:JSON.stringify({model:'gpt-4o',max_tokens:60,messages:[{role:'system',content:'Antworte in einem prägnanten Satz auf Deutsch. Keine Floskeln.'},{role:'user',content:t.q}]})});
-      if(!r.ok)throw new Error();
-      const txt=(await r.json()).choices[0].message.content.trim();
-      const d=document.createElement('div');
-      d.className='ni';
-      d.innerHTML=`<div class="ni-cat">${t.cat}</div><div class="ni-txt">${txt}</div>`;
-      d.onclick=()=>processInput('Erzähl mir mehr über: '+txt);
-      feed.appendChild(d);
-    }catch(e){
-      const d=document.createElement('div');
-      d.className='ni';
-      d.innerHTML=`<div class="ni-cat">${t.cat}</div><div class="ni-txt">Daten nicht verfügbar</div>`;
-      feed.appendChild(d);
-    }
+      const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},
+        body:JSON.stringify({model:'gpt-4o',max_tokens:60,
+          messages:[{role:'system',content:'Antworte in einem prägnanten Satz auf Deutsch. Kein Intro.'},{role:'user',content:t.q}]})});
+      if(r.ok){const d=await r.json();results.push(t.cat+': '+d.choices[0].message.content.trim());}
+    }catch(e){}
   }
-}
-
-// ══ SIDE INFO ══
-function initSideInfo(){
-  const now=new Date(),next=new Date(now);
-  next.setHours(now.getHours()+2,30,0);
-  document.getElementById('ic-appt').textContent=next.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' — Termin';
-  document.getElementById('ic-mail').textContent='Google Cal verbinden';
-  document.getElementById('ic-weather').textContent='—';
+  const feed=document.getElementById('nfeed');feed.innerHTML='';
+  results.forEach(n=>{
+    const[cat,...rest]=n.split(': ');const txt=rest.join(': ');
+    const d=document.createElement('div');d.className='ni';
+    d.innerHTML=`<div class="ni-c">${cat}</div><div class="ni-t">${txt}</div>`;
+    d.onclick=()=>processInput('Erzähl mir mehr über: '+txt);
+    feed.appendChild(d);
+  });
+  const summary=results.length>0?'Aktuelle Nachrichten: '+results.join('. '):'News-Abruf abgeschlossen. Stelle mir eine konkrete Frage.';
+  setBubble(summary);history.push({role:'assistant',content:summary});
+  await speakBrowser(summary);resetIdle();autoRestartMic();
 }
 
 // ══ MIC ══
@@ -474,13 +544,16 @@ async function startRec(){
     vSt='listening';setUI('HÖRE ZU...','L');
     document.getElementById('mic').classList.add('on');
     document.getElementById('mic').textContent='⏹';
-  }catch(e){showErr(e.name==='NotAllowedError'?'MIKROFON VERWEIGERT':'ERR: '+e.message);}
+  }catch(e){
+    showErr(e.name==='NotAllowedError'?'MIKROFON VERWEIGERT — BITTE TEXT NUTZEN':'ERR: '+e.message);
+    startBrowserSTT();
+  }
 }
 function stopRec(){
   if(!isRec)return;isRec=false;vSt='thinking';setUI('ANALYSIERE...','T');
-  document.getElementById('mic').classList.remove('on');
-  document.getElementById('mic').textContent='🎤';
-  mediaRec.stop();
+  document.getElementById('mic').classList.remove('on');document.getElementById('mic').textContent='🎤';
+  if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();
+  else startBrowserSTT();
 }
 async function doSTT(){
   try{
@@ -491,18 +564,29 @@ async function doSTT(){
     fd.append('file',blob,'a.'+(mime.includes('mp4')?'m4a':'webm'));
     fd.append('model','whisper-1');fd.append('language','de');
     const r=await fetch('https://api.openai.com/v1/audio/transcriptions',{method:'POST',headers:{'Authorization':'Bearer '+OAI},body:fd});
-    if(!r.ok){const e=await r.json().catch(()=>({}));if(r.status===404||(e.error?.message||'').includes('does not have access')){showErr('WHISPER N/A — TEXT EINGEBEN');resetIdle();return;}throw new Error(e.error?.message||'STT');}
+    if(!r.ok){const e=await r.json().catch(()=>({}));if(r.status===404||(e.error?.message||'').includes('does not have access')){startBrowserSTT();return;}throw new Error(e.error?.message||'STT');}
     const txt=((await r.json()).text||'').trim();
     if(!txt){resetIdle();return;}
     await processInput(txt);
   }catch(e){showErr(e.message);resetIdle();}
 }
+let recogB=null;
+function startBrowserSTT(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showErr('STT nicht verfügbar — Text eingeben');resetIdle();return;}
+  if(recogB){try{recogB.abort();}catch(e){}}
+  recogB=new SR();recogB.lang='de-DE';recogB.continuous=false;recogB.interimResults=false;
+  recogB.onstart=()=>{isRec=true;vSt='listening';setUI('HÖRE ZU...','L');document.getElementById('mic').classList.add('on');document.getElementById('mic').textContent='⏹';};
+  recogB.onresult=e=>{const txt=e.results[0][0].transcript.trim();recogB=null;isRec=false;document.getElementById('mic').classList.remove('on');document.getElementById('mic').textContent='🎤';if(txt)processInput(txt);};
+  recogB.onerror=()=>{recogB=null;isRec=false;document.getElementById('mic').classList.remove('on');document.getElementById('mic').textContent='🎤';resetIdle();};
+  recogB.onend=()=>{if(recogB){recogB=null;isRec=false;document.getElementById('mic').classList.remove('on');document.getElementById('mic').textContent='🎤';}};
+  recogB.start();
+}
 
 // ══ TEXT ══
 function sendText(){
   const inp=document.getElementById('txt'),v=inp.value.trim();
-  if(!v)return;
-  if(!OAI){showErr('API-KEY ERFORDERLICH');return;}
+  if(!v)return;if(!OAI){showErr('API-KEY ERFORDERLICH');return;}
   inp.value='';processInput(v);
 }
 
@@ -511,8 +595,11 @@ async function processInput(text){
   setBubble(text,'user');history.push({role:'user',content:text});
   msgCnt++;document.getElementById('mc').textContent=msgCnt;
   vSt='thinking';setUI('VERARBEITE...','T');showDots();
+  const sys=AGENTS[agent].sys.replace('CALDATA',calData||'nicht geladen').replace('MAILDATA',mailData||'nicht geladen');
   try{
-    const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},body:JSON.stringify({model:'gpt-4o',max_tokens:350,messages:[{role:'system',content:AGENTS[agent].sys},...history.slice(-12)]})});
+    const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},
+      body:JSON.stringify({model:'gpt-4o',max_tokens:350,messages:[{role:'system',content:sys},...history.slice(-12)]})});
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'GPT '+r.status);}
     const reply=(await r.json()).choices[0].message.content.trim();
     history.push({role:'assistant',content:reply});
@@ -523,91 +610,75 @@ async function processInput(text){
 // ══ TTS ══
 async function speak(text){
   vSt='speaking';setUI('SPRICHT...','S');
-  document.getElementById('bubble').classList.add('S');
   try{
-    const r=await fetch('https://api.openai.com/v1/audio/speech',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},body:JSON.stringify({model:'tts-1',input:text,voice:'nova',speed:.93})});
+    const r=await fetch('https://api.openai.com/v1/audio/speech',{method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},
+      body:JSON.stringify({model:'tts-1',input:text,voice:'nova',speed:.93})});
     if(!r.ok){const e=await r.json().catch(()=>({}));if((e.error?.message||'').includes('does not have access')||r.status===404)return speakBrowser(text);throw new Error(e.error?.message||'TTS');}
-    document.getElementById('tts-m').textContent='OpenAI';
     const url=URL.createObjectURL(await r.blob());
     const audio=new Audio(url);currentAudio=audio;
     return new Promise(res=>{
-      audio.onended=()=>{currentAudio=null;URL.revokeObjectURL(url);resetIdle();res();};
+      audio.onended=()=>{currentAudio=null;URL.revokeObjectURL(url);resetIdle();autoRestartMic();res();};
       audio.onerror=()=>{currentAudio=null;resetIdle();res();};
       audio.play().catch(()=>{currentAudio=null;resetIdle();res();});
     });
   }catch(e){return speakBrowser(text);}
 }
 function speakBrowser(text){
-  document.getElementById('tts-m').textContent='Browser';
+  vSt='speaking';setUI('SPRICHT...','S');
   return new Promise(res=>{
     if(!window.speechSynthesis){resetIdle();res();return;}
     window.speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(text);
-    u.lang='de-DE';u.rate=.91;
-    const v=window.speechSynthesis.getVoices().find(v=>v.lang.startsWith('de'))||null;
+    const u=new SpeechSynthesisUtterance(text);u.lang='de-DE';u.rate=.91;
+    const voices=window.speechSynthesis.getVoices();
+    const v=voices.find(v=>v.lang.startsWith('de')&&v.name.toLowerCase().includes('female'))||voices.find(v=>v.lang.startsWith('de'))||null;
     if(v)u.voice=v;
-    u.onend=()=>{resetIdle();res();};u.onerror=()=>{resetIdle();res();};
+    u.onend=()=>{resetIdle();autoRestartMic();res();};u.onerror=()=>{resetIdle();res();};
     window.speechSynthesis.speak(u);
   });
 }
-
-// ══ AGENT ══
-function setAgent(a){
-  agent=a;history=[];
-  document.querySelectorAll('.ag').forEach(el=>el.classList.remove('on'));
-  document.getElementById('ag-'+a).classList.add('on');
-  document.getElementById('t-agent').textContent=AGENTS[a].name;
-  document.getElementById('orb-ver').textContent=AGENTS[a].name;
-  const msg=AGENTS[a].name+'-Agent aktiviert. Wie kann ich helfen?';
-  setBubble(msg);speak(msg);
+function autoRestartMic(){
+  setTimeout(()=>{if(!isRec&&!currentAudio)startBrowserSTT();},900);
 }
 
-// ══ GESTURES ══
+// ══ UI ══
+function setUI(lbl,cls){
+  const s=document.getElementById('ist');s.textContent=lbl;s.className='ist '+(cls||'');
+  document.getElementById('tstxt').textContent=lbl;document.getElementById('fst').textContent=lbl;
+  const h=document.getElementById('hint');
+  h.textContent=cls==='L'?'NOCHMAL KLICKEN ZUM SENDEN':'KLICKEN ZUM SPRECHEN';
+  h.className='hint'+(cls?' on':'');
+}
+function resetIdle(){vSt='idle';setUI('SYSTEM BEREIT','');}
+function setBubble(txt,type){
+  const b=document.getElementById('bubble');
+  if(!txt){b.innerHTML='<span class="ph">AWAITING INPUT...</span>';return;}
+  if(type==='user')b.innerHTML=`<span style="color:rgba(0,204,255,.38);font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:.06em">▶ ${txt}</span>`;
+  else b.textContent=txt;
+}
+function showDots(){document.getElementById('bubble').innerHTML='<div class="dots"><span></span><span></span><span></span></div>';}
+function showErr(m){const e=document.getElementById('ebar');if(!e)return;e.textContent='⚠ '+m;setTimeout(()=>{if(e)e.textContent='';},8000);}
+function clearSession(){if(currentAudio)currentAudio.pause();history=[];msgCnt=0;document.getElementById('mc').textContent='0';resetIdle();setTimeout(morningBriefing,300);}
+
+// ══ TOUCH GESTURES ══
 let tSX=0,tSY=0,tST=0;
 document.addEventListener('touchstart',e=>{tSX=e.touches[0].clientX;tSY=e.touches[0].clientY;tST=Date.now();},{passive:true});
 document.addEventListener('touchend',e=>{
   if(Date.now()-tST>400)return;
   const dx=e.changedTouches[0].clientX-tSX,dy=e.changedTouches[0].clientY-tSY;
-  if(Math.abs(dy)>60&&Math.abs(dy)>Math.abs(dx)*1.5){if(dy<0&&!isRec&&!currentAudio)startRec();else if(dy>0&&isRec)stopRec();}
-  else if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){const keys=Object.keys(AGENTS),i=keys.indexOf(agent),next=keys[(i+(dx>0?1:-1)+keys.length)%keys.length];setAgent(next);}
+  if(Math.abs(dy)>70&&Math.abs(dy)>Math.abs(dx)*1.5){if(dy<0&&!isRec&&!currentAudio)startBrowserSTT();else if(dy>0&&isRec)stopRec();}
+  else if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5){
+    const keys=Object.keys(AGENTS),i=keys.indexOf(agent),next=keys[(i+(dx>0?1:-1)+keys.length)%keys.length];setAgent(next);
+  }
 },{passive:true});
-let pT=null,pA=false;
-document.addEventListener('mousemove',e=>{
-  const orb=document.querySelector('.orb-wrap');if(!orb)return;
-  const rect=orb.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
-  const dist=Math.sqrt((e.clientX-cx)**2+(e.clientY-cy)**2)-rect.width/2;
-  if(dist<80&&dist>0){if(!pA&&!isRec&&!currentAudio){pA=true;clearTimeout(pT);pT=setTimeout(()=>{if(pA&&!isRec&&!currentAudio)startRec();},1400);}}
-  else{if(pA){clearTimeout(pT);pA=false;if(isRec&&dist>150)stopRec();}}
-});
 
-// ══ UI ══
-function setUI(lbl,cls){
-  const s=document.getElementById('ist');s.textContent=lbl;s.className='iris-st '+(cls||'');
-  document.getElementById('tstatus').textContent=lbl;document.getElementById('fst').textContent=lbl;
-  const h=document.getElementById('hint');
-  h.textContent=cls==='L'?'NOCHMAL KLICKEN ZUM SENDEN':'KLICKEN ZUM SPRECHEN';
-  h.className='hint'+(cls?' on':'');
-}
-function resetIdle(){vSt='idle';setUI('SYSTEM BEREIT','');document.getElementById('bubble').classList.remove('S');}
-function setBubble(txt,type){
-  const b=document.getElementById('bubble');b.classList.remove('S');
-  if(!txt){b.innerHTML='<span class="ph">AWAITING INPUT...</span>';return;}
-  if(type==='user')b.innerHTML=`<span style="color:rgba(0,184,255,.4);font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:.06em">▶ ${esc(txt)}</span>`;
-  else{b.textContent=txt;b.classList.add('S');}
-}
-function showDots(){document.getElementById('bubble').innerHTML='<div class="dots"><span></span><span></span><span></span></div>';}
-function showErr(m){const e=document.getElementById('ebar');e.textContent='⚠ '+m;setTimeout(()=>{if(e)e.textContent='';},9000);}
-function clearSession(){if(currentAudio)currentAudio.pause();history=[];msgCnt=0;document.getElementById('mc').textContent='0';resetIdle();setBubble('');setTimeout(morningBriefing,400);}
-function toggleSidebars(){
-  const l=document.getElementById('lpanel'),r=document.getElementById('rpanel');
-  const h=l.style.display==='none';
-  l.style.display=h?'flex':'none';r.style.display=h?'flex':'none';
-}
-function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
+// ══ BOOT ══
 window.speechSynthesis&&window.speechSynthesis.getVoices();
 setTimeout(()=>window.speechSynthesis&&window.speechSynthesis.getVoices(),500);
-window.addEventListener('load',()=>{const k=localStorage.getItem('iris_oai');if(k&&k.length>10){OAI=k;document.getElementById('oai-key').value=k;connect();}});
+window.addEventListener('load',()=>{
+  const k=localStorage.getItem('iris_oai');
+  if(k&&k.length>10){OAI=k;document.getElementById('oai-key').value=k;connect();}
+});
 </script>
 </body>
 </html>
