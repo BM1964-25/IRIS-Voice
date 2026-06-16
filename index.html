@@ -526,27 +526,65 @@ function disconnect(){if(currentAudio)currentAudio.pause();localStorage.removeIt
 async function morningBriefing(){
   const h=new Date().getHours();
   const gr=h<12?'Guten Morgen':h<18?'Guten Tag':'Guten Abend';
-  const d=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const now=new Date();
+  const weekday=now.toLocaleDateString('de-DE',{weekday:'long'});
+  const day=now.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'});
+  const dateStr=`${weekday}, ${day}`;
+
   setBubble(`${gr}, Bernhard. Lade deine Daten...`);
   vSt='thinking';setUI('LADE DATEN...','T');
+
   try{
     const r=await fetch(GOOGLE_API+'?action=briefing');
     const data=await r.json();
-    if(data.calendar){calData=data.calendar.summary;document.getElementById('ic-cal').textContent=data.calendar.next;document.getElementById('ic-cal').classList.remove('loading');}
-    if(data.gmail){mailData=data.gmail.summary;document.getElementById('ic-mail').textContent=data.gmail.count+' ungelesen';document.getElementById('ic-mail').classList.remove('loading');}
-    const gcalTxt=data.calendar?.summary||'';
-    const gmailTxt=data.gmail?.summary||'';
-    const germanPart=`${gr}, Bernhard! Heute ist ${d}. Ich bin I.R.I.S. — dein persönliches intelligentes Betriebssystem. ${gcalTxt} ${gmailTxt}`.trim();
-    const englishTagline=`Your personal intelligent operating system for knowledge, decisions and automation.`;
-    const fullText=germanPart+' '+englishTagline;
-    setBubble(fullText);history.push({role:'assistant',content:fullText});
-    await speakMixed(germanPart, englishTagline);
+    if(data.calendar){
+      calData=data.calendar.summary;
+      document.getElementById('ic-cal').textContent=data.calendar.next||'Keine Termine';
+      document.getElementById('ic-cal').classList.remove('loading');
+    }
+    if(data.gmail){
+      mailData=data.gmail.summary;
+      document.getElementById('ic-mail').textContent=data.gmail.count+' ungelesen';
+      document.getElementById('ic-mail').classList.remove('loading');
+    }
+
+    // Build structured briefing text
+    const calText = data.calendar?.events?.length===0
+      ? 'Du hast keine anstehenden Termine.'
+      : data.calendar?.summary || 'Keine Termindaten verfügbar.';
+
+    const mailCount = data.gmail?.count || 0;
+    const mailText = mailCount===0
+      ? 'Du hast keine ungelesenen E-Mails.'
+      : `Du hast ${mailCount} ungelesene E-Mail${mailCount>1?'s':''}.`;
+
+    const latestMail = data.gmail?.mails?.[0];
+    const latestMailText = latestMail
+      ? `Die neueste Nachricht ist von ${latestMail.from}: ${latestMail.subject}.`
+      : '';
+
+    // German part 1: greeting + date
+    const part1 = `${gr}, Bernhard! Heute ist ${dateStr}. Ich bin`;
+    // English part: tagline
+    const partEN = `I.R.I.S. — Your personal intelligent operating system for knowledge, decisions and automation.`;
+    // German part 2: briefing data
+    const part2 = `${calText} ${mailText}${latestMailText?' '+latestMailText:''}`.trim();
+
+    const fullText = `${part1} ${partEN} ${part2}`;
+    setBubble(fullText);
+    history.push({role:'assistant', content:fullText});
+
+    // Speak: DE → EN → DE
+    await speakTriple(part1, partEN, part2);
+
   }catch(e){
-    const fbGerman=`${gr}, Bernhard! Heute ist ${d}. Ich bin I.R.I.S. — dein persönliches intelligentes Betriebssystem. Wie kann ich dir helfen?`;
-    const fbEnglish=`Your personal intelligent operating system for knowledge, decisions and automation.`;
-    const fb=fbGerman+' '+fbEnglish;
+    // Fallback without Google data
+    const part1=`${gr}, Bernhard! Heute ist ${dateStr}. Ich bin`;
+    const partEN=`I.R.I.S. — Your personal intelligent operating system for knowledge, decisions and automation.`;
+    const part2=`Wie kann ich dir heute helfen?`;
+    const fb=`${part1} ${partEN} ${part2}`;
     setBubble(fb);history.push({role:'assistant',content:fb});
-    await speakMixed(fbGerman, fbEnglish);
+    await speakTriple(part1, partEN, part2);
   }
   fetchNews();
 }
@@ -762,35 +800,82 @@ function stopWakeWord() {
   wakeActive = false;
 }
 
-// ══ SPEAK MIXED (German + English tagline) ══
+// ══ SPEAK MIXED & TRIPLE ══
+
+// Helper: speak one utterance
+function speakUtterance(text, lang, rate=.91, pitch=1.0){
+  return new Promise(res=>{
+    if(!window.speechSynthesis){res();return;}
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang=lang; u.rate=rate; u.pitch=pitch;
+    const voices=window.speechSynthesis.getVoices();
+    if(lang.startsWith('de')){
+      const v=voices.find(v=>v.lang.startsWith('de')&&v.name.toLowerCase().includes('female'))||voices.find(v=>v.lang.startsWith('de'))||null;
+      if(v)u.voice=v;
+    } else {
+      // English — prefer Daniel (UK) or Samantha (US) for professional sound
+      const v=voices.find(v=>v.name.includes('Daniel'))||
+               voices.find(v=>v.name.includes('Samantha'))||
+               voices.find(v=>v.lang.startsWith('en-GB'))||
+               voices.find(v=>v.lang.startsWith('en-US'))||null;
+      if(v)u.voice=v;
+    }
+    u.onend=()=>res(); u.onerror=()=>res();
+    window.speechSynthesis.speak(u);
+  });
+}
+
+// DE → EN (2 parts)
 async function speakMixed(germanText, englishText){
-  vSt='speaking';setUI('SPRICHT...','S');
-  // Speak German part first
-  await new Promise(res=>{
-    if(!window.speechSynthesis){res();return;}
-    window.speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(germanText);
-    u.lang='de-DE';u.rate=.91;
-    const voices=window.speechSynthesis.getVoices();
-    const v=voices.find(v=>v.lang.startsWith('de')&&v.name.toLowerCase().includes('female'))||voices.find(v=>v.lang.startsWith('de'))||null;
-    if(v)u.voice=v;
-    u.onend=()=>res();u.onerror=()=>res();
-    window.speechSynthesis.speak(u);
+  vSt='speaking'; setUI('SPRICHT...','S');
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  await speakUtterance(germanText, 'de-DE', .91);
+  await speakUtterance(englishText, 'en-GB', .86, 1.02);
+  resetIdle(); autoMic();
+}
+
+// DE → EN → DE (3 parts — for morning briefing)
+async function speakTriple(germanPart1, englishPart, germanPart2){
+  vSt='speaking'; setUI('SPRICHT...','S');
+  window.speechSynthesis && window.speechSynthesis.cancel();
+
+  // Try OpenAI TTS first (alloy voice — professional)
+  if(OAI){
+    try{
+      // Part 1: German
+      await speakOpenAI(germanPart1, 'alloy', 'de');
+      // Part 2: English — use onyx for deep professional English
+      await speakOpenAI(englishPart, 'onyx', 'en');
+      // Part 3: German
+      await speakOpenAI(germanPart2, 'alloy', 'de');
+      resetIdle(); autoMic(); return;
+    }catch(e){
+      // Fall through to browser TTS
+    }
+  }
+
+  // Browser TTS fallback
+  await speakUtterance(germanPart1, 'de-DE', .91);
+  await speakUtterance(englishPart, 'en-GB', .86, 1.02);
+  await speakUtterance(germanPart2, 'de-DE', .91);
+  resetIdle(); autoMic();
+}
+
+// OpenAI TTS single segment
+async function speakOpenAI(text, voice, lang){
+  const r=await fetch('https://api.openai.com/v1/audio/speech',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},
+    body:JSON.stringify({model:'tts-1-hd',input:text,voice:voice,speed:.93})
   });
-  // Then speak English tagline with English voice
-  await new Promise(res=>{
-    if(!window.speechSynthesis){res();return;}
-    const u=new SpeechSynthesisUtterance(englishText);
-    u.lang='en-US';u.rate=.88;u.pitch=1.05;
-    const voices=window.speechSynthesis.getVoices();
-    const v=voices.find(v=>v.lang.startsWith('en-US')&&v.name.toLowerCase().includes('female'))
-           ||voices.find(v=>v.lang.startsWith('en-US'))
-           ||voices.find(v=>v.lang.startsWith('en'))||null;
-    if(v)u.voice=v;
-    u.onend=()=>res();u.onerror=()=>res();
-    window.speechSynthesis.speak(u);
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'TTS');}
+  const url=URL.createObjectURL(await r.blob());
+  return new Promise(res=>{
+    const audio=new Audio(url);
+    audio.onended=()=>{URL.revokeObjectURL(url);res();};
+    audio.onerror=()=>{URL.revokeObjectURL(url);res();};
+    audio.play().catch(()=>res());
   });
-  resetIdle();autoMic();
 }
 
 
@@ -835,7 +920,7 @@ async function speak(text){
   try{
     const r=await fetch('https://api.openai.com/v1/audio/speech',{method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},
-      body:JSON.stringify({model:'tts-1',input:text,voice:'nova',speed:.93})});
+      body:JSON.stringify({model:'tts-1-hd',input:text,voice:'alloy',speed:.93})});
     if(!r.ok){const e=await r.json().catch(()=>({}));if((e.error?.message||'').includes('does not have access')||r.status===404)return speakBrowser(text);throw new Error(e.error?.message||'TTS');}
     document.getElementById('ttsm').textContent='OpenAI';
     const url=URL.createObjectURL(await r.blob());
