@@ -281,140 +281,176 @@ function dOrb(){
   const C='0,204,255';
   const R=CX;
 
-  // ── RING 1: Outermost fine tick ring ──
-  const R1=R*.96;
-  for(let t=0;t<240;t++){
-    const a=(t/240)*Math.PI*2;
-    const isLong=t%20===0,isMed=t%10===0,isShort=t%5===0;
-    const len=isLong?R*.065:isMed?R*.04:isShort?R*.022:R*.012;
-    const alpha=isLong?.65+vI*.25:isMed?.42+vI*.18:isShort?.25+vI*.1:.14+vI*.05;
-    const lw=isLong?1.4:isMed?.9:.5;
+  // ── OUTERMOST: Fine precision tick ring (like compass/radar) ──
+  const R1=R*.97;
+  for(let t=0;t<360;t++){
+    const a=(t/360)*Math.PI*2;
+    const isLong=t%45===0,isMed=t%15===0,isShort=t%5===0;
+    const len=isLong?R*.07:isMed?R*.045:isShort?R*.025:R*.012;
+    const alpha=isLong?.75+vI*.2:isMed?.48+vI*.15:isShort?.28+vI*.1:.14+vI*.04;
     ox.beginPath();
     ox.moveTo(CX+Math.cos(a)*(R1-len),CY+Math.sin(a)*(R1-len));
     ox.lineTo(CX+Math.cos(a)*R1,CY+Math.sin(a)*R1);
-    ox.strokeStyle=`rgba(${C},${alpha})`;ox.lineWidth=lw;ox.stroke();
+    ox.strokeStyle=`rgba(${C},${alpha})`;
+    ox.lineWidth=isLong?1.6:isMed?1:.5;ox.stroke();
   }
 
-  // ── RING 2: Outer segmented arc (JARVIS style gaps) ──
-  const R2=R*.85;
+  // ── RING 2: Outer segmented arcs — JARVIS signature ──
+  const R2=R*.88;
   const segs1=[
-    {s:0,e:.08,w:1.5},{s:.10,e:.22,w:3},{s:.24,e:.28,w:1},{s:.30,e:.46,w:2.5},
-    {s:.49,e:.51,w:4},{s:.53,e:.68,w:3},{s:.70,e:.74,w:1},{s:.76,e:.88,w:2.5},{s:.91,e:1,w:1.5}
+    {s:0.01,e:.07,w:1.2},{s:.09,e:.18,w:3.5,glow:true},{s:.20,e:.23,w:1},
+    {s:.25,e:.44,w:2.8,glow:true},{s:.46,e:.50,w:5,glow:true},
+    {s:.52,e:.70,w:3,glow:true},{s:.72,e:.76,w:1},
+    {s:.78,e:.91,w:2.8,glow:true},{s:.93,e:.99,w:1.2}
   ];
   segs1.forEach(s=>{
-    ox.beginPath();
-    ox.arc(CX,CY,R2,s.s*Math.PI*2-Math.PI/2+oT*.1,s.e*Math.PI*2-Math.PI/2+oT*.1);
-    ox.strokeStyle=`rgba(${C},${.38+vI*.28})`;ox.lineWidth=s.w;ox.stroke();
+    const sa=s.s*Math.PI*2-Math.PI/2+oT*.08;
+    const ea=s.e*Math.PI*2-Math.PI/2+oT*.08;
+    if(s.glow){
+      ox.beginPath();ox.arc(CX,CY,R2,sa,ea);
+      ox.strokeStyle=`rgba(${C},${.15+vI*.1})`;ox.lineWidth=s.w+6;ox.stroke();
+    }
+    ox.beginPath();ox.arc(CX,CY,R2,sa,ea);
+    ox.strokeStyle=`rgba(${C},${.45+vI*.3})`;ox.lineWidth=s.w;ox.stroke();
   });
 
-  // ── RING 3: Medium tick ring ──
-  const R3=R*.76;
-  for(let t=0;t<120;t++){
-    const a=(t/120)*Math.PI*2-oT*.06;
-    const isLong=t%15===0,isMed=t%5===0;
-    const len=isLong?R*.04:isMed?R*.025:R*.012;
-    ox.beginPath();
-    ox.moveTo(CX+Math.cos(a)*(R3-len),CY+Math.sin(a)*(R3-len));
-    ox.lineTo(CX+Math.cos(a)*R3,CY+Math.sin(a)*R3);
-    ox.strokeStyle=`rgba(${C},${isLong?.45+vI*.2:isMed?.28+vI*.12:.15+vI*.06})`;
-    ox.lineWidth=isLong?1.1:isMed?.7:.4;ox.stroke();
-  }
-
-  // ── RING 4: Data squares/dots ring ──
-  const R4=R*.68;
-  for(let d=0;d<48;d++){
-    const a=(d/48)*Math.PI*2+oT*.15;
-    const isLarge=d%6===0,isMed=d%3===0;
-    const sz=isLarge?4.5:isMed?2.8:1.4;
-    const bx=CX+Math.cos(a)*R4,by=CY+Math.sin(a)*R4;
-    const alpha=isLarge?.55+vI*.3:isMed?.35+vI*.18:.18+vI*.08;
+  // ── RING 3: Data dot ring (binary pattern) ──
+  const R3=R*.79;
+  for(let d=0;d<72;d++){
+    const a=(d/72)*Math.PI*2+oT*.12;
+    const pattern=[1,0,1,1,0,1,0,0,1,1,0,1];
+    const isOn=pattern[d%12]===1;
+    const sz=isOn?(d%6===0?4:2.5):1.2;
+    const bx=CX+Math.cos(a)*R3,by=CY+Math.sin(a)*R3;
+    const alpha=isOn?(.55+vI*.3):(.12+vI*.06);
+    if(isOn&&d%6===0){
+      ox.shadowColor=`rgba(${C},.6)`;ox.shadowBlur=6;
+    }
     ox.fillStyle=`rgba(${C},${alpha})`;
     ox.fillRect(bx-sz/2,by-sz/2,sz,sz);
+    ox.shadowBlur=0;
   }
 
-  // ── RING 5: Counter-rotating segmented ring ──
-  const R5=R*.59;
+  // ── RING 4: Medium segmented counter-ring ──
+  const R4=R*.71;
   const segs2=[
-    {s:0,e:.25,w:2.2},{s:.28,e:.38,w:1.2},{s:.41,e:.62,w:2.2},
-    {s:.65,e:.72,w:1},{s:.75,e:.94,w:2.2},{s:.97,e:1,w:1}
+    {s:.02,e:.22,w:2.2},{s:.25,e:.32,w:1},{s:.35,e:.48,w:3,glow:true},
+    {s:.51,e:.51,w:0},{s:.52,e:.73,w:2.5,glow:true},{s:.76,e:.82,w:1},
+    {s:.85,e:.98,w:2.2}
   ];
   segs2.forEach(s=>{
-    ox.beginPath();
-    ox.arc(CX,CY,R5,s.s*Math.PI*2-Math.PI/2-oT*.15,s.e*Math.PI*2-Math.PI/2-oT*.15);
-    ox.strokeStyle=`rgba(${C},${.3+vI*.22})`;ox.lineWidth=s.w;ox.stroke();
+    if(s.w===0)return;
+    const sa=s.s*Math.PI*2-Math.PI/2-oT*.12;
+    const ea=s.e*Math.PI*2-Math.PI/2-oT*.12;
+    if(s.glow){
+      ox.beginPath();ox.arc(CX,CY,R4,sa,ea);
+      ox.strokeStyle=`rgba(${C},${.1+vI*.08})`;ox.lineWidth=s.w+5;ox.stroke();
+    }
+    ox.beginPath();ox.arc(CX,CY,R4,sa,ea);
+    ox.strokeStyle=`rgba(${C},${.32+vI*.2})`;ox.lineWidth=s.w;ox.stroke();
   });
 
-  // ── RING 6: Fine inner tick ring ──
-  const R6=R*.51;
-  for(let t=0;t<80;t++){
-    const a=(t/80)*Math.PI*2+oT*.08;
-    const isLong=t%10===0;
-    const len=isLong?R*.03:R*.015;
+  // ── RING 5: Small tick ring (inner compass) ──
+  const R5=R*.63;
+  for(let t=0;t<120;t++){
+    const a=(t/120)*Math.PI*2+oT*.06;
+    const isLong=t%12===0,isMed=t%4===0;
+    const len=isLong?R*.038:isMed?R*.022:R*.01;
     ox.beginPath();
-    ox.moveTo(CX+Math.cos(a)*R6,CY+Math.sin(a)*R6);
-    ox.lineTo(CX+Math.cos(a)*(R6+len),CY+Math.sin(a)*(R6+len));
-    ox.strokeStyle=`rgba(${C},${isLong?.4+vI*.2:.2+vI*.1})`;
-    ox.lineWidth=isLong?.9:.4;ox.stroke();
+    ox.moveTo(CX+Math.cos(a)*R5,CY+Math.sin(a)*R5);
+    ox.lineTo(CX+Math.cos(a)*(R5+len),CY+Math.sin(a)*(R5+len));
+    ox.strokeStyle=`rgba(${C},${isLong?.5+vI*.22:isMed?.3+vI*.12:.14+vI*.05})`;
+    ox.lineWidth=isLong?1.2:isMed?.7:.4;ox.stroke();
   }
 
-  // ── WAVEFORM RING — circular, reacts to voice ──
-  const WR=R*.44;
+  // ── RING 6: Hex data blocks (outer) ──
+  const R6=R*.55;
+  for(let h=0;h<36;h++){
+    const a=(h/36)*Math.PI*2-oT*.09;
+    const isKey=h%9===0,isMed=h%3===0;
+    const sz=isKey?5.5:isMed?3:1.5;
+    const bx=CX+Math.cos(a)*R6,by=CY+Math.sin(a)*R6;
+    const alpha=isKey?.6+vI*.3:isMed?.35+vI*.15:.16+vI*.07;
+    if(isKey){ox.shadowColor=`rgba(${C},.7)`;ox.shadowBlur=8;}
+    ox.fillStyle=`rgba(${C},${alpha})`;
+    if(isKey){
+      ox.beginPath();
+      for(let s=0;s<6;s++){const sa=s/6*Math.PI*2;ox.lineTo?ox.lineTo(bx+Math.cos(sa)*sz*0.7,by+Math.sin(sa)*sz*0.7):ox.moveTo(bx+Math.cos(sa)*sz*0.7,by+Math.sin(sa)*sz*0.7);}
+      ox.beginPath();
+      ox.moveTo(bx+Math.cos(0)*sz*.7,by+Math.sin(0)*sz*.7);
+      for(let s=1;s<7;s++){const sa=s/6*Math.PI*2;ox.lineTo(bx+Math.cos(sa)*sz*.7,by+Math.sin(sa)*sz*.7);}
+      ox.fillStyle=`rgba(${C},${alpha})`;ox.fill();
+    } else {
+      ox.fillRect(bx-sz/2,by-sz/2,sz,sz);
+    }
+    ox.shadowBlur=0;
+  }
+
+  // ── WAVEFORM RING — 256 points, reacts to voice ──
+  const WR=R*.46;
+  ox.shadowColor=`rgba(${C},.4)`;ox.shadowBlur=vSt==='speaking'?12:4;
   ox.beginPath();
   for(let i=0;i<256;i++){
     const a=(i/256)*Math.PI*2-Math.PI/2;
-    const amp=wd[i]*R*.16*vI;
+    const amp=wd[i]*R*.18*vI;
     const r=WR+amp;
     const x=CX+Math.cos(a)*r,y=CY+Math.sin(a)*r;
     i===0?ox.moveTo(x,y):ox.lineTo(x,y);
   }
-  ox.closePath();ox.strokeStyle=`rgba(${C},${.65*vI+.06})`;ox.lineWidth=1.6;ox.stroke();
+  ox.closePath();ox.strokeStyle=`rgba(${C},${.7*vI+.08})`;ox.lineWidth=1.8;ox.stroke();
+  ox.shadowBlur=0;
 
-  // ── INNER BRIGHT RING (JARVIS signature glow) ──
-  const IG=R*.36;
-  // Outer soft ring
+  // ── INNER BRIGHT RING — JARVIS signature glow circle ──
+  const IG=R*.365;
+  // Soft outer halo
+  ox.beginPath();ox.arc(CX,CY,IG+12,0,Math.PI*2);
+  ox.strokeStyle=`rgba(${C},${.06+vI*.1})`;ox.lineWidth=8;ox.stroke();
   ox.beginPath();ox.arc(CX,CY,IG+6,0,Math.PI*2);
-  ox.strokeStyle=`rgba(${C},${.12+vI*.18})`;ox.lineWidth=3;ox.stroke();
-  // Main bright ring
+  ox.strokeStyle=`rgba(${C},${.1+vI*.15})`;ox.lineWidth=4;ox.stroke();
+  // Main glow ring
+  ox.shadowColor=`rgba(${C},${.8+vI*.2})`;ox.shadowBlur=20+vI*15;
   ox.beginPath();ox.arc(CX,CY,IG,0,Math.PI*2);
-  ox.strokeStyle=`rgba(${C},${.65+vI*.3})`;ox.lineWidth=3+vI*2;ox.stroke();
-  // Inner soft glow
-  ox.beginPath();ox.arc(CX,CY,IG-5,0,Math.PI*2);
-  ox.strokeStyle=`rgba(${C},${.15+vI*.2})`;ox.lineWidth=2;ox.stroke();
+  ox.strokeStyle=`rgba(${C},${.7+vI*.3})`;ox.lineWidth=3.5+vI*2.5;ox.stroke();
+  ox.shadowBlur=0;
+  // Inner ring
+  ox.beginPath();ox.arc(CX,CY,IG-6,0,Math.PI*2);
+  ox.strokeStyle=`rgba(${C},${.18+vI*.2})`;ox.lineWidth=1.5;ox.stroke();
 
-  // Inner fill glow
+  // Inner fill
   const igrd=ox.createRadialGradient(CX,CY,0,CX,CY,IG);
-  igrd.addColorStop(0,`rgba(${C},${.07*vI})`);
-  igrd.addColorStop(.75,`rgba(${C},${.04*vI})`);
+  igrd.addColorStop(0,`rgba(${C},${.08*vI})`);
+  igrd.addColorStop(.6,`rgba(${C},${.05*vI})`);
   igrd.addColorStop(1,'transparent');
   ox.fillStyle=igrd;ox.beginPath();ox.arc(CX,CY,IG,0,Math.PI*2);ox.fill();
 
-  // ── Radial spikes when active ──
+  // ── Radial spikes when speaking/listening ──
   if(vSt!=='idle'){
-    const cnt=vSt==='speaking'?32:20;
+    const cnt=vSt==='speaking'?36:22;
     for(let s=0;s<cnt;s++){
-      const a=(s/cnt)*Math.PI*2+oT*.38;
-      const l=(6+Math.sin(oT*5+s*.9)*20)*vI;
-      const inner=IG+3;
+      const a=(s/cnt)*Math.PI*2+oT*.35;
+      const l=(5+Math.sin(oT*5+s*.9)*22)*vI;
+      const inner=IG+4;
       ox.beginPath();
       ox.moveTo(CX+Math.cos(a)*inner,CY+Math.sin(a)*inner);
       ox.lineTo(CX+Math.cos(a)*(inner+l),CY+Math.sin(a)*(inner+l));
-      ox.strokeStyle=`rgba(${C},${.42*vI})`;ox.lineWidth=1.1;ox.stroke();
+      ox.strokeStyle=`rgba(${C},${.45*vI})`;ox.lineWidth=1;ox.stroke();
     }
   }
 
-  // ── Particles ──
-  for(let p=0;p<10;p++){
-    const pA=(p/10)*Math.PI*2+oT*.55;
-    const pR=R*.26+Math.sin(oT*1.6+p)*R*.1*vI;
-    ox.beginPath();ox.arc(CX+Math.cos(pA)*pR,CY+Math.sin(pA)*pR,1.8,0,Math.PI*2);
-    ox.fillStyle=`rgba(${C},${.55*vI})`;ox.fill();
+  // ── Rotating particles ──
+  for(let p=0;p<12;p++){
+    const pA=(p/12)*Math.PI*2+oT*.5;
+    const pR=R*.28+Math.sin(oT*1.6+p)*R*.08*vI;
+    const ps=1.5+vI*1.5;
+    ox.beginPath();ox.arc(CX+Math.cos(pA)*pR,CY+Math.sin(pA)*pR,ps,0,Math.PI*2);
+    ox.fillStyle=`rgba(${C},${.6*vI})`;ox.fill();
   }
 
   // ── Outer ambient glow ──
-  const ogrd=ox.createRadialGradient(CX,CY,R*.5,CX,CY,R*.97);
+  const ogrd=ox.createRadialGradient(CX,CY,R*.5,CX,CY,R*.98);
   ogrd.addColorStop(0,'transparent');
-  ogrd.addColorStop(1,`rgba(${C},${.035*vI})`);
-  ox.fillStyle=ogrd;ox.beginPath();ox.arc(CX,CY,R*.97,0,Math.PI*2);ox.fill();
+  ogrd.addColorStop(1,`rgba(${C},${.04*vI})`);
+  ox.fillStyle=ogrd;ox.beginPath();ox.arc(CX,CY,R*.98,0,Math.PI*2);ox.fill();
 }
 
 function loop(){requestAnimationFrame(loop);bgT+=.01;oT+=.007;dBg();dOrb();}
@@ -478,13 +514,17 @@ async function morningBriefing(){
     if(data.gmail){mailData=data.gmail.summary;document.getElementById('ic-mail').textContent=data.gmail.count+' ungelesen';document.getElementById('ic-mail').classList.remove('loading');}
     const gcalTxt=data.calendar?.summary||'';
     const gmailTxt=data.gmail?.summary||'';
-    const brief=`${gr}, Bernhard! Heute ist ${d}. Ich bin I.R.I.S. — dein personal intelligent operating system for knowledge, decisions and automation. ${gcalTxt} ${gmailTxt}`.trim();
-    setBubble(brief);history.push({role:'assistant',content:brief});
-    await speak(brief);
+    const germanPart=`${gr}, Bernhard! Heute ist ${d}. Ich bin I.R.I.S. — dein persönliches intelligentes Betriebssystem. ${gcalTxt} ${gmailTxt}`.trim();
+    const englishTagline=`Your personal intelligent operating system for knowledge, decisions and automation.`;
+    const fullText=germanPart+' '+englishTagline;
+    setBubble(fullText);history.push({role:'assistant',content:fullText});
+    await speakMixed(germanPart, englishTagline);
   }catch(e){
-    const fb=`${gr}, Bernhard! Ich bin I.R.I.S. — dein personal intelligent operating system for knowledge, decisions and automation. Heute ist ${d}. Wie kann ich dir helfen?`;
+    const fbGerman=`${gr}, Bernhard! Heute ist ${d}. Ich bin I.R.I.S. — dein persönliches intelligentes Betriebssystem. Wie kann ich dir helfen?`;
+    const fbEnglish=`Your personal intelligent operating system for knowledge, decisions and automation.`;
+    const fb=fbGerman+' '+fbEnglish;
     setBubble(fb);history.push({role:'assistant',content:fb});
-    await speak(fb);
+    await speakMixed(fbGerman, fbEnglish);
   }
   fetchNews();
 }
@@ -636,6 +676,38 @@ async function processInput(text){
     const reply=await callAI(history,sys,agent);
     history.push({role:'assistant',content:reply});setBubble(reply);await speak(reply);
   }catch(e){showErr(e.message);resetIdle();}
+}
+
+
+// ══ SPEAK MIXED (German + English tagline) ══
+async function speakMixed(germanText, englishText){
+  vSt='speaking';setUI('SPRICHT...','S');
+  // Speak German part first
+  await new Promise(res=>{
+    if(!window.speechSynthesis){res();return;}
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(germanText);
+    u.lang='de-DE';u.rate=.91;
+    const voices=window.speechSynthesis.getVoices();
+    const v=voices.find(v=>v.lang.startsWith('de')&&v.name.toLowerCase().includes('female'))||voices.find(v=>v.lang.startsWith('de'))||null;
+    if(v)u.voice=v;
+    u.onend=()=>res();u.onerror=()=>res();
+    window.speechSynthesis.speak(u);
+  });
+  // Then speak English tagline with English voice
+  await new Promise(res=>{
+    if(!window.speechSynthesis){res();return;}
+    const u=new SpeechSynthesisUtterance(englishText);
+    u.lang='en-US';u.rate=.88;u.pitch=1.05;
+    const voices=window.speechSynthesis.getVoices();
+    const v=voices.find(v=>v.lang.startsWith('en-US')&&v.name.toLowerCase().includes('female'))
+           ||voices.find(v=>v.lang.startsWith('en-US'))
+           ||voices.find(v=>v.lang.startsWith('en'))||null;
+    if(v)u.voice=v;
+    u.onend=()=>res();u.onerror=()=>res();
+    window.speechSynthesis.speak(u);
+  });
+  resetIdle();autoMic();
 }
 
 // ══ TTS ══
