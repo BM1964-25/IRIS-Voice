@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IRIS — BuiltSmart AI</title>
+<title>I.R.I.S. — Integrated Reasoning &amp; Intelligence System</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--c:#00ccff;--c2:#0044aa;--c3:#00ff99;--c4:#ff6600;--c5:#aa44ff;--c6:#ffcc00;--bg:#000508;}
@@ -152,8 +152,9 @@ canvas#orb{position:absolute;inset:0;}
 
 <!-- SETUP -->
 <div id="setup">
-  <div class="slogo">IRIS</div>
-  <div class="ssub">Intelligent Real Estate Intelligence System · v9</div>
+  <div class="slogo">I.R.I.S.</div>
+  <div class="ssub">Integrated Reasoning &amp; Intelligence System · v10</div>
+  <div style="font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.18em;color:rgba(0,204,255,.28);text-align:center;max-width:420px;line-height:1.8">Your intelligent operating system for knowledge, decisions and automation.</div>
   <div class="sbox">
     <div class="slbl">OpenAI API Authorization</div>
     <input class="sinp" type="password" id="oai-key" placeholder="sk-proj-…" autocomplete="off" onkeydown="if(event.key==='Enter')connect()">
@@ -168,7 +169,7 @@ canvas#orb{position:absolute;inset:0;}
   <!-- TOPBAR -->
   <div class="topbar">
     <div style="display:flex;align-items:baseline;gap:.6rem">
-      <div class="tlogo">IRIS</div>
+      <div class="tlogo">I.R.I.S.</div>
       <div class="tagent" id="tagent">GESPRÄCH</div>
     </div>
     <div class="tclock" id="clock">--:--:--</div>
@@ -206,7 +207,7 @@ canvas#orb{position:absolute;inset:0;}
     <div class="orb-wrap" onclick="toggleMic()">
       <canvas id="orb" width="520" height="520"></canvas>
       <div class="orb-ct">
-        <div class="orb-name">IRIS</div>
+        <div class="orb-name">I.R.I.S.</div>
         <div class="orb-sub" id="osub">v9.0 · BUILTSMART AI</div>
       </div>
     </div>
@@ -218,7 +219,7 @@ canvas#orb{position:absolute;inset:0;}
   <!-- DASHBOARD PANEL -->
   <div class="dashboard" id="dashboard">
     <div class="dash-top">
-      <div class="dash-title">IRIS DASHBOARD</div>
+      <div class="dash-title">I.R.I.S. DASHBOARD</div>
       <button class="dash-close" onclick="toggleDash()">✕ CLOSE</button>
     </div>
     <div class="dash-body">
@@ -254,7 +255,7 @@ canvas#orb{position:absolute;inset:0;}
     <button class="ssend" onclick="sendText()">SENDEN ▶</button>
   </div>
   <div class="fbar">
-    <span>© 2026 BUILTSMART AI · BUILTSMART HUB · BERNHARD METZGER</span>
+    <span>© 2026 I.R.I.S. · BUILTSMART AI · BUILTSMART HUB · BERNHARD METZGER</span>
     <span id="fst">IDLE</span>
   </div>
 </div>
@@ -404,7 +405,7 @@ let OAI='',agent='chat',history=[],currentAudio=null,mediaRec=null,audioChunks=[
 let calData='',mailData='';
 
 const AGENTS={
-  chat:{name:'GESPRÄCH',sys:`Du bist IRIS v9, persönliche KI-Zentrale von Bernhard Metzger, BuiltSmart AI. Sprich Bernhard immer mit "du" an — persönlich, direkt, professionell. Max 80 Wörter. Deutsch.`},
+  chat:{name:'GESPRÄCH',sys:`Du bist I.R.I.S. — Integrated Reasoning & Intelligence System, die persönliche KI-Zentrale von Bernhard Metzger, BuiltSmart AI. Sprich Bernhard immer mit "du" an — persönlich, direkt, professionell. Max 80 Wörter. Deutsch.`},
   news:{name:'NEWS',sys:`Du bist IRIS, News-Agent. Sprich Bernhard mit "du" an. Fasse aktuelle Nachrichten strukturiert zusammen. Max 90 Wörter. Deutsch.`},
   cal:{name:'KALENDER',sys:`Du bist IRIS, Kalender-Agent. Sprich Bernhard mit "du" an. Helfe mit Terminplanung. Kalenderdaten: CALDATA. Max 90 Wörter. Deutsch.`},
   mail:{name:'E-MAIL',sys:`Du bist IRIS, E-Mail-Agent. Sprich Bernhard mit "du" an. Verfasse und fasse E-Mails zusammen. Maildaten: MAILDATA. Max 90 Wörter. Deutsch.`},
@@ -442,11 +443,11 @@ async function morningBriefing(){
     const data=await r.json();
     if(data.calendar){calData=data.calendar.summary;document.getElementById('ic-cal').textContent=data.calendar.next;document.getElementById('ic-cal').classList.remove('loading');}
     if(data.gmail){mailData=data.gmail.summary;document.getElementById('ic-mail').textContent=data.gmail.count+' ungelesen';document.getElementById('ic-mail').classList.remove('loading');}
-    const txt=data.briefingText||`${gr}, Bernhard! Ich bin IRIS, deine KI-Zentrale. Wie kann ich dir helfen?`;
+    const txt=data.briefingText||`${gr}, Bernhard! Ich bin I.R.I.S., dein Integrated Reasoning & Intelligence System. Wie kann ich dir helfen?`;
     setBubble(txt);history.push({role:'assistant',content:txt});
     await speakBrowser(txt);resetIdle();autoRestartMic();
   }catch(e){
-    const txt=`${gr}, Bernhard! Ich bin IRIS, deine persönliche KI-Zentrale. Wie kann ich dir heute helfen?`;
+    const txt=`${gr}, Bernhard! Ich bin I.R.I.S., dein persönliches intelligentes Betriebssystem. Wie kann ich dir helfen?`;
     setBubble(txt);history.push({role:'assistant',content:txt});
     await speakBrowser(txt);resetIdle();autoRestartMic();
   }
@@ -459,7 +460,7 @@ function setAgent(a){
   const agEl=document.getElementById('ag-'+a);if(agEl)agEl.classList.add('on');
   const pEl=document.getElementById('p-'+a);if(pEl)pEl.classList.add('on');
   document.getElementById('tagent').textContent=AGENTS[a].name;
-  document.getElementById('osub').textContent=AGENTS[a].name+' · BUILTSMART AI';
+  document.getElementById('osub').textContent=AGENTS[a].name+' · I.R.I.S.';
   if(a==='cal'){fetchAndSpeakCalendar();return;}
   if(a==='mail'){fetchAndSpeakMail();return;}
   if(a==='news'){fetchAndSpeakNews();return;}
