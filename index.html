@@ -375,14 +375,14 @@ setInterval(tick,1000);tick();
 let OAI='',agent='chat',history=[],currentAudio=null,mediaRec=null,audioChunks=[],isRec=false,msgCnt=0;
 
 const AGENTS={
-  chat:{name:'GESPRÄCH',sys:`Du bist IRIS v8 — persönliche KI-Zentrale von Bernhard Metzger, BuiltSmart AI. Professionell, prägnant, hilfreich. Max 90 Wörter. Deutsch. Siezen.`},
-  news:{name:'NEWS',sys:`Du bist IRIS, News-Agent. Fasse aktuelle Weltlage, Wirtschaft, Immobilienmarkt zusammen. Strukturiert und faktenbasiert. Max 100 Wörter. Deutsch.`},
+  chat:{name:'GESPRÄCH',sys:`Du bist IRIS v8 — persönliche KI-Zentrale von Bernhard Metzger, BuiltSmart AI. Professionell, prägnant, hilfreich. Max 90 Wörter. Deutsch. Duze Bernhard. Duzen. Sprich Bernhard persönlich mit "du" an.`},
+  news:{name:'NEWS',sys:`Du bist IRIS, News-Agent. Sprich Bernhard mit "du" an. Fasse aktuelle Weltlage, Wirtschaft, Immobilienmarkt zusammen. Strukturiert und faktenbasiert. Max 100 Wörter. Deutsch.`},
   cal:{name:'KALENDER',sys:`Du bist IRIS, Kalender-Agent (Google Calendar verbunden via MCP). Hilf bei Terminplanung, erstelle Einträge, fasse Kalender zusammen. Max 100 Wörter. Deutsch.`},
   mail:{name:'E-MAIL',sys:`Du bist IRIS, E-Mail-Agent (Gmail verbunden via MCP). Lies E-Mails vor, verfasse Antworten, erstelle Vorlagen. Max 100 Wörter. Deutsch.`},
-  risk:{name:'RISIKO',sys:`Du bist IRIS, Risiko-Agent. §650f BGB, VOB, Verträge, Claims, Baurecht. Klar und handlungsorientiert. Max 100 Wörter. Deutsch.`},
-  write:{name:'SCHREIBEN',sys:`Du bist IRIS, Schreib-Agent. Managementberichte, Briefe, Exposés, Protokolle. Professionell und prägnant. Max 100 Wörter. Deutsch.`},
-  research:{name:'RECHERCHE',sys:`Du bist IRIS, Recherche-Agent. Marktanalyse, Preise, Standorte, Trends. Faktenbasiert. Max 100 Wörter. Deutsch.`},
-  kpi:{name:'KPI',sys:`Du bist IRIS, KPI-Agent. Kennzahlen, Controlling, Performance-Analyse. Max 100 Wörter. Deutsch.`}
+  risk:{name:'RISIKO',sys:`Du bist IRIS, Risiko-Agent. Sprich Bernhard mit "du" an. §650f BGB, VOB, Verträge, Claims, Baurecht. Klar und handlungsorientiert. Max 100 Wörter. Deutsch.`},
+  write:{name:'SCHREIBEN',sys:`Du bist IRIS, Schreib-Agent. Sprich Bernhard mit "du" an. Managementberichte, Briefe, Exposés, Protokolle. Professionell und prägnant. Max 100 Wörter. Deutsch.`},
+  research:{name:'RECHERCHE',sys:`Du bist IRIS, Recherche-Agent. Sprich Bernhard mit "du" an. Marktanalyse, Preise, Standorte, Trends. Faktenbasiert. Max 100 Wörter. Deutsch.`},
+  kpi:{name:'KPI',sys:`Du bist IRIS, KPI-Agent. Sprich Bernhard mit "du" an. Kennzahlen, Controlling, Performance-Analyse. Max 100 Wörter. Deutsch.`}
 };
 
 // ══ SETUP ══
@@ -403,7 +403,7 @@ async function morningBriefing(){
   const h=new Date().getHours();
   const gr=h<12?'Guten Morgen':h<18?'Guten Tag':'Guten Abend';
   const d=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const prompt=`Erstelle ein kurzes Morning Briefing für Bernhard Metzger. Heute ist ${d}. Begrüße ihn mit "${gr}, Bernhard." Erwähne: 1) Datum/Tag, 2) dass du IRIS bist und seine KI-Zentrale, 3) du für Recherche, Berichte, Kalender und E-Mails bereit bist. Max 60 Wörter. Natürlich und professionell.`;
+  const prompt=`Erstelle ein kurzes Morning Briefing für Bernhard Metzger. Heute ist ${d}. Begrüße ihn mit "${gr}, Bernhard." Sprich ihn mit "du" an, persönlich und direkt. Erwähne: 1) Datum/Tag, 2) dass du IRIS bist und seine KI-Zentrale, 3) du für Recherche, Berichte, Kalender und E-Mails bereit bist. Max 60 Wörter. Natürlich und professionell.`;
   setBubble('');showDots();
   setUI('MORNING BRIEFING','S');
   try{
@@ -413,7 +413,7 @@ async function morningBriefing(){
     setBubble(txt);history.push({role:'assistant',content:txt});
     await speak(txt);
   }catch(e){
-    const fb=`${gr}, Bernhard. Ich bin IRIS, Ihre persönliche KI-Zentrale. Heute ist ${d}. Wie kann ich Ihnen helfen?`;
+    const fb=`${gr}, Bernhard. Ich bin IRIS, deine persönliche KI-Zentrale. Heute ist ${d}. Wie kann ich dir helfen?`;
     setBubble(fb);history.push({role:'assistant',content:fb});await speak(fb);
   }
 }
