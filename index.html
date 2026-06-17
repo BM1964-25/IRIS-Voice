@@ -48,14 +48,14 @@ body{font-family:'Rajdhani',sans-serif;color:var(--c);}
 .body{flex:1;display:flex;overflow:hidden;}
 
 /* LEFT — Agents */
-.lpanel{width:155px;flex-shrink:0;border-right:1px solid rgba(0,204,255,.08);background:rgba(0,10,18,.8);backdrop-filter:blur(12px);display:flex;flex-direction:column;padding:.5rem 0;overflow-y:auto;z-index:5;}
-.plbl{font-family:'Orbitron',monospace;font-size:.38rem;letter-spacing:.2em;color:rgba(0,204,255,.24);padding:.3rem .65rem .25rem;border-bottom:1px solid rgba(0,204,255,.06);margin-bottom:.2rem;}
+.lpanel{width:165px;flex-shrink:0;border-right:1px solid rgba(0,204,255,.08);background:rgba(0,10,18,.8);backdrop-filter:blur(12px);display:flex;flex-direction:column;padding:.5rem 0;overflow-y:auto;z-index:5;}
+.plbl{font-family:'Orbitron',monospace;font-size:.48rem;letter-spacing:.2em;color:rgba(0,204,255,.24);padding:.3rem .65rem .25rem;border-bottom:1px solid rgba(0,204,255,.06);margin-bottom:.2rem;}
 .ag{display:flex;align-items:center;gap:.42rem;padding:.35rem .55rem;border:1px solid transparent;border-radius:2px;cursor:pointer;transition:all .18s;margin:0 .32rem .14rem;}
 .ag:hover{border-color:rgba(0,204,255,.2);background:rgba(0,204,255,.04);}
 .ag.on{border-color:rgba(0,204,255,.42);background:rgba(0,204,255,.07);}
 .ag-ico{width:19px;height:19px;border-radius:2px;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:.62rem;flex-shrink:0;}
-.ag-n{font-family:'Orbitron',monospace;font-size:.44rem;letter-spacing:.05em;}
-.ag-d{font-size:.48rem;color:rgba(255,255,255,.2);}
+.ag-n{font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:.05em;}
+.ag-d{font-size:.54rem;color:rgba(255,255,255,.3);}
 .a-chat .ag-ico,.a-chat .ag-n{color:var(--c);}
 .a-news .ag-ico,.a-news .ag-n{color:#00ddff;}
 .a-cal .ag-ico,.a-cal .ag-n{color:var(--c3);}
@@ -94,16 +94,26 @@ canvas#orb{display:block;}
 .bubble .ph{color:rgba(0,204,255,.17);font-family:'Orbitron',monospace;font-size:.48rem;letter-spacing:.12em;}
 
 /* RIGHT — Dashboard */
-.rpanel{width:175px;flex-shrink:0;border-left:1px solid rgba(0,204,255,.08);background:rgba(0,10,18,.8);backdrop-filter:blur(12px);display:flex;flex-direction:column;padding:.5rem .6rem;gap:.4rem;overflow-y:auto;z-index:5;}
-.rplbl{font-family:'Orbitron',monospace;font-size:.38rem;letter-spacing:.2em;color:rgba(0,204,255,.24);padding-bottom:.25rem;border-bottom:1px solid rgba(0,204,255,.06);margin-bottom:.15rem;}
-.met{background:rgba(0,204,255,.02);border:1px solid rgba(0,204,255,.07);border-radius:2px;padding:.4rem .52rem;}
-.ml{font-family:'Orbitron',monospace;font-size:.36rem;letter-spacing:.13em;color:rgba(0,204,255,.26);margin-bottom:.12rem;}
-.mv{font-size:.76rem;font-weight:600;color:var(--c);font-family:'Orbitron',monospace;}
-.ms{font-size:.48rem;color:rgba(0,204,255,.3);margin-top:.04rem;}
-.ni{border-left:2px solid rgba(0,204,255,.2);padding:.25rem .42rem;margin-bottom:.2rem;cursor:pointer;transition:all .15s;border-radius:0 2px 2px 0;}
-.ni:hover{border-left-color:var(--c);background:rgba(0,204,255,.04);}
-.ni-c{font-family:'Orbitron',monospace;font-size:.36rem;letter-spacing:.12em;color:rgba(0,204,255,.3);}
-.ni-t{font-size:.56rem;color:rgba(0,204,255,.58);line-height:1.32;margin-top:.07rem;}
+.rpanel{width:220px;flex-shrink:0;border-left:1px solid rgba(0,204,255,.12);background:rgba(0,10,18,.88);backdrop-filter:blur(16px);display:flex;flex-direction:column;padding:.7rem .8rem;gap:.55rem;overflow-y:auto;z-index:5;}
+.rplbl{font-family:'Orbitron',monospace;font-size:.52rem;letter-spacing:.18em;color:rgba(0,204,255,.5);padding-bottom:.35rem;border-bottom:1px solid rgba(0,204,255,.12);margin-bottom:.2rem;text-transform:uppercase;}
+.met{background:rgba(0,204,255,.03);border:1px solid rgba(0,204,255,.1);border-radius:4px;padding:.55rem .7rem;}
+.ml{font-family:'Orbitron',monospace;font-size:.48rem;letter-spacing:.14em;color:rgba(0,204,255,.45);margin-bottom:.18rem;text-transform:uppercase;}
+.mv{font-size:.9rem;font-weight:700;color:var(--c);font-family:'Orbitron',monospace;}
+.ms{font-size:.58rem;color:rgba(0,204,255,.4);margin-top:.06rem;}
+.ni{border-left:2px solid rgba(0,204,255,.25);padding:.35rem .55rem;margin-bottom:.28rem;cursor:pointer;transition:all .15s;border-radius:0 3px 3px 0;background:rgba(0,204,255,.02);}
+.ni:hover{border-left-color:var(--c);background:rgba(0,204,255,.06);}
+.ni-c{font-family:'Orbitron',monospace;font-size:.46rem;letter-spacing:.12em;color:rgba(0,204,255,.5);text-transform:uppercase;}
+.ni-t{font-size:.68rem;color:rgba(0,204,255,.75);line-height:1.45;margin-top:.1rem;}
+/* API Key fields in right panel */
+.api-field{display:flex;flex-direction:column;gap:.3rem;}
+.api-lbl{font-family:'Orbitron',monospace;font-size:.44rem;letter-spacing:.14em;color:rgba(0,204,255,.45);text-transform:uppercase;}
+.api-inp{background:rgba(0,204,255,.05);border:1px solid rgba(0,204,255,.2);border-radius:3px;padding:.5rem .7rem;color:var(--c);font-family:'Orbitron',monospace;font-size:.6rem;outline:none;width:100%;letter-spacing:.04em;transition:all .2s;}
+.api-inp:focus{border-color:var(--c);box-shadow:0 0 0 2px rgba(0,204,255,.1);}
+.api-inp::placeholder{color:rgba(0,204,255,.2);}
+.api-btn{background:rgba(0,204,255,.1);border:1px solid rgba(0,204,255,.3);border-radius:3px;padding:.45rem;color:var(--c);font-family:'Orbitron',monospace;font-size:.5rem;font-weight:700;letter-spacing:.14em;cursor:pointer;transition:all .2s;width:100%;text-align:center;}
+.api-btn:hover{background:rgba(0,204,255,.2);box-shadow:0 0 10px rgba(0,204,255,.2);}
+.api-status{font-size:.5rem;color:rgba(0,204,255,.35);font-family:'Orbitron',monospace;letter-spacing:.08em;}
+.api-status.ok{color:var(--c3);}
 
 /* FOOTER */
 .ftr{display:flex;align-items:center;justify-content:space-between;padding:.38rem 1.1rem;background:rgba(0,10,18,.9);border-top:1px solid rgba(0,204,255,.07);flex-shrink:0;z-index:20;}
@@ -217,15 +227,35 @@ canvas#orb{display:block;}
 
     <!-- RIGHT -->
     <div class="rpanel">
-      <div class="rplbl">System</div>
-      <div class="met"><div class="ml">KI Engine</div><div class="mv" style="font-size:.6rem" id="engine-disp">GPT-4o-mini</div><div class="ms" id="engine-sub">OpenAI</div></div>
-      <div class="met"><div class="ml">Claude</div><div class="mv" style="font-size:.6rem;color:rgba(0,204,255,.3)" id="claude-disp">—</div><div class="ms">Anthropic</div></div>
-      <div class="met"><div class="ml">Session</div><div class="mv" id="mc">0</div><div class="ms">Nachrichten</div></div>
-      <div class="met"><div class="ml">TTS</div><div class="mv" style="font-size:.58rem" id="ttsm">Browser</div><div class="ms">Sprachausgabe</div></div>
-      <div class="met"><div class="ml">Google</div><div class="mv" style="font-size:.56rem;color:var(--c3)">Cal+Mail</div><div class="ms">verbunden</div></div>
-      <div class="met"><div class="ml">Microsoft 365</div><div class="mv" style="font-size:.56rem;color:#0078d4" id="ms365-st">Bereit</div><div class="ms">Outlook·Teams</div></div>
-      <div class="rplbl" style="margin-top:.28rem">World Feed</div>
-      <div id="nfeed"><div class="ni"><div class="ni-c">LADEN</div><div class="ni-t" style="color:rgba(0,204,255,.22);font-style:italic">Nachrichten...</div></div></div>
+
+      <!-- API Keys -->
+      <div class="rplbl">API Keys</div>
+      <div class="api-field">
+        <div class="api-lbl">OpenAI (STT · TTS)</div>
+        <input class="api-inp" type="password" id="r-oai-key" placeholder="sk-proj-…" autocomplete="off">
+        <div class="api-status" id="r-oai-st">● Nicht verbunden</div>
+      </div>
+      <div class="api-field">
+        <div class="api-lbl">Anthropic (Claude)</div>
+        <input class="api-inp" type="password" id="r-ant-key" placeholder="sk-ant-…" autocomplete="off">
+        <div class="api-status" id="r-ant-st">● Nicht verbunden</div>
+      </div>
+      <button class="api-btn" onclick="updateKeys()">▶ KEYS SPEICHERN</button>
+
+      <!-- System Status -->
+      <div class="rplbl" style="margin-top:.3rem">System</div>
+      <div class="met"><div class="ml">KI Engine</div><div class="mv" style="font-size:.72rem" id="engine-disp">GPT-4o-mini</div><div class="ms" id="engine-sub">OpenAI</div></div>
+      <div class="met"><div class="ml">Claude</div><div class="mv" style="font-size:.68rem;color:rgba(0,204,255,.35)" id="claude-disp">—</div><div class="ms">Anthropic</div></div>
+      <div class="met"><div class="ml">Nachrichten</div><div class="mv" id="mc">0</div><div class="ms">Session</div></div>
+      <div class="met"><div class="ml">Stimme</div><div class="mv" style="font-size:.65rem" id="ttsm">Browser</div><div class="ms">TTS Engine</div></div>
+      <div class="met"><div class="ml">Google</div><div class="mv" style="font-size:.65rem;color:var(--c3)">Cal + Mail</div><div class="ms">verbunden</div></div>
+      <div class="met"><div class="ml">Microsoft 365</div><div class="mv" style="font-size:.62rem;color:#0078d4" id="ms365-st">Bereit</div><div class="ms">Outlook · Teams</div></div>
+
+      <!-- World Feed -->
+      <div class="rplbl" style="margin-top:.3rem">World Feed</div>
+      <div id="nfeed">
+        <div class="ni"><div class="ni-c">LADEN</div><div class="ni-t" style="color:rgba(0,204,255,.3);font-style:italic">Nachrichten werden geladen...</div></div>
+      </div>
     </div>
   </div>
 
@@ -990,6 +1020,40 @@ document.addEventListener('touchend',e=>{
   else if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5){const keys=Object.keys(AGENTS),i=keys.indexOf(agent),next=keys[(i+(dx>0?1:-1)+keys.length)%keys.length];setAgent(next);}
 },{passive:true});
 
+
+
+// ══ UPDATE KEYS FROM RIGHT PANEL ══
+function updateKeys(){
+  const oai = document.getElementById('r-oai-key').value.trim();
+  const ant = document.getElementById('r-ant-key').value.trim();
+  if(oai){ OAI=oai; localStorage.setItem('iris_oai',oai);
+    document.getElementById('r-oai-st').textContent='● Verbunden';
+    document.getElementById('r-oai-st').className='api-status ok';
+  }
+  if(ant){ ANT=ant; localStorage.setItem('iris_ant',ant);
+    document.getElementById('r-ant-st').textContent='● Verbunden';
+    document.getElementById('r-ant-st').className='api-status ok';
+    document.getElementById('claude-disp').textContent='Claude Sonnet';
+    document.getElementById('claude-disp').style.color='var(--c3)';
+  }
+  if(oai||ant){
+    const msg='Keys gespeichert. I.R.I.S. ist bereit.';
+    setBubble(msg); speakBrowser(msg);
+  }
+}
+
+function initRightPanelKeys(){
+  const oai=localStorage.getItem('iris_oai');
+  const ant=localStorage.getItem('iris_ant');
+  if(oai){ document.getElementById('r-oai-key').value='sk-…'+oai.slice(-6);
+    document.getElementById('r-oai-st').textContent='● Verbunden';
+    document.getElementById('r-oai-st').className='api-status ok'; }
+  if(ant){ document.getElementById('r-ant-key').value='sk-ant-…'+ant.slice(-6);
+    document.getElementById('r-ant-st').textContent='● Verbunden';
+    document.getElementById('r-ant-st').className='api-status ok';
+    document.getElementById('claude-disp').textContent='Claude Sonnet';
+    document.getElementById('claude-disp').style.color='var(--c3)'; }
+}
 
 // ══ MOBILE PANELS ══
 function toggleMobilePanel(side) {
