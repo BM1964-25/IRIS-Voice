@@ -821,10 +821,9 @@ async function fetchNewsData(){
 
 async function fetchLiveNews(){
   const queries=[
-    {cat:'IMMOBILIEN', q:'Immobilien Deutschland', country:'de'},
-    {cat:'WIRTSCHAFT', q:'Wirtschaft Deutschland', country:'de'},
-    {cat:'BAU',        q:'Baubranche Deutschland', country:'de'},
-    {cat:'KI',         q:'Künstliche Intelligenz', country:'de'},
+    {cat:'BAU & WOHNEN',   q:'Baubranche Wohnungswirtschaft Deutschland'},
+    {cat:'KI & ROBOTIK',   q:'Künstliche Intelligenz Robotik'},
+    {cat:'WELTWIRTSCHAFT', q:'global economy world economy'},
   ];
   const results=[];
   for(const t of queries){
@@ -865,10 +864,9 @@ async function fetchAINewsOne(q){
 
 async function fetchAINews(){
   const topics=[
-    {cat:'IMMOBILIEN',q:'Aktuelle Entwicklung am deutschen Immobilienmarkt'},
-    {cat:'WIRTSCHAFT',q:'Wichtigste aktuelle Wirtschaftsnachricht'},
-    {cat:'BAU',q:'Aktuelles aus der deutschen Baubranche'},
-    {cat:'KI',q:'Neueste wichtige KI-Nachricht'},
+    {cat:'BAU & WOHNEN',   q:'Aktuelle Entwicklung in Baubranche und Wohnungswirtschaft Deutschland'},
+    {cat:'KI & ROBOTIK',   q:'Neueste Entwicklungen in Künstlicher Intelligenz und Robotik'},
+    {cat:'WELTWIRTSCHAFT', q:'Wichtigste aktuelle Nachricht aus der Weltwirtschaft'},
   ];
   const results=[];
   for(const t of topics){
