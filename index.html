@@ -826,28 +826,32 @@ async function fetchLiveNews(){
     {cat:'WELTWIRTSCHAFT', q:'global economy world economy'},
   ];
   const results=[];
+  // Use CORS proxy for NewsAPI
+  const PROXY = 'https://api.allorigins.win/get?url=';
   for(const t of queries){
     try{
-      // NewsAPI: top headlines by keyword
-      const url=`https://newsapi.org/v2/everything?q=${encodeURIComponent(t.q)}&language=de&sortBy=publishedAt&pageSize=1&apiKey=${NEWS_KEY}`;
-      const r=await fetch(url);
-      if(!r.ok) throw new Error('NewsAPI '+r.status);
-      const d=await r.json();
+      const newsUrl=`https://newsapi.org/v2/everything?q=${encodeURIComponent(t.q)}&sortBy=publishedAt&pageSize=1&apiKey=${NEWS_KEY}`;
+      const r=await fetch(PROXY + encodeURIComponent(newsUrl));
+      if(!r.ok) throw new Error('Proxy '+r.status);
+      const wrapper=await r.json();
+      const d=JSON.parse(wrapper.contents);
       if(d.articles&&d.articles.length>0){
         const a=d.articles[0];
-        const txt=a.title||(a.description||'').substring(0,100);
+        const txt=a.title||(a.description||'').substring(0,120);
         const src=a.source?.name||'';
         results.push({cat:t.cat, txt:txt, src:src, url:a.url});
+      } else {
+        throw new Error('No articles');
       }
     }catch(e){
-      // Fallback single item
       const fb=await fetchAINewsOne(t.q);
       if(fb) results.push({cat:t.cat, txt:fb});
     }
   }
-  // Update feed label
-  const lbl=document.querySelector('.rplbl');
-  if(lbl&&results.length>0) lbl.innerHTML='World Feed <span style="font-size:.38rem;color:#00cc66;font-weight:normal;letter-spacing:.06em">· LIVE</span>';
+  const feed_lbl=document.querySelectorAll('.rplbl');
+  feed_lbl.forEach(el=>{if(el.textContent.includes('World Feed'))
+    el.innerHTML='World Feed <span style="font-size:.38rem;color:#00cc66;font-weight:normal;letter-spacing:.06em">· LIVE</span>';
+  });
   return results;
 }
 
