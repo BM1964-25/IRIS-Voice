@@ -240,6 +240,11 @@ canvas#orb{display:block;}
         <input class="api-inp" type="password" id="r-ant-key" placeholder="sk-ant-…" autocomplete="off">
         <div class="api-status" id="r-ant-st">● Nicht verbunden</div>
       </div>
+      <div class="api-field">
+        <div class="api-lbl">NewsAPI (Live-Nachrichten)</div>
+        <input class="api-inp" type="password" id="r-news-key" placeholder="newsapi.org Key" autocomplete="off">
+        <div class="api-status" id="r-news-st">● Nicht verbunden · newsapi.org</div>
+      </div>
       <button class="api-btn" onclick="updateKeys()">▶ KEYS SPEICHERN</button>
 
       <!-- System Status -->
@@ -516,7 +521,7 @@ function tick(){
 setInterval(tick,1000);tick();
 
 // ══ STATE ══
-let OAI='',ANT='',agent='chat',history=[],currentAudio=null,isRec=false,msgCnt=0;
+let OAI='',ANT='',NEWS_KEY='',agent='chat',history=[],currentAudio=null,isRec=false,msgCnt=0;
 let calData='',mailData='';
 let recogB=null;
 
@@ -705,19 +710,80 @@ async function fetchAndSpeakNews(){
 async function fetchNews(){
   const results=await fetchNewsData();
   const feed=document.getElementById('nfeed');feed.innerHTML='';
+  if(results.length===0){
+    feed.innerHTML='<div class="ni"><div class="ni-c">INFO</div><div class="ni-t">Keine Nachrichten verfügbar</div></div>';
+    return;
+  }
   results.forEach(n=>{
     const d=document.createElement('div');d.className='ni';
-    d.innerHTML=`<div class="ni-c">${n.cat}</div><div class="ni-t">${n.txt}</div>`;
-    d.onclick=()=>processInput('Erzähl mir mehr: '+n.txt);
+    const src=n.src?`<span style="font-size:.44rem;color:#336688"> · ${n.src}</span>`:'';
+    d.innerHTML=`<div class="ni-c">${n.cat}${src}</div><div class="ni-t">${n.txt}</div>`;
+    d.onclick=()=>{
+      if(n.url) window.open(n.url,'_blank');
+      else processInput('Erzähl mir mehr: '+n.txt);
+    };
     feed.appendChild(d);
   });
 }
 async function fetchNewsData(){
+  // Use real NewsAPI if key available
+  if(NEWS_KEY){
+    return fetchLiveNews();
+  }
+  // Fallback: GPT-4o-mini generated
+  return fetchAINews();
+}
+
+async function fetchLiveNews(){
+  const queries=[
+    {cat:'IMMOBILIEN', q:'Immobilien Deutschland', country:'de'},
+    {cat:'WIRTSCHAFT', q:'Wirtschaft Deutschland', country:'de'},
+    {cat:'BAU',        q:'Baubranche Deutschland', country:'de'},
+    {cat:'KI',         q:'Künstliche Intelligenz', country:'de'},
+  ];
+  const results=[];
+  for(const t of queries){
+    try{
+      // NewsAPI: top headlines by keyword
+      const url=`https://newsapi.org/v2/everything?q=${encodeURIComponent(t.q)}&language=de&sortBy=publishedAt&pageSize=1&apiKey=${NEWS_KEY}`;
+      const r=await fetch(url);
+      if(!r.ok) throw new Error('NewsAPI '+r.status);
+      const d=await r.json();
+      if(d.articles&&d.articles.length>0){
+        const a=d.articles[0];
+        const txt=a.title||(a.description||'').substring(0,100);
+        const src=a.source?.name||'';
+        results.push({cat:t.cat, txt:txt, src:src, url:a.url});
+      }
+    }catch(e){
+      // Fallback single item
+      const fb=await fetchAINewsOne(t.q);
+      if(fb) results.push({cat:t.cat, txt:fb});
+    }
+  }
+  // Update feed label
+  const lbl=document.querySelector('.rplbl');
+  if(lbl&&results.length>0) lbl.innerHTML='World Feed <span style="font-size:.38rem;color:#00cc66;font-weight:normal;letter-spacing:.06em">· LIVE</span>';
+  return results;
+}
+
+async function fetchAINewsOne(q){
+  try{
+    const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},
+      body:JSON.stringify({model:'gpt-4o-mini',max_tokens:60,
+        messages:[{role:'system',content:'Antworte in einem Satz auf Deutsch.'},{role:'user',content:q+'? Aktuellste Entwicklung in einem Satz.'}]})});
+    if(r.ok){const d=await r.json();return d.choices[0].message.content.trim();}
+  }catch(e){}
+  return null;
+}
+
+async function fetchAINews(){
   const topics=[
-    {cat:'IMMOBILIEN',q:'Aktuelle Entwicklung am deutschen Immobilienmarkt? Ein Satz.'},
-    {cat:'WIRTSCHAFT',q:'Wichtigste aktuelle Wirtschaftsnachricht? Ein Satz.'},
-    {cat:'BAU',q:'Aktuelles aus der deutschen Baubranche? Ein Satz.'},
-    {cat:'KI',q:'Neueste wichtige KI-Nachricht? Ein Satz.'},
+    {cat:'IMMOBILIEN',q:'Aktuelle Entwicklung am deutschen Immobilienmarkt'},
+    {cat:'WIRTSCHAFT',q:'Wichtigste aktuelle Wirtschaftsnachricht'},
+    {cat:'BAU',q:'Aktuelles aus der deutschen Baubranche'},
+    {cat:'KI',q:'Neueste wichtige KI-Nachricht'},
   ];
   const results=[];
   for(const t of topics){
@@ -725,7 +791,7 @@ async function fetchNewsData(){
       const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+OAI},
         body:JSON.stringify({model:'gpt-4o-mini',max_tokens:60,
-          messages:[{role:'system',content:'Antworte in einem Satz auf Deutsch.'},{role:'user',content:t.q}]})});
+          messages:[{role:'system',content:'Antworte in einem prägnanten Satz auf Deutsch.'},{role:'user',content:t.q+'? Aktuellste Entwicklung.'}]})});
       if(r.ok){const d=await r.json();results.push({cat:t.cat,txt:d.choices[0].message.content.trim()});}
     }catch(e){}
   }
@@ -1026,6 +1092,7 @@ document.addEventListener('touchend',e=>{
 function updateKeys(){
   const oai = document.getElementById('r-oai-key').value.trim();
   const ant = document.getElementById('r-ant-key').value.trim();
+  const news = document.getElementById('r-news-key').value.trim();
   if(oai){ OAI=oai; localStorage.setItem('iris_oai',oai);
     document.getElementById('r-oai-st').textContent='● Verbunden';
     document.getElementById('r-oai-st').className='api-status ok';
@@ -1036,7 +1103,13 @@ function updateKeys(){
     document.getElementById('claude-disp').textContent='Claude Sonnet';
     document.getElementById('claude-disp').style.color='var(--c3)';
   }
-  if(oai||ant){
+  if(news){ NEWS_KEY=news; localStorage.setItem('iris_news',news);
+    document.getElementById('r-news-st').textContent='● Verbunden · Live-News aktiv';
+    document.getElementById('r-news-st').className='api-status ok';
+    // Reload news with real data
+    fetchNews();
+  }
+  if(oai||ant||news){
     const msg='Keys gespeichert. I.R.I.S. ist bereit.';
     setBubble(msg); speakBrowser(msg);
   }
@@ -1045,6 +1118,7 @@ function updateKeys(){
 function initRightPanelKeys(){
   const oai=localStorage.getItem('iris_oai');
   const ant=localStorage.getItem('iris_ant');
+  const news=localStorage.getItem('iris_news');
   if(oai){ document.getElementById('r-oai-key').value='sk-…'+oai.slice(-6);
     document.getElementById('r-oai-st').textContent='● Verbunden';
     document.getElementById('r-oai-st').className='api-status ok'; }
@@ -1053,6 +1127,10 @@ function initRightPanelKeys(){
     document.getElementById('r-ant-st').className='api-status ok';
     document.getElementById('claude-disp').textContent='Claude Sonnet';
     document.getElementById('claude-disp').style.color='var(--c3)'; }
+  if(news){ NEWS_KEY=news;
+    document.getElementById('r-news-key').value='…'+news.slice(-6);
+    document.getElementById('r-news-st').textContent='● Verbunden · Live-News aktiv';
+    document.getElementById('r-news-st').className='api-status ok'; }
 }
 
 // ══ MOBILE PANELS ══
@@ -1082,6 +1160,7 @@ window.addEventListener('load',()=>{
   setTimeout(startWakeWord, 3000); // Start wake word listener
   const k=localStorage.getItem('iris_oai');
   const a=localStorage.getItem('iris_ant');
+  const n=localStorage.getItem('iris_news'); if(n&&n.length>8){NEWS_KEY=n;}
   if(k&&k.length>10){
     OAI=k;document.getElementById('oai-key').value=k;
     if(a&&a.length>10){ANT=a;document.getElementById('ant-key').value=a;document.getElementById('claude-disp').textContent='Claude';document.getElementById('claude-disp').style.color='var(--c3)';}
