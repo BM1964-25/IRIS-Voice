@@ -150,6 +150,82 @@ canvas#orb{display:block;}
 .mobile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 45; display: none; }
 .mobile-overlay.show { display: block; }
 
+
+/* ── AGENT FLYOUT PANEL ── */
+.flyout {
+  position: fixed;
+  left: 195px;
+  top: 38px; /* below header */
+  bottom: 38px; /* above footer */
+  width: 220px;
+  background: rgba(0,8,16,.95);
+  border-right: 1px solid rgba(0,204,255,.18);
+  border-top: 1px solid rgba(0,204,255,.1);
+  border-bottom: 1px solid rgba(0,204,255,.1);
+  backdrop-filter: blur(20px);
+  z-index: 30;
+  display: none;
+  flex-direction: column;
+  padding: .6rem 0;
+  overflow-y: auto;
+  animation: flyout-in .2s ease;
+}
+@keyframes flyout-in {
+  from { opacity:0; transform: translateX(-8px); }
+  to   { opacity:1; transform: translateX(0); }
+}
+.flyout.show { display: flex; }
+.flyout-hdr {
+  font-family: 'Orbitron', monospace;
+  font-size: .52rem; letter-spacing: .18em;
+  color: #00ccff; text-transform: uppercase;
+  padding: .35rem .7rem .3rem;
+  border-bottom: 1px solid rgba(0,204,255,.18);
+  margin-bottom: .3rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.flyout-close {
+  background: transparent; border: none;
+  color: rgba(0,204,255,.4); font-size: .7rem;
+  cursor: pointer; padding: 0 .2rem;
+  transition: color .2s;
+}
+.flyout-close:hover { color: #00ccff; }
+.flyout-item {
+  padding: .45rem .7rem;
+  border-bottom: 1px solid rgba(0,204,255,.06);
+  cursor: pointer;
+  transition: background .15s;
+}
+.flyout-item:hover { background: rgba(0,204,255,.06); }
+.flyout-item:last-child { border-bottom: none; }
+.flyout-item-title {
+  font-family: 'Orbitron', monospace;
+  font-size: .52rem; color: #c0eeff;
+  letter-spacing: .04em; line-height: 1.4;
+  margin-bottom: .18rem;
+}
+.flyout-item-sub {
+  font-size: .56rem; color: #4dc8e8;
+  line-height: 1.35;
+}
+.flyout-item-meta {
+  font-family: 'Orbitron', monospace;
+  font-size: .44rem; color: #336688;
+  letter-spacing: .06em; margin-top: .12rem;
+}
+.flyout-empty {
+  padding: .6rem .7rem;
+  font-size: .58rem; color: rgba(0,204,255,.3);
+  font-style: italic;
+}
+.flyout-loading {
+  padding: .6rem .7rem;
+  font-size: .56rem; color: rgba(0,204,255,.3);
+  font-family: 'Orbitron', monospace;
+  letter-spacing: .1em;
+}
+
 ::-webkit-scrollbar{width:2px;}
 ::-webkit-scrollbar-thumb{background:rgba(0,204,255,.15);}
 </style>
@@ -158,6 +234,15 @@ canvas#orb{display:block;}
 <canvas id="gc"></canvas>
 
 <div class="mobile-overlay" id="mobile-overlay" onclick="closeMobilePanels()"></div>
+<div class="flyout" id="flyout">
+  <div class="flyout-hdr">
+    <span id="flyout-title">INFO</span>
+    <button class="flyout-close" onclick="closeFlyout()">✕</button>
+  </div>
+  <div id="flyout-body">
+    <div class="flyout-loading">LADEN...</div>
+  </div>
+</div>
 <!-- SETUP -->
 <div id="setup">
   <div class="slogo">I.R.I.S.</div>
@@ -194,15 +279,15 @@ canvas#orb{display:block;}
     <!-- LEFT -->
     <div class="lpanel">
       <div class="plbl">Agenten</div>
-      <div class="ag a-chat on" id="ag-chat" onclick="setAgent('chat')"><div class="ag-ico">💬</div><div><div class="ag-n">Gespräch</div><div class="ag-d">Dialog</div></div></div>
-      <div class="ag a-news" id="ag-news" onclick="setAgent('news')"><div class="ag-ico">📡</div><div><div class="ag-n">News</div><div class="ag-d">Live</div></div></div>
+      <div class="ag a-chat on" id="ag-chat" onclick="setAgent('chat');closeFlyout()"><div class="ag-ico">💬</div><div><div class="ag-n">Gespräch</div><div class="ag-d">Dialog</div></div></div>
+      <div class="ag a-news" id="ag-news" onclick="setAgent('news');closeFlyout()"><div class="ag-ico">📡</div><div><div class="ag-n">News</div><div class="ag-d">Live</div></div></div>
       <div class="ag a-cal" id="ag-cal" onclick="setAgent('cal')"><div class="ag-ico">📅</div><div><div class="ag-n">Kalender</div><div class="ag-d">Google</div></div></div>
-      <div class="ag a-mail" id="ag-mail" onclick="setAgent('mail')"><div class="ag-ico">✉️</div><div><div class="ag-n">E-Mail</div><div class="ag-d">Gmail</div></div></div>
-      <div class="ag a-risk" id="ag-risk" onclick="setAgent('risk')"><div class="ag-ico">⚠️</div><div><div class="ag-n">Risiko</div><div class="ag-d">§650f</div></div></div>
-      <div class="ag a-write" id="ag-write" onclick="setAgent('write')"><div class="ag-ico">✍️</div><div><div class="ag-n">Schreiben</div><div class="ag-d">Berichte</div></div></div>
-      <div class="ag a-research" id="ag-research" onclick="setAgent('research')"><div class="ag-ico">🔍</div><div><div class="ag-n">Recherche</div><div class="ag-d">Analyse</div></div></div>
-      <div class="ag a-kpi" id="ag-kpi" onclick="setAgent('kpi')"><div class="ag-ico">📊</div><div><div class="ag-n">KPI</div><div class="ag-d">Controlling</div></div></div>
-      <div class="ag" id="ag-ms365" onclick="setAgent('ms365')" style="--ag-color:#0078d4"><div class="ag-ico" style="color:#0078d4;border-color:#0078d4">📧</div><div><div class="ag-n" style="color:#0078d4">MS 365</div><div class="ag-d">Outlook·Teams</div></div></div>
+      <div class="ag a-mail" id="ag-mail" onclick="setAgent('mail');showFlyout('mail')"><div class="ag-ico">✉️</div><div><div class="ag-n">E-Mail</div><div class="ag-d">Gmail</div></div></div>
+      <div class="ag a-risk" id="ag-risk" onclick="setAgent('risk');closeFlyout()"><div class="ag-ico">⚠️</div><div><div class="ag-n">Risiko</div><div class="ag-d">§650f</div></div></div>
+      <div class="ag a-write" id="ag-write" onclick="setAgent('write');closeFlyout()"><div class="ag-ico">✍️</div><div><div class="ag-n">Schreiben</div><div class="ag-d">Berichte</div></div></div>
+      <div class="ag a-research" id="ag-research" onclick="setAgent('research');closeFlyout()"><div class="ag-ico">🔍</div><div><div class="ag-n">Recherche</div><div class="ag-d">Analyse</div></div></div>
+      <div class="ag a-kpi" id="ag-kpi" onclick="setAgent('kpi');closeFlyout()"><div class="ag-ico">📊</div><div><div class="ag-n">KPI</div><div class="ag-d">Controlling</div></div></div>
+      <div class="ag" id="ag-ms365" onclick="setAgent('ms365');closeFlyout()" style="--ag-color:#0078d4"><div class="ag-ico" style="color:#0078d4;border-color:#0078d4">📧</div><div><div class="ag-n" style="color:#0078d4">MS 365</div><div class="ag-d">Outlook·Teams</div></div></div>
       <div class="plbl" style="margin-top:.35rem">Briefing</div>
       <div class="ic"><div class="ic-l">Kalender</div><div class="ic-v loading" id="ic-cal">Lädt...</div></div>
       <div class="ic"><div class="ic-l">E-Mail</div><div class="ic-v loading" id="ic-mail">Lädt...</div></div>
@@ -1087,6 +1172,90 @@ document.addEventListener('touchend',e=>{
 },{passive:true});
 
 
+
+
+// ══ AGENT FLYOUT ══
+let flyoutOpen = false;
+
+function showFlyout(type) {
+  const flyout = document.getElementById('flyout');
+  const title = document.getElementById('flyout-title');
+  const body = document.getElementById('flyout-body');
+
+  flyout.classList.add('show');
+  flyoutOpen = true;
+
+  if (type === 'cal') {
+    title.textContent = 'KALENDER · NÄCHSTE TERMINE';
+    body.innerHTML = '<div class="flyout-loading">LADE TERMINE...</div>';
+    loadCalendarFlyout(body);
+  } else if (type === 'mail') {
+    title.textContent = 'E-MAIL · LETZTE NACHRICHTEN';
+    body.innerHTML = '<div class="flyout-loading">LADE E-MAILS...</div>';
+    loadMailFlyout(body);
+  }
+}
+
+function closeFlyout() {
+  document.getElementById('flyout').classList.remove('show');
+  flyoutOpen = false;
+}
+
+async function loadCalendarFlyout(body) {
+  try {
+    const r = await fetch(GOOGLE_API + '?action=calendar');
+    const d = await r.json();
+    const events = d.events || [];
+
+    if (events.length === 0) {
+      body.innerHTML = '<div class="flyout-empty">Keine Termine in den nächsten 3 Tagen</div>';
+      return;
+    }
+
+    body.innerHTML = '';
+    events.slice(0, 5).forEach(ev => {
+      const item = document.createElement('div');
+      item.className = 'flyout-item';
+      item.innerHTML = `
+        <div class="flyout-item-title">${escHtml(ev.title)}</div>
+        <div class="flyout-item-sub">${ev.today ? '📅 Heute' : '📅 ' + ev.date} ${ev.time !== 'Ganztägig' ? '· ' + ev.time : '· Ganztägig'}</div>
+        ${ev.location ? `<div class="flyout-item-meta">📍 ${escHtml(ev.location)}</div>` : ''}
+      `;
+      item.onclick = () => processInput('Mehr Infos zum Termin: ' + ev.title);
+      body.appendChild(item);
+    });
+  } catch(e) {
+    body.innerHTML = '<div class="flyout-empty">Kalender nicht erreichbar</div>';
+  }
+}
+
+async function loadMailFlyout(body) {
+  try {
+    const r = await fetch(GOOGLE_API + '?action=gmail');
+    const d = await r.json();
+    const mails = d.mails || [];
+
+    if (mails.length === 0) {
+      body.innerHTML = '<div class="flyout-empty">Keine ungelesenen E-Mails</div>';
+      return;
+    }
+
+    body.innerHTML = '';
+    mails.slice(0, 5).forEach(m => {
+      const item = document.createElement('div');
+      item.className = 'flyout-item';
+      item.innerHTML = `
+        <div class="flyout-item-title">${escHtml(m.subject)}</div>
+        <div class="flyout-item-sub">✉️ ${escHtml(m.from)}</div>
+        <div class="flyout-item-meta">${m.date}${m.snippet ? ' · ' + escHtml(m.snippet.substring(0,60)) + '…' : ''}</div>
+      `;
+      item.onclick = () => processInput('Lies mir diese E-Mail vor und fasse sie zusammen: Von ' + m.from + ', Betreff: ' + m.subject);
+      body.appendChild(item);
+    });
+  } catch(e) {
+    body.innerHTML = '<div class="flyout-empty">Gmail nicht erreichbar</div>';
+  }
+}
 
 // ══ UPDATE KEYS FROM RIGHT PANEL ══
 function updateKeys(){
