@@ -521,7 +521,7 @@ function tick(){
 setInterval(tick,1000);tick();
 
 // ══ STATE ══
-let OAI='',ANT='',NEWS_KEY='',agent='chat',history=[],currentAudio=null,isRec=false,msgCnt=0;
+let OAI='',ANT='',NEWS_KEY='e1760f5a3e164b438bd20ea09f0eab5f',agent='chat',history=[],currentAudio=null,isRec=false,msgCnt=0;
 let calData='',mailData='';
 let recogB=null;
 
@@ -1160,7 +1160,7 @@ window.addEventListener('load',()=>{
   setTimeout(startWakeWord, 3000); // Start wake word listener
   const k=localStorage.getItem('iris_oai');
   const a=localStorage.getItem('iris_ant');
-  const n=localStorage.getItem('iris_news'); if(n&&n.length>8){NEWS_KEY=n;}
+  const n=localStorage.getItem('iris_news'); if(n&&n.length>8){NEWS_KEY=n;} else {NEWS_KEY='e1760f5a3e164b438bd20ea09f0eab5f';}
   if(k&&k.length>10){
     OAI=k;document.getElementById('oai-key').value=k;
     if(a&&a.length>10){ANT=a;document.getElementById('ant-key').value=a;document.getElementById('claude-disp').textContent='Claude';document.getElementById('claude-disp').style.color='var(--c3)';}
