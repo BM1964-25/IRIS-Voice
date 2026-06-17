@@ -362,7 +362,7 @@ canvas#orb{display:block;}
 </div>
 
 <script>
-const GOOGLE_API='https://script.google.com/macros/s/AKfycbxJ-DbcK2cAJgPXJvcucqFBC2z5kYL01_RpWYIr8CW8bPc_GfcXnETSa1WZfGbkJ8ZyRw/exec';
+const GOOGLE_API='https://script.google.com/macros/s/AKfycbwgOlU-XCu2bAR4-fcgYHaYe-hbmWHlNDDubGbuOAfZYXun3H6nMpW90UEPHea-iL99gA/exec';
 
 // ══ BG CANVAS ══
 const gc=document.getElementById('gc'),gx=gc.getContext('2d');
@@ -793,21 +793,45 @@ async function fetchAndSpeakNews(){
   setBubble(txt);history.push({role:'assistant',content:txt});await speak(txt);
 }
 async function fetchNews(){
-  const results=await fetchNewsData();
-  const feed=document.getElementById('nfeed');feed.innerHTML='';
+  const feed=document.getElementById('nfeed');
+  feed.innerHTML='<div class="ni"><div class="ni-c">LADEN</div><div class="ni-t" style="color:rgba(0,204,255,.3);font-style:italic">Live-Nachrichten werden geladen...</div></div>';
+
+  try {
+    // Try Google Apps Script RSS endpoint first (live news)
+    const r = await fetch(GOOGLE_API + '?action=news');
+    if(r.ok){
+      const d = await r.json();
+      if(d.articles && d.articles.length > 0){
+        feed.innerHTML = '';
+        // Update label to LIVE
+        document.querySelectorAll('.rplbl').forEach(el=>{
+          if(el.textContent.includes('World Feed'))
+            el.innerHTML='World Feed <span style="font-size:.38rem;color:#00cc66;font-weight:normal;letter-spacing:.06em">· LIVE</span>';
+        });
+        d.articles.forEach(a=>{
+          const el=document.createElement('div');el.className='ni';
+          const dateStr=a.date?`<span style="color:#336688"> · ${a.date}</span>`:'';
+          el.innerHTML=`<div class="ni-c">${a.cat} <span style="color:#336688;font-size:.4rem">· ${a.source}</span></div><div class="ni-t">${a.title}${dateStr}</div>`;
+          el.onclick=()=>{ if(a.link) window.open(a.link,'_blank'); else processInput('Erzähl mir mehr: '+a.title); };
+          feed.appendChild(el);
+        });
+        return;
+      }
+    }
+  } catch(e) {}
+
+  // Fallback: AI-generated news
+  const results = await fetchNewsData();
+  feed.innerHTML = '';
   if(results.length===0){
     feed.innerHTML='<div class="ni"><div class="ni-c">INFO</div><div class="ni-t">Keine Nachrichten verfügbar</div></div>';
     return;
   }
   results.forEach(n=>{
-    const d=document.createElement('div');d.className='ni';
-    const src=n.src?`<span style="font-size:.44rem;color:#336688"> · ${n.src}</span>`:'';
-    d.innerHTML=`<div class="ni-c">${n.cat}${src}</div><div class="ni-t">${n.txt}</div>`;
-    d.onclick=()=>{
-      if(n.url) window.open(n.url,'_blank');
-      else processInput('Erzähl mir mehr: '+n.txt);
-    };
-    feed.appendChild(d);
+    const el=document.createElement('div');el.className='ni';
+    el.innerHTML=`<div class="ni-c">${n.cat} <span style="color:#336688;font-size:.4rem">· KI</span></div><div class="ni-t">${n.txt}</div>`;
+    el.onclick=()=>processInput('Erzähl mir mehr: '+n.txt);
+    feed.appendChild(el);
   });
 }
 async function fetchNewsData(){
